@@ -24,11 +24,12 @@ manifest:
 
 test:
 	$(PY) -m unittest discover -s tools
+	node --test projects/konquest/test.mjs
 
 ## check: serve the pack, load every page in headless Chromium, fail on any error.
 ## ANGLE=vulkan where Chromium has no SwiftShader (e.g. Alpine).
 ANGLE ?= swiftshader
-PAGES ?= all examples/ projects/ playground/ projects/dom-shipyard/ projects/dom-dogfight/ projects/threejs-fleet/ projects/threejs-hangar/
+PAGES ?= all examples/ projects/ playground/ projects/konquest/ projects/dom-shipyard/ projects/dom-dogfight/ projects/threejs-fleet/ projects/threejs-hangar/
 check:
 	@$(PY) -m http.server 8799 --bind 127.0.0.1 >/dev/null 2>&1 & pid=$$!; sleep 1; \
 	  node tools/check_pages.mjs http://127.0.0.1:8799/ $(PAGES) --angle $(ANGLE); rc=$$?; \

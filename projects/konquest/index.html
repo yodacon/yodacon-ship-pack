@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konquest · Yodacon Ship Pack</title>
+<meta name="description" content="KDE's Konquest in the browser, with its exact rules, and Paul Richeson's ConEx ships flying the fleets.">
+<link rel="stylesheet" href="konquest.css">
+<script type="module" src="konquest.js"></script>
+</head>
+<body>
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Konquest</h1>
+  <p class="status" aria-live="polite">
+    <span id="turn">—</span>
+    <span id="who"></span>
+    <button type="button" id="end-turn" class="primary" disabled>End turn</button>
+    <button type="button" id="new-game">New game</button>
+  </p>
+</header>
+
+<main class="game">
+  <section class="board-wrap" aria-label="The galaxy">
+    <div id="board" class="board" role="grid"></div>
+    <canvas id="fleets" class="fleets" aria-hidden="true"></canvas>
+    <div id="cover" class="cover" hidden>
+      <p id="cover-text"></p>
+      <button type="button" id="cover-go" class="primary">I'm ready</button>
+    </div>
+    <div id="tip" class="tip" role="tooltip" hidden></div>
+  </section>
+
+  <aside class="side">
+    <section class="panel" id="send-panel" aria-labelledby="send-h">
+      <h2 id="send-h">Send a fleet</h2>
+      <p id="send-hint" class="muted">Pick one of your planets, then a destination.</p>
+      <form id="send-form" hidden>
+        <p id="send-route"></p>
+        <label>Ships <input id="send-count" type="number" min="0" step="1" inputmode="numeric" required></label>
+        <label class="check"><input id="send-standing" type="checkbox"> Standing order (send every turn)</label>
+        <p><button type="submit" class="primary">Send</button> <button type="button" id="send-cancel">Cancel</button></p>
+      </form>
+      <ul id="orders" class="orders"></ul>
+    </section>
+
+    <section class="panel" aria-labelledby="news-h">
+      <h2 id="news-h">News</h2>
+      <ol id="news" class="news" aria-live="polite"></ol>
+    </section>
+
+    <section class="panel" aria-labelledby="stand-h">
+      <h2 id="stand-h">Standings</h2>
+      <table class="standings">
+        <thead><tr><th scope="col">Player</th><th scope="col" title="Planets">Pl</th><th scope="col" title="Ships on planets and in flight">Ships</th><th scope="col" title="Ships built">Built</th><th scope="col" title="Planets conquered">Conq</th><th scope="col" title="Fleets launched">Fleets</th><th scope="col" title="Enemy ships destroyed">Kills</th></tr></thead>
+        <tbody id="standings"></tbody>
+      </table>
+    </section>
+  </aside>
+</main>
+
+<dialog id="setup" aria-labelledby="setup-h">
+  <form method="dialog" id="setup-form">
+    <h2 id="setup-h">New game</h2>
+    <fieldset>
+      <legend>Players</legend>
+      <ol id="setup-players" class="setup-players"></ol>
+      <p><button type="button" id="add-player">Add player</button> <button type="button" id="remove-player">Remove last</button></p>
+    </fieldset>
+    <fieldset class="grid2">
+      <legend>Galaxy</legend>
+      <label>Neutral planets <input id="opt-neutrals" type="number" min="0" max="60" value="3"></label>
+      <label>Width <input id="opt-cols" type="number" min="5" max="20" value="10"></label>
+      <label>Height <input id="opt-rows" type="number" min="5" max="20" value="10"></label>
+      <label>Seed <input id="opt-seed" type="text" placeholder="random" inputmode="numeric"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Options</legend>
+      <label class="check"><input type="checkbox" id="opt-BlindMap"> Blind map (see only your own ships)</label>
+      <label class="check"><input type="checkbox" id="opt-CumulativeProduction"> Cumulative production</label>
+      <label class="check"><input type="checkbox" id="opt-ProductionAfterConquere" checked> Production after conquest</label>
+      <label class="check"><input type="checkbox" id="opt-NeutralsShowShips"> Neutral planets show their ships</label>
+      <label class="check"><input type="checkbox" id="opt-NeutralsShowStats"> Neutral planets show their stats</label>
+      <label>Neutral production <input id="opt-NeutralsProduction" type="number" min="0" max="20" value="1"></label>
+    </fieldset>
+    <p class="dialog-buttons"><button type="submit" value="start" class="primary">Start</button>
+      <button type="submit" value="cancel" formnovalidate>Cancel</button></p>
+  </form>
+</dialog>
+
+<footer class="credit">
+  <p>Rules: <a href="https://apps.kde.org/konquest/">Konquest</a> by KDE (GPL-2.0-or-later), reimplemented
+  from <a href="https://invent.kde.org/games/konquest">its source</a>; see
+  <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/docs/research/2026-10-21-05-konquest-source.md">the rules, as read</a>.
+  Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</footer>
+</body>
+</html>

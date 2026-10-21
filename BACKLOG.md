@@ -1,0 +1,78 @@
+# Backlog
+
+What to build next with the pack, in order. The reasoning is in
+[docs/game-ideas.md](docs/game-ideas.md), from the
+[research](docs/research/README.md).
+
+## Now: Konquest
+
+A browser Konquest with KDE's exact rules ([research 05](docs/research/2026-10-21-05-konquest-source.md)),
+and the pack's ships as the fleets. `projects/konquest/`.
+
+- [x] Rules as a pure module (`rules.js`): map, planets, names, distance,
+      production, travel, the battle loop, conquest, win check, turn order
+- [x] Tests for every rule, run with Node (`node projects/konquest/test.mjs`)
+- [x] The default computer player, Weak / Normal / Hard, as in the source
+- [x] A seeded random generator, so a game can be replayed from its seed
+- [x] The board: DOM grid, planets drawn in code, owner colours, name and ships
+- [x] Sending fleets: pick a source, a target, a count; End Turn
+- [x] Fleets in flight drawn as pack ships, turned to their heading
+- [x] News after each turn, with the comm portrait of the player's hull
+- [x] New-game dialog: players (human / Weak / Normal / Hard), neutral
+      planets, map size, the five options
+- [x] Standing orders
+- [x] Hover details for planets (production, kill %), honouring the
+      *NeutralsShowShips* / *NeutralsShowStats* options and *BlindMap*
+- [x] Standings: ships built, planets conquered, fleets launched, kills
+- [x] Hot-seat play for several humans
+- [ ] Sound (Web Audio, in code)
+
+## Project: treadcore, the crates.io game
+
+Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-treadcore-crates.md)).
+
+- [ ] `examples/bevy/`: a Bevy app that loads a ship's sheet as a texture atlas and flies it
+- [ ] A `yodacon-ship-pack` crate on crates.io: the catalogue as typed structs and the frame maths; PNGs vendored or fetched, not packed in
+- [ ] Settle the licence route for treadcore (MIT) using the pack (GPL-2.0-or-later): run-time loading from a vendored folder, or a direct grant from Paul
+- [ ] Pack craft as treadcore's drones (Defender, Gryphon, Trident)
+- [ ] The Bevy example in the browser (needs the `wasm32` target)
+- [ ] Check: treadcore's README says 0.1.0-rc.6, crates.io has 0.1.0-rc.1
+
+## Next: examples, one technique each
+
+- [ ] SVG sprite (`viewBox` per frame)
+- [ ] CSS-only spin (`steps(36)`)
+- [ ] OffscreenCanvas in a worker
+- [ ] Web Audio engine and shots
+- [ ] Gamepad API
+- [ ] WebGPU: one ship, then ten thousand (with fallback)
+- [ ] Zig → WebAssembly: frame maths, then the Konquest battle loop, checked
+      against `rules.js`
+- [ ] Go → WebAssembly: Gonex in a tab (Ebitengine)
+- [ ] Rust → WebAssembly with macroquad (needs `rustup target add wasm32-unknown-unknown`)
+- [ ] Babylon.js and KAPLAY, pinned like the others
+
+## Next: games
+
+- [ ] Orbital Defence (Canvas 2D)
+- [ ] Slingshot (gravity, Canvas 2D)
+- [ ] ConEx Courier (trade and fly; DOM + Canvas)
+- [ ] Pin Miner (idle, DOM only)
+- [ ] Fleet Tactics (cards with comm portraits)
+- [ ] Cutaway (repair by target picture)
+
+## Assets
+
+- [ ] **Planets**: the biggest gap. Paul's renders to match the ships;
+      meanwhile a generated set (`tools/`), sprite + mask + radius
+- [ ] Asteroids (36 frames, 3 sizes)
+- [ ] Explosions (frame sequence); check the author of konex's explosion frames
+- [ ] Projectiles beyond the line: bolt, beam, mine
+- [ ] Starfield layers
+- [ ] Sounds
+
+## Housekeeping
+
+- [ ] PixiJS: the playground snippet pins 7.4.2, `examples/pixi` pins 8.6.6; pick one
+- [ ] Gonex's `*97` ships carry the old black/negative decodes; re-export from the pack
+- [ ] The v1.0.0 tag still contains the plugins' Missile Repeater art
