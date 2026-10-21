@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pin Miner · Yodacon Ship Pack</title>
+<meta name="description" content="An idle mining game in plain DOM: Consolidated Express Pins haul ore from an asteroid field while you build the fleet.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="pinminer.css">
+<script type="module" src="pinminer.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Pin Miner</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Credits</span><span class="yc-value" id="credits">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Per minute</span><span class="yc-value" id="rate">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value" id="count">0</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport field" id="field" aria-label="The station and the asteroid field">
+    <div class="station" id="station"><img src="../../planets/garden/medium/planet.png" width="64" height="64" alt="ConEx, the station's planet"><span>ConEx</span></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Shipyard</h2>
+      <ul id="yard" class="list"></ul>
+    </section>
+    <section class="yc-panel">
+      <h2>Upgrades</h2>
+      <ul id="upgrades" class="list"></ul>
+    </section>
+    <section class="yc-panel">
+      <h2>Log</h2>
+      <ol id="log" class="log yc-crt" aria-live="polite"></ol>
+      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
+        <button type="button" id="reset" class="yc-plate">Start over</button></p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+  Asteroids and planet: the pack's generated set. Progress is kept in this browser.</p>
+</footer>
+</body>
+</html>

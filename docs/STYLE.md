@@ -113,7 +113,7 @@ The shaded 3D look, done in CSS without images:
 
 ## Sound
 
-Short sine-wave confirmations, made in code (`projects/konquest/sound.js`):
+Short sine-wave confirmations, made in code (`lib/yodacon-sound.js`, shared by the games):
 higher notes for "yes", lower for "no", a rising arpeggio for success. Quiet
 (gain ≤ 0.2), under 0.5 s, and always behind a mute switch that remembers.
 

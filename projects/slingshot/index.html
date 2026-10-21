@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slingshot · Yodacon Ship Pack</title>
+<meta name="description" content="Gravity golf with the 1997 ConEx Dart: one push, then the planets do the flying.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="slingshot.css">
+<script type="module" src="slingshot.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Slingshot</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1</span></span>
+    <span class="yc-readout"><span class="yc-label">Launches</span><span class="yc-value" id="strokes">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Par</span><span class="yc-value" id="par">—</span></span>
+    <span class="yc-readout"><span class="yc-label">Total</span><span class="yc-value" id="total">0</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The level">
+    <canvas id="screen" width="900" height="560" tabindex="0"
+      aria-label="Drag back from the ship and let go to launch. Or arrows to aim and set power, Space to launch."></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Flight</h2>
+      <p id="status" class="phase"><span class="yc-lamp" style="--lamp: var(--yc-amber)"></span>Aim</p>
+      <p class="muted">Drag back from the Dart and let go: the further you pull, the harder it goes.
+        The planets pull it on its way. Fly through the green gate. Crash, or leave the screen, and you start again.</p>
+      <p class="muted">Keys: <kbd>←</kbd> <kbd>→</kbd> aim, <kbd>↑</kbd> <kbd>↓</kbd> power, <kbd>Space</kbd> launch, <kbd>R</kbd> restart the level.</p>
+      <p class="buttons"><button type="button" id="restart" class="yc-plate">Restart level</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>Levels</h2>
+      <ol id="levels" class="levels"></ol>
+      <p id="best" class="best muted"></p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+  Planets: the pack's generated set.</p>
+</footer>
+</body>
+</html>

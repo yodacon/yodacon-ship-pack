@@ -6,7 +6,7 @@ import {
   planetByName, distance, travelTurns, isDead,
 } from "./rules.js";
 import { loadShip, drawShip, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
-import { play, isMuted, setMuted } from "./sound.js";
+import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
 // Each seat flies one hull from the pack.
 const HULLS = [["conex", "yodacon"], ["conex", "dart"], ["override", "callisto"], ["konex", "advisor"],
