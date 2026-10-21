@@ -5,67 +5,69 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Konquest · Yodacon Ship Pack</title>
 <meta name="description" content="KDE's Konquest in the browser, with its exact rules, and Paul Richeson's ConEx ships flying the fleets.">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
 <link rel="stylesheet" href="konquest.css">
 <script type="module" src="konquest.js"></script>
 </head>
-<body>
+<body class="yc-space">
 <header class="top">
   <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
-  <h1>Konquest</h1>
+  <h1 class="yc-title">Konquest</h1>
   <p class="status" aria-live="polite">
-    <span id="turn">—</span>
-    <span id="who"></span>
-    <button type="button" id="end-turn" class="primary" disabled>End turn</button>
-    <button type="button" id="new-game">New game</button>
+    <span class="yc-crt turnbox"><span class="yc-label">Turn</span> <span id="turn" class="turn-value">—</span></span>
+    <span id="who" class="who"></span>
+    <button type="button" id="end-turn" class="yc-plate yc-go" disabled>End turn</button>
+    <button type="button" id="new-game" class="yc-plate">New game</button>
+    <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
   </p>
 </header>
 
-<main class="game">
-  <section class="board-wrap" aria-label="The galaxy">
+<main class="game yc-console">
+  <section class="board-wrap yc-viewport" aria-label="The galaxy">
     <div id="board" class="board" role="grid"></div>
     <canvas id="fleets" class="fleets" aria-hidden="true"></canvas>
     <div id="cover" class="cover" hidden>
       <p id="cover-text"></p>
-      <button type="button" id="cover-go" class="primary">I'm ready</button>
+      <button type="button" id="cover-go" class="yc-plate yc-go">I'm ready</button>
     </div>
     <div id="tip" class="tip" role="tooltip" hidden></div>
   </section>
 
   <aside class="side">
-    <section class="panel" id="send-panel" aria-labelledby="send-h">
+    <section class="yc-panel" id="send-panel" aria-labelledby="send-h">
       <h2 id="send-h">Send a fleet</h2>
       <p id="send-hint" class="muted">Pick one of your planets, then a destination.</p>
-      <form id="send-form" hidden>
+      <form id="send-form" class="yc-target" hidden>
         <p id="send-route"></p>
         <label>Ships <input id="send-count" type="number" min="0" step="1" inputmode="numeric" required></label>
         <label class="check"><input id="send-standing" type="checkbox"> Standing order (send every turn)</label>
-        <p><button type="submit" class="primary">Send</button> <button type="button" id="send-cancel">Cancel</button></p>
+        <p><button type="submit" class="yc-plate yc-go">Send</button> <button type="button" id="send-cancel" class="yc-plate">Cancel</button></p>
       </form>
       <ul id="orders" class="orders"></ul>
     </section>
 
-    <section class="panel" aria-labelledby="news-h">
+    <section class="yc-panel" aria-labelledby="news-h">
       <h2 id="news-h">News</h2>
-      <ol id="news" class="news" aria-live="polite"></ol>
+      <ol id="news" class="news yc-crt" aria-live="polite"></ol>
     </section>
 
-    <section class="panel" aria-labelledby="stand-h">
+    <section class="yc-panel" aria-labelledby="stand-h">
       <h2 id="stand-h">Standings</h2>
-      <table class="standings">
+      <div class="yc-crt"><table class="standings">
         <thead><tr><th scope="col">Player</th><th scope="col" title="Planets">Pl</th><th scope="col" title="Ships on planets and in flight">Ships</th><th scope="col" title="Ships built">Built</th><th scope="col" title="Planets conquered">Conq</th><th scope="col" title="Fleets launched">Fleets</th><th scope="col" title="Enemy ships destroyed">Kills</th></tr></thead>
         <tbody id="standings"></tbody>
-      </table>
+      </table></div>
     </section>
   </aside>
 </main>
 
-<dialog id="setup" aria-labelledby="setup-h">
+<dialog id="setup" class="yc-console" aria-labelledby="setup-h">
   <form method="dialog" id="setup-form">
-    <h2 id="setup-h">New game</h2>
+    <h2 id="setup-h" class="yc-title">New game</h2>
     <fieldset>
       <legend>Players</legend>
       <ol id="setup-players" class="setup-players"></ol>
-      <p><button type="button" id="add-player">Add player</button> <button type="button" id="remove-player">Remove last</button></p>
+      <p><button type="button" id="add-player" class="yc-plate">Add player</button> <button type="button" id="remove-player" class="yc-plate">Remove last</button></p>
     </fieldset>
     <fieldset class="grid2">
       <legend>Galaxy</legend>
@@ -83,8 +85,8 @@
       <label class="check"><input type="checkbox" id="opt-NeutralsShowStats"> Neutral planets show their stats</label>
       <label>Neutral production <input id="opt-NeutralsProduction" type="number" min="0" max="20" value="1"></label>
     </fieldset>
-    <p class="dialog-buttons"><button type="submit" value="start" class="primary">Start</button>
-      <button type="submit" value="cancel" formnovalidate>Cancel</button></p>
+    <p class="dialog-buttons"><button type="submit" value="start" class="yc-plate yc-go">Start</button>
+      <button type="submit" value="cancel" class="yc-plate" formnovalidate>Cancel</button></p>
   </form>
 </dialog>
 

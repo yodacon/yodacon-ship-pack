@@ -228,3 +228,59 @@ test("board order is row by row", () => {
   assert.deepEqual(boardOrder(s).map((p) => p.name), ["C", "B", "A"]);
   assert.equal(planetByName(s, "B").col, 5);
 });
+
+// --- Opponents ----------------------------------------------------------------------------
+
+import { OPPONENTS, becaiPlay, computerPlay } from "./rules.js";
+
+test("Easy, Medium and Hard are Konquest's Defensive, Normal and BecAI brains", () => {
+  assert.deepEqual(Object.keys(OPPONENTS).slice(0, 3), ["easy", "medium", "hard"]);
+  assert.equal(OPPONENTS.easy.level, "hard");     // the source calls Default/Hard "Defensive"
+  assert.equal(OPPONENTS.medium.level, "normal");
+  assert.equal(OPPONENTS.hard.brain, "becai");
+});
+
+test("BecAI sends just enough to win, counting production on the way and kill percentages", () => {
+  // Home kill 0.4, target kill 0.4, neutral production 1, distance 1 → needs ceil((4 + 1·1)·1) = 5.
+  const s = board([{ row: 5, col: 5, owner: 0, ships: 60, kill: 0.4, production: 10 },
+    { row: 5, col: 7, owner: NEUTRAL, ships: 4, kill: 0.4, production: 8 },
+    { row: 0, col: 0, owner: 1, ships: 30, kill: 0.4, production: 10 }], { types: ["hard", "human"] });
+  becaiPlay(s, 0);
+  const f = s.players[0].newFleets.find((x) => x.destination === "B");
+  assert.ok(f, "attacks the cheap neutral");
+  assert.ok(f.ships >= 5, `sends at least the 5 it needs (sent ${f.ships})`);
+  assert.ok(s.planets[0].ships > 0, "keeps a defence at home");
+});
+
+test("BecAI never sends two fleets at one target, including this turn's", () => {
+  const s = board([{ row: 5, col: 5, owner: 0, ships: 200 }, { row: 5, col: 9, owner: 0, ships: 200 },
+    { row: 5, col: 7, owner: NEUTRAL, ships: 3 }, { row: 0, col: 0, owner: 1, ships: 5000 }], { types: ["hard", "human"] });
+  becaiPlay(s, 0);
+  const atC = s.players[0].newFleets.filter((x) => x.destination === "C");
+  assert.equal(atC.length, 1);
+});
+
+test("computerPlay routes each type to its brain", () => {
+  const s = board([{ row: 5, col: 5, owner: 0, ships: 100 }, { row: 5, col: 7, owner: NEUTRAL, ships: 5 },
+    { row: 0, col: 0, owner: 1, ships: 500 }], { types: ["easy", "human"] });
+  computerPlay(s, 0);                             // Defensive: 70 ≥ 30, attacks B with 70
+  assert.equal(s.players[0].newFleets[0].ships, 70);
+});
+
+test("difficulty holds in play: Hard beats Medium beats Easy over 60 seeded duels", () => {
+  const duel = (a, b) => {
+    let winsA = 0, winsB = 0;
+    for (let g = 0; g < 60; g++) {
+      const seats = g % 2 ? [b, a] : [a, b];
+      const s = newGame({ players: seats.map((type) => ({ type })), seed: 9000 + g });
+      while (!s.over && s.turn < 300) endTurn(s);
+      if (!s.over) continue;
+      if (seats[s.winner] === a) winsA++; else winsB++;
+    }
+    return [winsA, winsB];
+  };
+  const [hard, medium] = duel("hard", "medium");
+  assert.ok(hard > medium, `Hard ${hard} v Medium ${medium}`);
+  const [medium2, easy] = duel("medium", "easy");
+  assert.ok(medium2 > easy, `Medium ${medium2} v Easy ${easy}`);
+});

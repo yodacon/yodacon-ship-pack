@@ -19,6 +19,6 @@ Not ranked, because they are the pack's ancestry rather than its users:
 | --- | --- | --- | --- |
 | 1997 | **ConEx 1.2**, *Escape Velocity* plugin | Paul Richeson | Designed, rendered and published ten of them |
 | 1998 | **ConEx Override 1.0**, *EV Override* plugin | Paul Richeson | Rebuilt them larger and added the Callisto |
-| 1998 | **ConEx GL**, C/OpenGL, private | Joshua Bussdieker | The first standalone ConEx, before konex (Paul Richeson's account) |
+| 1998 | **ConEx GL**, C/OpenGL, private | Joshua Bussdieker | The first standalone ConEx, before konex |
 | 2005 | **konex**, C++/OpenGL remake | Joshua Bussdieker | Took ConEx Override's ten as its cast, plus Advisor and Citrus, also rendered by Paul Richeson |
 | 2026 | **Yodacon**, the ConEx revival | Team Yodacon | Recovered every picture byte for byte and built this pack |

@@ -1,0 +1,14 @@
+{
+  "type": "garden",
+  "size": "medium",
+  "description": "oceans, land, ice caps and cloud",
+  "diameter": 64,
+  "radius": 32.0,
+  "light": "upper left, in front (as the ships are lit)",
+  "files": {
+    "planet": "planet.png",
+    "opaque": "opaque.png",
+    "mask": "mask.png"
+  },
+  "made_by": "tools/make_planets.py (Yodacon Ship Pack, 2026): generated, not rendered"
+}

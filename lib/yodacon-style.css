@@ -1,0 +1,255 @@
+/* Yodacon style: a 1990s space console, lit from the upper left.
+   The rules are in docs/STYLE.md; styleguide/ shows every component.
+   Link it, then use the yc- classes:
+     <link rel="stylesheet" href="…/lib/yodacon-style.css">
+   Pure CSS, no images, no fonts to download. */
+
+:root {
+  --yc-void: #05070a;
+  --yc-deck: #0b0f14;
+  --yc-crt: #0d3d12;
+  --yc-crt-lit: #1d7a24;
+  --yc-phos: #5cff5c;
+  --yc-phos-dim: #2f9b34;
+  --yc-text: #8fe98f;
+  --yc-chrome-hi: #dfe4e6;
+  --yc-chrome: #9aa3a7;
+  --yc-chrome-lo: #4c5457;
+  --yc-bezel: #2b3134;
+  --yc-violet: #c26bd8;
+  --yc-cyan: #7fe9ff;
+  --yc-amber: #ffb340;
+  --yc-hal: #ff2a1a;
+  --yc-ice: #e8f4ff;
+  --yc-mono: "Courier New", Courier, ui-monospace, monospace;
+  --yc-title: "Eurostile", "Microgramma", "Bank Gothic", "Arial Black", ui-sans-serif, sans-serif;
+  color-scheme: dark;
+}
+
+/* ---- the page: space ---------------------------------------------------------------- */
+.yc-space {
+  margin: 0;
+  background-color: var(--yc-void);
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff9 0 1px, transparent 1px),
+    radial-gradient(1px 1px at 78% 9%, #fff7 0 1px, transparent 1px),
+    radial-gradient(1px 1px at 34% 62%, #fff6 0 1px, transparent 1px),
+    radial-gradient(1px 1px at 61% 41%, #fff8 0 1px, transparent 1px),
+    radial-gradient(1px 1px at 88% 74%, #fff5 0 1px, transparent 1px),
+    radial-gradient(1px 1px at 22% 88%, #fff6 0 1px, transparent 1px);
+  background-attachment: fixed;
+  color: var(--yc-text);
+  font: 400 15px/1.6 var(--yc-mono);
+  letter-spacing: 0.02em;
+}
+.yc-space a { color: var(--yc-cyan); }
+.yc-space :focus-visible { outline: 2px solid var(--yc-amber); outline-offset: 2px; }
+
+/* ---- type ------------------------------------------------------------------------- */
+.yc-title {
+  margin: 0;
+  font-family: var(--yc-title);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--yc-ice);
+  text-shadow: 0 0 1px #000, 0 0 18px rgb(190 225 255 / 0.35);
+}
+.yc-label {
+  font: 700 11px/1.2 var(--yc-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--yc-phos-dim);
+}
+
+/* ---- chrome: the bevel every instrument sits in ------------------------------------- */
+.yc-console {
+  background: linear-gradient(180deg, #353c40, var(--yc-bezel) 40%, #1e2326);
+  border: 3px solid var(--yc-chrome);
+  border-color: var(--yc-chrome-hi) var(--yc-chrome-lo) var(--yc-chrome-lo) var(--yc-chrome-hi);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #000, inset 0 1px 0 rgb(255 255 255 / 0.18), 0 10px 28px #000c;
+  padding: 10px;
+}
+
+.yc-panel {
+  position: relative;
+  background: var(--yc-deck);
+  border: 2px solid;
+  border-color: var(--yc-chrome-lo) var(--yc-chrome-hi) var(--yc-chrome-hi) var(--yc-chrome-lo); /* recessed */
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px #000, inset 0 2px 10px #000c;
+  padding: 10px 12px;
+}
+.yc-panel > h2, .yc-panel > .yc-panel-title {
+  margin: -10px -12px 8px;
+  padding: 5px 12px;
+  font: 700 12px/1.3 var(--yc-title);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #11161a;
+  background: linear-gradient(180deg, var(--yc-chrome-hi), var(--yc-chrome) 55%, var(--yc-chrome-lo));
+  border-bottom: 1px solid #000;
+  border-radius: 4px 4px 0 0;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.5);   /* engraved */
+}
+
+/* ---- CRT: phosphor screen -------------------------------------------------------------- */
+.yc-crt {
+  position: relative;
+  color: var(--yc-phos);
+  font-weight: 700;
+  text-shadow: 0 0 6px rgb(92 255 92 / 0.45);
+  background-color: var(--yc-crt);
+  background-image:
+    linear-gradient(45deg, rgb(92 255 92 / 0.08) 25%, transparent 25%, transparent 75%, rgb(92 255 92 / 0.08) 75%),
+    linear-gradient(45deg, rgb(92 255 92 / 0.08) 25%, transparent 25%, transparent 75%, rgb(92 255 92 / 0.08) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 18px #000c, inset 0 0 0 1px #000;
+  padding: 8px 10px;
+}
+
+.yc-scanlines { position: relative; }
+.yc-scanlines::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.26) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+
+.yc-readout { display: inline-grid; gap: 2px; }
+.yc-readout > .yc-value {
+  font: 700 26px/1 var(--yc-mono);
+  color: var(--yc-phos);
+  text-shadow: 0 0 10px rgb(92 255 92 / 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.yc-telemetry {
+  display: flex; flex-wrap: wrap; gap: 4px 18px;
+  font: 700 11px/1.4 var(--yc-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--yc-violet);
+  text-shadow: 0 0 8px rgb(194 107 216 / 0.35);
+}
+.yc-telemetry > * { white-space: nowrap; }
+
+/* ---- the viewport a game draws in ----------------------------------------------------------- */
+.yc-viewport {
+  background: #000;
+  border: 2px solid;
+  border-color: var(--yc-chrome-lo) var(--yc-chrome-hi) var(--yc-chrome-hi) var(--yc-chrome-lo);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px #000, inset 0 0 30px #000;
+}
+
+/* ---- buttons -------------------------------------------------------------------------------- */
+/* Plate: a bevelled chrome key with an engraved label. */
+.yc-plate {
+  font: 700 12px/1 var(--yc-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #10161a;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.45);
+  padding: 9px 14px;
+  border: 2px solid;
+  border-color: var(--yc-chrome-hi) var(--yc-chrome-lo) var(--yc-chrome-lo) var(--yc-chrome-hi);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #eef2f3, var(--yc-chrome) 55%, #7b8589);
+  box-shadow: 0 0 0 1px #000, 0 3px 6px #000a;
+  cursor: pointer;
+}
+.yc-plate:hover { background: linear-gradient(180deg, #fff, #b4bcc0 55%, #8a9498); }
+.yc-plate:active, .yc-plate[aria-pressed="true"] {
+  border-color: var(--yc-chrome-lo) var(--yc-chrome-hi) var(--yc-chrome-hi) var(--yc-chrome-lo);
+  background: linear-gradient(180deg, #7b8589, var(--yc-chrome) 60%, #c7ced1);
+  transform: translateY(1px);
+}
+.yc-plate:disabled { opacity: 0.45; cursor: default; transform: none; }
+.yc-plate.yc-go {   /* the one button that moves the game on */
+  color: #031a05;
+  background: linear-gradient(180deg, #b6ffb6, var(--yc-phos) 50%, #1d9b25);
+  box-shadow: 0 0 0 1px #000, 0 0 16px rgb(92 255 92 / 0.45), 0 3px 6px #000a;
+}
+
+/* Orb: a glossy sphere, lit upper left, with a glint. Put a short label beside it
+   or an icon inside; give it an accessible name. */
+.yc-orb {
+  --orb: #4fa3ff;
+  position: relative;
+  width: var(--orb-size, 44px); height: var(--orb-size, 44px);
+  border: 0; border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  font: 700 12px/1 var(--yc-mono);
+  background:
+    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.95) 0 6%, transparent 18%),
+    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--orb) 55%, #fff) 0%, var(--orb) 38%,
+      color-mix(in srgb, var(--orb) 45%, #000) 78%, color-mix(in srgb, var(--orb) 25%, #000) 100%);
+  box-shadow: 0 0 0 2px var(--yc-chrome-lo), 0 0 0 3px #000,
+    inset -4px -6px 10px rgb(0 0 0 / 0.45), inset 2px 2px 4px rgb(255 255 255 / 0.25),
+    0 4px 10px #000c;
+  transition: filter 0.15s, transform 0.08s;
+}
+.yc-orb:hover { filter: brightness(1.15); }
+.yc-orb:active { transform: translateY(1px) scale(0.97); filter: brightness(0.9); }
+.yc-orb:disabled { filter: grayscale(0.8) brightness(0.6); cursor: default; }
+
+/* Lamp: a small glowing sphere in a chrome ring. */
+.yc-lamp {
+  --lamp: var(--yc-hal);
+  display: inline-block;
+  width: 0.95em; height: 0.95em;
+  border-radius: 50%;
+  vertical-align: -0.12em;
+  margin-right: 0.35em;
+  background: radial-gradient(circle at 35% 30%, #fff 0 8%, var(--lamp) 34%,
+    color-mix(in srgb, var(--lamp) 40%, #000) 100%);
+  box-shadow: 0 0 0 2px var(--yc-chrome-lo), 0 0 0 3px #000, 0 0 10px var(--lamp);
+}
+.yc-lamp.yc-on { animation: yc-breathe 2.4s ease-in-out infinite; }
+@keyframes yc-breathe { 50% { box-shadow: 0 0 0 2px var(--yc-chrome-lo), 0 0 0 3px #000, 0 0 18px 2px var(--lamp); } }
+
+/* Target box: Escape Velocity's green wireframe frame with corner brackets. */
+.yc-target {
+  position: relative;
+  border: 1px solid rgb(92 255 92 / 0.35);
+  background: #020d03;
+  padding: 10px;
+  color: var(--yc-phos);
+}
+.yc-target::before, .yc-target::after {
+  content: "";
+  position: absolute; width: 14px; height: 14px;
+  border: 2px solid var(--yc-phos);
+  filter: drop-shadow(0 0 4px rgb(92 255 92 / 0.6));
+}
+.yc-target::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.yc-target::after { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+/* ---- forms on a console ---------------------------------------------------------------------- */
+.yc-space input, .yc-space select {
+  font: 700 14px/1.2 var(--yc-mono);
+  color: var(--yc-phos);
+  background: #020d03;
+  border: 2px solid;
+  border-color: var(--yc-chrome-lo) var(--yc-chrome-hi) var(--yc-chrome-hi) var(--yc-chrome-lo);
+  border-radius: 4px;
+  padding: 5px 7px;
+}
+.yc-space input[type="checkbox"] { accent-color: var(--yc-phos); }
+
+/* ---- calm, and reachable --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .yc-lamp.yc-on { animation: none; }
+  .yc-orb, .yc-plate { transition: none; }
+}
+@media (forced-colors: active) {
+  .yc-scanlines::after { display: none; }
+  .yc-orb, .yc-lamp { forced-color-adjust: none; }
+}

@@ -97,7 +97,7 @@ Guides' mirror of Ambrosia's add-on archive
 
 | When | What | By |
 | --- | --- | --- |
-| **1998** | **ConEx GL**: the first standalone ConEx, a C and OpenGL program kept in a private repository, written before konex. No code or archive of it is public; the entry rests on Paul Richeson's account | Joshua Bussdieker |
+| **1998** | **ConEx GL**: the first standalone ConEx, a C and OpenGL program kept in a private repository, written before konex. No code or archive of it is public | Joshua Bussdieker |
 | **19 Jul – 31 Aug 2005** | **konex**: a standalone C++/OpenGL remake of ConEx, kept in CVS on 2nd-gen.net (712 file entries in that range). Its cast is ConEx Override's ten ships, plus Advisor and Citrus, two more ships rendered by Paul Richeson | Joshua Bussdieker |
 | 3 Oct 2023 | konex brought into git from an old backup; now [yodacon/konex](https://github.com/yodacon/konex) | |
 | **27 Aug 2026** | **Yodacon** begins: the ConEx 1.2 archive is found again, expanded and its 538 resources dumped and rebuilt byte for byte ([yodacon/yodacon](https://github.com/yodacon/yodacon)) | Team Yodacon |

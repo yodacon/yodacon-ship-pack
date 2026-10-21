@@ -1,0 +1,14 @@
+{
+  "type": "lava",
+  "size": "large",
+  "description": "a dark crust over glowing lava",
+  "diameter": 96,
+  "radius": 48.0,
+  "light": "upper left, in front (as the ships are lit)",
+  "files": {
+    "planet": "planet.png",
+    "opaque": "opaque.png",
+    "mask": "mask.png"
+  },
+  "made_by": "tools/make_planets.py (Yodacon Ship Pack, 2026): generated, not rendered"
+}

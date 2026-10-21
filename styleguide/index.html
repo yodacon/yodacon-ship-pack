@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Style Guide · Yodacon Ship Pack</title>
+<meta name="description" content="Every component of the Yodacon style: chrome consoles, CRT readouts, glossy orbs, lamps and the Escape Velocity target box.">
+<link rel="stylesheet" href="../lib/yodacon-style.css">
+<style>
+  main { max-width: 1060px; margin: 0 auto; padding: 18px 16px 48px; }
+  .row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin: 10px 0 26px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; margin: 10px 0 26px; }
+  h2.yc-title { font-size: 15px; margin: 34px 0 6px; }
+  code { color: var(--yc-violet); font-weight: 700; }
+  .swatch { width: 120px; }
+  .swatch div { height: 46px; border-radius: 4px; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px rgb(255 255 255 / 0.12); }
+  .swatch p { margin: 4px 0 0; font-size: 11px; line-height: 1.3; }
+  .orbs label { display: grid; justify-items: center; gap: 6px; font-size: 11px; }
+  .ship { image-rendering: pixelated; width: 140px; }
+</style>
+</head>
+<body class="yc-space">
+<main>
+  <p><a href="../">← Ship Pack</a> · <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/docs/STYLE.md">The rules (STYLE.md)</a></p>
+  <h1 class="yc-title" style="font-size: clamp(22px, 5vw, 40px)">Style guide</h1>
+  <p>A 1990s Macintosh space console seen through a film-set future: Yodacon's phosphor and chrome,
+  <i>Escape Velocity</i>'s console and target box, <i>2001</i>'s calm capitals and lamps, and shaded spheres.
+  One light, from the upper left. Link <code>lib/yodacon-style.css</code> and use the classes below.</p>
+
+  <h2 class="yc-title">Colour</h2>
+  <div class="row" id="swatches"></div>
+
+  <h2 class="yc-title">Type</h2>
+  <div class="yc-panel">
+    <p class="yc-title" style="font-size: 22px">Send fleet · Turn 12</p>
+    <p class="yc-label">Label · .yc-label</p>
+    <p>Prose is the readout face at normal weight, at most eighty characters wide. Titles are short, spaced capitals.</p>
+  </div>
+
+  <h2 class="yc-title">Console, panels, CRT</h2>
+  <div class="yc-console">
+    <div class="grid" style="margin: 0">
+      <section class="yc-panel"><h2>Panel</h2><p><code>.yc-panel</code> is recessed into the console, with an engraved chrome title strip.</p></section>
+      <section class="yc-panel"><h2>CRT readouts</h2>
+        <div class="yc-crt yc-scanlines">
+          <div class="row" style="margin: 0; gap: 24px">
+            <div class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value">146</span></div>
+            <div class="yc-readout"><span class="yc-label">Turn</span><span class="yc-value">12</span></div>
+            <div class="yc-readout"><span class="yc-label">Kill</span><span class="yc-value">0.42</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="yc-panel"><h2>Target box</h2>
+        <div class="yc-target"><img class="ship" src="../conex/ships/yodacon/target.png" width="128" height="64" alt="The Yodacon's 1997 target picture"></div>
+      </section>
+    </div>
+    <p class="yc-telemetry" style="margin: 10px 4px 0"><span>23 ships</span><span>36 frames each</span><span>GPL-2.0+</span><span>.yc-telemetry</span></p>
+  </div>
+
+  <h2 class="yc-title">Buttons</h2>
+  <div class="row">
+    <button class="yc-plate" type="button">New game</button>
+    <button class="yc-plate yc-go" type="button">End turn</button>
+    <button class="yc-plate" type="button" aria-pressed="true">Pressed</button>
+    <button class="yc-plate" type="button" disabled>Disabled</button>
+  </div>
+  <div class="row orbs">
+    <label><button class="yc-orb" type="button" aria-label="Blue orb"></button>.yc-orb</label>
+    <label><button class="yc-orb" type="button" style="--orb: #4cd964" aria-label="Green orb"></button>--orb: green</label>
+    <label><button class="yc-orb" type="button" style="--orb: #ff3b30" aria-label="Red orb"></button>--orb: red</label>
+    <label><button class="yc-orb" type="button" style="--orb: #ffcc00; --orb-size: 64px" aria-label="Large amber orb"></button>--orb-size: 64px</label>
+    <label><button class="yc-orb" type="button" style="--orb: #c26bd8" disabled aria-label="Disabled orb"></button>disabled</label>
+  </div>
+
+  <h2 class="yc-title">Lamps</h2>
+  <div class="row">
+    <span><span class="yc-lamp yc-on"></span>HAL · alarm</span>
+    <span><span class="yc-lamp" style="--lamp: #ffb340"></span>Amber · your turn</span>
+    <span><span class="yc-lamp" style="--lamp: #5cff5c"></span>Phosphor · ready</span>
+    <span><span class="yc-lamp" style="--lamp: #8282ff"></span>A player colour</span>
+  </div>
+
+  <h2 class="yc-title">Spheres: the planets</h2>
+  <div class="row" id="planets"></div>
+
+  <h2 class="yc-title">Viewport</h2>
+  <div class="yc-viewport" style="height: 160px; display: grid; place-items: center">
+    <img class="ship" src="../override/ships/yodacon/frames/03.png" width="96" height="96" alt="The 1998 Yodacon at heading 30°" style="width: 192px">
+  </div>
+</main>
+<script>
+  // Swatches and planets are listed from data so the page stays in step with the stylesheet.
+  const tokens = ["void", "deck", "crt", "crt-lit", "phos", "phos-dim", "text", "chrome-hi", "chrome",
+    "chrome-lo", "bezel", "violet", "cyan", "amber", "hal", "ice"];
+  const css = getComputedStyle(document.documentElement);
+  document.getElementById("swatches").append(...tokens.map((t) => {
+    const d = document.createElement("div");
+    d.className = "swatch";
+    d.innerHTML = `<div style="background: var(--yc-${t})"></div><p><code>--yc-${t}</code><br>${css.getPropertyValue(`--yc-${t}`).trim()}</p>`;
+    return d;
+  }));
+  document.getElementById("planets").append(...["rocky", "gas", "ice", "lava", "garden"].map((type) => {
+    const img = new Image(96, 96);
+    img.src = `../planets/${type}/large/planet.png`;
+    img.alt = `A ${type} planet`;
+    return img;
+  }));
+</script>
+</body>
+</html>

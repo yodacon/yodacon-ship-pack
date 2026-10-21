@@ -6,12 +6,14 @@ import {
   planetByName, distance, travelTurns, isDead,
 } from "./rules.js";
 import { loadShip, drawShip, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
+import { play, isMuted, setMuted } from "./sound.js";
 
 // Each seat flies one hull from the pack.
 const HULLS = [["conex", "yodacon"], ["conex", "dart"], ["override", "callisto"], ["konex", "advisor"],
   ["conex", "gryphon"], ["konex", "citrus"], ["conex", "necromancer"], ["override", "tomaquad"],
   ["conex", "trident"], ["conex", "large-pin"]];
-const TYPES = [["human", "Human"], ["weak", "Computer: weak"], ["normal", "Computer: normal"], ["hard", "Computer: hard"]];
+// Opponents by how they actually play (docs/research/2026-10-21-08-konquest-brains.md).
+const TYPES = [["human", "Human"], ["easy", "Computer: Easy"], ["medium", "Computer: Medium"], ["hard", "Computer: Hard"]];
 const AI_DELAY = 450;   // ms between computer turns when no human is playing
 
 const $ = (id) => document.getElementById(id);
@@ -21,7 +23,7 @@ let game = null, source = null, target = null, waiting = false;
 
 // --- Setup ---------------------------------------------------------------------------
 
-let seats = [{ name: "You", type: "human" }, { name: "Computer", type: "normal" }];
+let seats = [{ name: "You", type: "human" }, { name: "Computer", type: "medium" }];
 
 function renderSetup() {
   const list = $("setup-players");
@@ -37,9 +39,7 @@ function renderSetup() {
     type.ariaLabel = `Player ${i + 1} type`;
     for (const [value, label] of TYPES) type.add(new Option(label, value, false, value === seat.type));
     type.addEventListener("change", () => { seat.type = type.value; });
-    const chip = Object.assign(document.createElement("span"), { className: "chip" });
-    chip.style.background = DEFAULT_COLORS[i];
-    li.append(chip, img, name, type);
+    li.append(chip(DEFAULT_COLORS[i]), img, name, type);
     return li;
   }));
   $("add-player").disabled = seats.length >= HULLS.length;
@@ -49,7 +49,7 @@ const DEFAULT_COLORS = ["#8282ff", "#ffff00", "#ff0000", "#00ff00", "#ffffff",
   "#00ffff", "#ff00ff", "#eb992e", "#6a9d68", "#839980"];
 
 $("add-player").addEventListener("click", () => {
-  seats.push({ name: `Computer ${seats.length}`, type: "normal" }); renderSetup();
+  seats.push({ name: `Computer ${seats.length}`, type: "medium" }); renderSetup();
 });
 $("remove-player").addEventListener("click", () => { seats.pop(); renderSetup(); });
 $("new-game").addEventListener("click", () => { renderSetup(); $("setup").showModal(); });
@@ -111,9 +111,30 @@ $("cover-go").addEventListener("click", () => { $("cover").hidden = true; render
 $("end-turn").addEventListener("click", () => {
   if (!game || game.over || waiting) return;
   source = target = null;
-  addNews(endTurn(game));
+  play("endTurn");
+  const news = endTurn(game);
+  addNews(news);
+  setTimeout(() => newsSound(news), 220);    // after the end-turn figure
   nextHuman();
 });
+
+// One sound for a turn's news, the most important first: a win, a human's
+// planet lost, a planet taken by a human, a human's planet holding.
+function newsSound(news) {
+  const human = (i) => i !== NEUTRAL && game.players[i]?.type === "human";
+  if (news.some((n) => n.kind === "won")) play("won");
+  else if (news.some((n) => n.kind === "fell" && human(n.defender))) play("lost");
+  else if (news.some((n) => n.kind === "fell" && human(n.player))) play("conquered");
+  else if (news.some((n) => n.kind === "held" && human(n.defender))) play("held");
+}
+
+const muteButton = $("mute");
+const showMute = () => {
+  muteButton.textContent = isMuted() ? "Sound: off" : "Sound: on";
+  muteButton.setAttribute("aria-pressed", String(isMuted()));
+};
+muteButton.addEventListener("click", () => { setMuted(!isMuted()); showMute(); if (!isMuted()) play("select"); });
+showMute();
 
 // --- The board ---------------------------------------------------------------------------
 
@@ -132,7 +153,7 @@ function buildBoard() {
         cell.classList.add("planet");
         cell.dataset.planet = planet.name;
         cell.tabIndex = 0;
-        cell.append(planetCanvas(planet), Object.assign(document.createElement("span"), { className: "name", textContent: planet.name }),
+        cell.append(planetPicture(planet), Object.assign(document.createElement("span"), { className: "name", textContent: planet.name }),
           Object.assign(document.createElement("span"), { className: "ships" }));
         cell.addEventListener("click", () => pick(planet));
         cell.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(planet); } });
@@ -147,8 +168,22 @@ function buildBoard() {
   board.replaceChildren(...cells);
 }
 
-// Planets are drawn in code until the pack has planet renders: ten looks, as
-// Konquest's planet.cc picks one of ten pictures.
+// Planets come from the pack's planets/: Konquest's ten looks (planet.cc picks
+// one of ten pictures) map onto its five types, and production sets the size.
+// If a picture fails to load, the planet is drawn in code instead.
+const PLANET_TYPES = ["rocky", "gas", "ice", "lava", "garden"];
+function planetPicture(planet) {
+  const type = PLANET_TYPES[planet.look % PLANET_TYPES.length];
+  const size = planet.production <= 7 ? "small" : planet.production <= 11 ? "medium" : "large";
+  const img = new Image();
+  img.className = `pic ${size}`;
+  img.alt = `Planet ${planet.name}, ${type}`;
+  img.src = new URL(`planets/${type}/${size}/planet.png`, PACK_BASE).href;
+  img.addEventListener("error", () => img.replaceWith(planetCanvas(planet)), { once: true });
+  return img;
+}
+
+// The fallback: a planet drawn in code, in one of ten looks.
 const LOOKS = [["#d9a066", "#7a4a22"], ["#7fb2e5", "#1d3f73"], ["#c9d6df", "#5b6b78"], ["#e2734b", "#5a1f12"],
   ["#9bcf8a", "#2e5e2a"], ["#f2d675", "#8a6a1a"], ["#b28fd9", "#45266e"], ["#79d2c8", "#1f5b55"],
   ["#d98fa6", "#6e2640"], ["#a7a7a7", "#3c3c3c"]];
@@ -192,7 +227,7 @@ const seesStats = (planet) => planet.owner !== NEUTRAL || game.options.NeutralsS
 function render() {
   if (!game) return;
   const p = viewer();
-  $("turn").textContent = `Turn ${game.turn}`;
+  $("turn").textContent = game.turn;
   $("who").innerHTML = "";
   if (game.over) {
     const w = game.players[game.winner];
@@ -200,7 +235,7 @@ function render() {
   } else if (!humansAlive()) {
     $("who").append("Computers playing");
   } else {
-    $("who").append(chip(p.color), `${p.name} to move`);
+    $("who").append(chip(p.color, true), `${p.name} to move`);
   }
   $("end-turn").disabled = game.over || p.type !== "human" || waiting;
   for (const cell of $("board").querySelectorAll(".planet")) {
@@ -214,7 +249,9 @@ function render() {
   renderStandings();
   drawFleets();
 }
-const chip = (color) => Object.assign(document.createElement("span"), { className: "chip", style: `background:${color}` });
+// A player is a lamp in their colour (docs/STYLE.md: lamps, not fills).
+const chip = (color, on = false) => Object.assign(document.createElement("span"),
+  { className: on ? "yc-lamp yc-on" : "yc-lamp", style: `--lamp:${color}` });
 
 function showTip(planet, cell) {
   const tip = $("tip");
@@ -239,12 +276,15 @@ function showTip(planet, cell) {
 function pick(planet) {
   if (!game || game.over || viewer().type !== "human") return;
   if (!source || (planet.owner === game.current && planet !== source && !target)) {
-    if (planet.owner !== game.current) return;
+    if (planet.owner !== game.current) { play("error"); return; }   // not yours to send from
     source = planet; target = null;
+    play("select");
   } else if (planet === source) {
     source = target = null;
+    play("cancel");
   } else {
     target = planet;
+    play("target");
   }
   render();
   if (target) { $("send-count").focus(); $("send-count").select(); }
@@ -271,7 +311,7 @@ function renderSend() {
   $("orders").replaceChildren(...items.map(([text, undo]) => {
     const li = document.createElement("li");
     const b = Object.assign(document.createElement("button"), { type: "button", textContent: "Cancel" });
-    b.addEventListener("click", () => { undo(); render(); });
+    b.addEventListener("click", () => { undo(); play("cancel"); render(); });
     li.append(text, b);
     return li;
   }));
@@ -282,12 +322,18 @@ $("send-form").addEventListener("submit", (e) => {
   const count = Number($("send-count").value);
   const ok = $("send-standing").checked ? addStandingOrder(game, source, target, count)
     : sendFleet(game, source, target, count);
+  play(ok ? "send" : "error");
   if (ok) { target = null; if (source.ships === 0) source = null; }
   $("send-standing").checked = false;
   render();
 });
-$("send-cancel").addEventListener("click", () => { source = target = null; render(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && game && !$("setup").open) { source = target = null; render(); } });
+function deselect() {
+  if (source || target) play("cancel");
+  source = target = null;
+  render();
+}
+$("send-cancel").addEventListener("click", deselect);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && game && !$("setup").open) deselect(); });
 
 // --- Fleets in flight: pack ships on a canvas over the board ---------------------------------
 
@@ -390,7 +436,7 @@ function renderStandings() {
 // --- Go -------------------------------------------------------------------------------------
 
 const params = new URLSearchParams(location.search);
-if (params.has("watch")) seats = [{ name: "Weak", type: "weak" }, { name: "Normal", type: "normal" }, { name: "Hard", type: "hard" }];
+if (params.has("watch")) seats = [{ name: "Easy", type: "easy" }, { name: "Medium", type: "medium" }, { name: "Hard", type: "hard" }];
 start({ players: seats.map((s) => ({ ...s })), neutralPlanets: DEFAULTS.neutralPlanets,
   rows: DEFAULTS.rows, cols: DEFAULTS.cols, options: {},
   seed: params.has("seed") ? Number(params.get("seed")) >>> 0 : (Math.random() * 2 ** 32) >>> 0 });

@@ -110,7 +110,8 @@ const newStats = () => ({ shipsBuilt: 0, planetsConquered: 0, fleetsLaunched: 0,
   enemyFleetsDestroyed: 0, enemyShipsDestroyed: 0 });
 
 /**
- * players: [{name, type: "human" | "weak" | "normal" | "hard"}], 2–10 of them.
+ * players: [{name, type: "human" | "easy" | "medium" | "hard" | "weak"}], 2–10 of
+ * them (see OPPONENTS).
  * Returns the state after the opening Neutral step (turn 1, first production
  * done), with player 0 to move, as Konquest's state machine does.
  */
@@ -210,7 +211,7 @@ export function endTurn(state) {
       // With no human left alive, stop after each turn so the board can show it.
       const humans = state.players.some((pl, i) => pl.type === "human" && !isDead(state, i));
       if (!humans) {
-        if (state.players[0].type !== "human" && !isDead(state, 0)) aiPlay(state, 0);
+        if (state.players[0].type !== "human" && !isDead(state, 0)) computerPlay(state, 0);
         return news;
       }
     } else {
@@ -218,7 +219,7 @@ export function endTurn(state) {
     }
     const player = state.players[state.current];
     if (isDead(state, state.current)) continue;           // player.cpp onEntry: the dead pass
-    if (player.type !== "human") { aiPlay(state, state.current); continue; }
+    if (player.type !== "human") { computerPlay(state, state.current); continue; }
     return news;
   }
 }
@@ -332,10 +333,34 @@ function findWinner(state) {
   if (alive.length === 1) { state.winner = alive[0]; state.over = true; }
 }
 
+// --- Computer players ----------------------------------------------------------------
+//
+// Player types, and the Konquest brain behind each. The order follows how they
+// actually play (tournament.mjs: 200-game round robins), not Konquest's names:
+//   easy    Default brain at its "Hard" level, which the source itself calls
+//           "Defensive": it waits for 30 ships. The weakest in play.
+//   medium  Default brain, "Normal" level (offensive)
+//   hard    BecAI (becai.cpp), Konquest's strongest by a wide margin
+// "weak" (the Default brain's Weak level) is accepted too; it plays between
+// easy and medium.
+export const OPPONENTS = Object.freeze({
+  easy: { brain: "default", level: "hard", label: "Easy", source: "Konquest Default, Hard (\"Defensive\")" },
+  medium: { brain: "default", level: "normal", label: "Medium", source: "Konquest Default, Normal" },
+  hard: { brain: "becai", label: "Hard", source: "Konquest BecAI" },
+  weak: { brain: "default", level: "weak", label: "Konquest Weak", source: "Konquest Default, Weak" },
+});
+
+export function computerPlay(state, p) {
+  const type = state.players[p].type;
+  const o = OPPONENTS[type];
+  if (o?.brain === "becai") return becaiPlay(state, p);
+  return aiPlay(state, p, o?.level ?? type);
+}
+
 // --- The default computer player (default.cpp) ---------------------------------------
 
-export function aiPlay(state, p) {
-  const { minimumShips, shipCountFactor } = AI_LEVELS[state.players[p].type];
+export function aiPlay(state, p, level = state.players[p].type) {
+  const { minimumShips, shipCountFactor } = AI_LEVELS[level];
   const inFlight = state.players[p].fleets;  // attackList(): last turns' fleets, not this turn's
   const targeted = (planet) => inFlight.some((f) => f.destination === planet.name);
   const planets = boardOrder(state);
@@ -365,5 +390,113 @@ export function aiPlay(state, p) {
       }
     }
     if (target) sendFleet(state, home, target, send);
+  }
+}
+
+// --- BecAI (players/ai/becai/becai.cpp) -----------------------------------------------
+//
+// Konquest's strongest computer player. It sizes a defence for each planet
+// from the state of the game, works out the smallest fleet that wins each
+// possible battle (counting the target's production while the fleet travels
+// and both kill percentages), ranks targets by cost × distance (preferring
+// rich, deadly and non-neutral planets), and moves spare ships towards
+// planets that need support or that kill better. Ported line by line,
+// including one quirk of the original: a home planet with a kill percentage
+// under 0.1 resets the *target's* value, not its own.
+
+const defenceFor = (planet, base, avgKill, avgProd) =>
+  Math.ceil(base * planet.kill / avgKill * planet.production / avgProd);
+
+export function becaiPlay(state, p) {
+  const player = state.players[p];
+  const planets = boardOrder(state);
+  let totalOwnProduction = 0, totalOwnPlanets = 0, totalOwnFleet = 0;
+  let totalEnemyPlanets = 0, totalEnemyDefence = 0, totalKill = 0;
+  for (const f of player.fleets) totalOwnFleet += f.ships;
+  const nonOwnDefence = [];
+  for (const planet of planets) {
+    if (planet.owner === p) {
+      totalOwnProduction += planet.production; totalOwnPlanets++;
+      totalOwnFleet += planet.ships; totalKill += planet.kill;
+    } else {
+      if (planet.owner !== NEUTRAL) { totalEnemyPlanets++; totalEnemyDefence += planet.ships; }
+      nonOwnDefence.push(planet.ships);
+    }
+  }
+  // The average non-own defence, ignoring the top and bottom tenth.
+  nonOwnDefence.sort((a, b) => a - b);
+  for (let i = Math.floor(nonOwnDefence.length / 10); i > 0; i--) { nonOwnDefence.shift(); nonOwnDefence.pop(); }
+  let averageNonOwnDefence = 0;
+  if (nonOwnDefence.length) {
+    averageNonOwnDefence = Math.ceil(nonOwnDefence.reduce((s, v) => s + v, 0) / nonOwnDefence.length);
+  }
+  if (totalOwnPlanets === 0) return;           // alive only through fleets in flight
+  const avgKill = totalKill / totalOwnPlanets;
+  const avgProd = totalOwnProduction / totalOwnPlanets;
+
+  // Defence: half the fleet spread over the planets, less as the empire grows,
+  // capped by the universe's average defence and by what the enemy can throw.
+  let base = Math.ceil(((totalOwnFleet / 2) / totalOwnPlanets) *
+    (1 - totalOwnPlanets / (totalOwnPlanets + totalEnemyPlanets)));
+  const originalBase = base;
+  const capped = Math.trunc(1.5 * averageNonOwnDefence);
+  const enemyAttackPerOwnPlanet = Math.ceil(totalEnemyDefence / totalOwnPlanets);
+  if (base > capped) base = capped;
+  if (base > enemyAttackPerOwnPlanet) {
+    base = enemyAttackPerOwnPlanet;
+    if (base < avgProd) base = originalBase;   // end game: keep a real minimum
+  }
+  if (totalEnemyPlanets === 0) base = Math.trunc(totalOwnFleet / totalOwnPlanets);
+
+  const ordered = () => [...player.fleets, ...player.newFleets];
+  for (const home of planets) {
+    if (home.owner !== p) continue;
+    let surplus = home.ships - defenceFor(home, base, avgKill, avgProd);   // can be negative
+    let upstream = home, upstreamDistance = Infinity;
+    let support = home, supportDistance = Infinity;
+    const targets = [];
+    for (const other of planets) {
+      if (other.owner === p) {
+        if (other === home) continue;
+        const dist = distance(home, other);
+        if (dist <= upstreamDistance && other.kill > home.kill) { upstream = other; upstreamDistance = dist; }
+        if (dist <= supportDistance && other.ships < defenceFor(other, base, avgKill, avgProd)) {
+          support = other; supportDistance = dist;
+        }
+        continue;
+      }
+      if (ordered().some((f) => f.destination === other.name)) continue;  // already on its way
+      const dist = distance(home, other);
+      const isNeutral = other.owner === NEUTRAL;
+      const production = isNeutral ? state.options.NeutralsProduction : other.production;
+      let killOther = other.kill;
+      const killHome = home.kill;
+      if (killOther < 0.1) killOther = 0.1;
+      if (killHome < 0.1) killOther = 0.1;     // (sic) the original's quirk
+      let needed = Math.ceil((other.ships + Math.ceil(dist) * production) * killOther / killHome);
+      if (needed === 0) needed++;
+      let score = needed * dist;
+      score *= 1 / (killOther / avgKill);
+      score *= 1 / (other.production / avgProd);
+      targets.push({ score: (isNeutral ? 1.1 : 1.0) * score, planet: other, needed, dist });
+    }
+    // QMultiMap order: by score, ties in insertion order (a stable sort).
+    targets.sort((a, b) => a.score - b.score);
+    let skip = 3;
+    for (const t of targets) {
+      if (skip <= 0) break;
+      skip--;
+      if (upstream !== home && t.dist > 2 * upstreamDistance) continue;
+      if (surplus > 0 && surplus > t.needed) {
+        const keep = defenceFor(t.planet, base, avgKill, avgProd);
+        const size = surplus > t.needed + keep ? t.needed + keep : surplus;
+        if (size > 0 && sendFleet(state, home, t.planet, size)) { surplus -= size; skip++; }
+      }
+    }
+    if (support !== home && supportDistance < 2 * upstreamDistance) {
+      const helping = ordered().some((f) => f.destination === support.name && f.owner === p);
+      if (!helping && surplus > 0) { sendFleet(state, home, support, surplus); surplus = 0; }
+    }
+    if (upstream !== home && surplus > 3 * home.production) sendFleet(state, home, upstream, surplus);
   }
 }

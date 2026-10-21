@@ -416,5 +416,97 @@
       "columns": 6,
       "frames": 36
     }
+  ],
+  "planets": [
+    {
+      "type": "rocky",
+      "size": "small",
+      "diameter": 32,
+      "path": "planets/rocky/small/"
+    },
+    {
+      "type": "rocky",
+      "size": "medium",
+      "diameter": 64,
+      "path": "planets/rocky/medium/"
+    },
+    {
+      "type": "rocky",
+      "size": "large",
+      "diameter": 96,
+      "path": "planets/rocky/large/"
+    },
+    {
+      "type": "gas",
+      "size": "small",
+      "diameter": 32,
+      "path": "planets/gas/small/"
+    },
+    {
+      "type": "gas",
+      "size": "medium",
+      "diameter": 64,
+      "path": "planets/gas/medium/"
+    },
+    {
+      "type": "gas",
+      "size": "large",
+      "diameter": 96,
+      "path": "planets/gas/large/"
+    },
+    {
+      "type": "ice",
+      "size": "small",
+      "diameter": 32,
+      "path": "planets/ice/small/"
+    },
+    {
+      "type": "ice",
+      "size": "medium",
+      "diameter": 64,
+      "path": "planets/ice/medium/"
+    },
+    {
+      "type": "ice",
+      "size": "large",
+      "diameter": 96,
+      "path": "planets/ice/large/"
+    },
+    {
+      "type": "lava",
+      "size": "small",
+      "diameter": 32,
+      "path": "planets/lava/small/"
+    },
+    {
+      "type": "lava",
+      "size": "medium",
+      "diameter": 64,
+      "path": "planets/lava/medium/"
+    },
+    {
+      "type": "lava",
+      "size": "large",
+      "diameter": 96,
+      "path": "planets/lava/large/"
+    },
+    {
+      "type": "garden",
+      "size": "small",
+      "diameter": 32,
+      "path": "planets/garden/small/"
+    },
+    {
+      "type": "garden",
+      "size": "medium",
+      "diameter": 64,
+      "path": "planets/garden/medium/"
+    },
+    {
+      "type": "garden",
+      "size": "large",
+      "diameter": 96,
+      "path": "planets/garden/large/"
+    }
   ]
 }
