@@ -1,0 +1,86 @@
+{
+  "name": "Gryphon",
+  "slug": "gryphon",
+  "edition": "override",
+  "description": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. Which now holds a crew of 25, no 2 as the original.",
+  "escort": "The Gryphon is a well built ship that has great fire power.",
+  "sprite": {
+    "frame_width": 48,
+    "frame_height": 48,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 20,
+    "Shield": 300,
+    "Accel": 500,
+    "Speed": 400,
+    "Maneuver": 2,
+    "Fuel": 900,
+    "FreeMass": 150,
+    "Armor": 75,
+    "ShieldRe": 1,
+    "WeapType": [
+      153,
+      154,
+      129,
+      156
+    ],
+    "WeapCount": [
+      3,
+      3,
+      3,
+      2
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      15
+    ],
+    "MaxGun": 15,
+    "MaxTur": 15,
+    "TechLevel": 1,
+    "Cost": 2000000,
+    "DeathDelay": 70,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      5
+    ],
+    "Mass": 100,
+    "Length": 15,
+    "InherentAI": 5,
+    "Crew": 15,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0004"
+  },
+  "sources": {
+    "shïp": 180,
+    "spïn": 180,
+    "sheet": "PICT 1094",
+    "mask": "PICT 1095",
+    "target": "PICT 3052",
+    "yard": "PICT 5052",
+    "comm": "PICT 5352",
+    "thumb": "PICT 5153"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/gryphon/",
+    "gonex": "assets/data/ships/gryphon/"
+  }
+}

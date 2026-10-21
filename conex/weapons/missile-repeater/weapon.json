@@ -1,0 +1,19 @@
+{
+  "name": "A-75 Missile Repeater",
+  "slug": "missile-repeater",
+  "edition": "conex",
+  "description": "The Necromancer is a highly experimental government project. It is Equiped with three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile.",
+  "sprite": {
+    "frame_width": 24,
+    "frame_height": 20,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "sources": {
+    "spïn": 200,
+    "sheet": "PICT 210",
+    "mask": "PICT 211"
+  }
+}

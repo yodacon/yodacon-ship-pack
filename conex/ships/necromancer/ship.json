@@ -1,0 +1,85 @@
+{
+  "name": "Necromancer",
+  "slug": "necromancer",
+  "edition": "conex",
+  "description": "The Necromancer is a highly experimental government project. It is Equiped with three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile.",
+  "escort": "",
+  "sprite": {
+    "frame_width": 50,
+    "frame_height": 50,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 80,
+    "Shield": 800,
+    "Accel": 375,
+    "Speed": 225,
+    "Maneuver": 3,
+    "Fuel": 500,
+    "FreeMass": 120,
+    "Armor": 250,
+    "ShieldRe": 60,
+    "WeapType": [
+      176,
+      -1,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      3,
+      0,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 6,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 3000000,
+    "DeathDelay": 60,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 180,
+    "Length": 80,
+    "InherentAI": 3,
+    "Crew": 96,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 173,
+    "spïn": 173,
+    "sheet": "PICT 20614",
+    "mask": "PICT 20615",
+    "target": "PICT 3045",
+    "yard": "PICT 5045",
+    "comm": "PICT 5345",
+    "thumb": "PICT 5146"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/necromancer/",
+    "gonex": "assets/data/ships/necromancer97/"
+  }
+}

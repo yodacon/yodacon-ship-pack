@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Projects · Yodacon Ship Pack</title>
+<meta name="description" content="Complete small projects built on the Yodacon Ship Pack: a DOM shipyard, a DOM dogfight, and two three.js scenes.">
+<style>
+  :root { --bg: #f2f3f8; --card: #fff; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; color-scheme: light; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --card: #121624; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 1100px; margin: 0 auto; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); gap: 16px; padding: 0; list-style: none; }
+  .grid li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .grid a.shot { display: block; aspect-ratio: 1280 / 860; background: #05060b; }
+  .grid img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .grid div { padding: 10px 14px 14px; }
+  .grid h2 { margin: 0 0 4px; font-size: 19px; }
+  .grid p { margin: 0 0 6px; }
+  .tag { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Ship Pack</a> · <a href="../examples/">Examples</a> · <a href="../playground/">Playground</a></p>
+  <h1>Sample projects</h1>
+  <p>Small, finished projects to copy and build on. Plain HTML, CSS and JavaScript, no build step. Each folder
+    has a README that explains how it works and how to move it into your own project.</p>
+
+  <ul class="grid">
+    <li>
+      <a class="shot" href="dom-shipyard/"><img src="dom-shipyard/screenshot.png" alt="The shipyard: a ship list, the 1998 Dart turning, its pictures and stats" width="1280" height="860" loading="lazy"></a>
+      <div><p class="tag">Pure DOM</p><h2><a href="dom-shipyard/">Shipyard</a></h2>
+        <p>Every ship, its pictures, stats and 1997/98 description; a sprite you drag to turn; buy a fleet with credits.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/dom-shipyard">Source and README</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="dom-dogfight/"><img src="dom-dogfight/screenshot.png" alt="The Yodacon fighting Defenders among the stars" width="1280" height="860" loading="lazy"></a>
+      <div><p class="tag">Pure DOM game</p><h2><a href="dom-dogfight/">DOM Dogfight</a></h2>
+        <p>Waves of Defenders with Missile Repeaters. Every object is a &lt;div&gt;; fixed-timestep loop, touch controls.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/dom-dogfight">Source and README</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="threejs-fleet/"><img src="threejs-fleet/screenshot.png" alt="Two formations of ships flying past a red canyon landing picture" width="1280" height="860" loading="lazy"></a>
+      <div><p class="tag">three.js</p><h2><a href="threejs-fleet/">Fleet Flyby</a></h2>
+        <p>All 21 ships in formation along a spline, as billboards that turn as you orbit. Click one for its pictures.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/threejs-fleet">Source and README</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="threejs-hangar/"><img src="threejs-hangar/screenshot.png" alt="The Callisto on a turntable in a hangar, with its pictures on wall monitors" width="1024" height="688" loading="lazy"></a>
+      <div><p class="tag">three.js</p><h2><a href="threejs-hangar/">Hangar</a></h2>
+        <p>One ship on a turntable whose frame follows the table; its shipyard, target and comm pictures on monitors.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/threejs-hangar">Source and README</a></p></div>
+    </li>
+  </ul>
+
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
+    <a href="https://paulricheson.com">paulricheson.com</a></p>
+</main>
+</body>
+</html>

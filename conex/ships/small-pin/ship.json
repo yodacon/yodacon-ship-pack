@@ -1,0 +1,85 @@
+{
+  "name": "Small Pin",
+  "slug": "small-pin",
+  "edition": "conex",
+  "description": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun Pirates, and still cary a reasonable amout of cargo.",
+  "escort": "The pilot would be glad to work for you.",
+  "sprite": {
+    "frame_width": 36,
+    "frame_height": 36,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 60,
+    "Shield": 540,
+    "Accel": 435,
+    "Speed": 275,
+    "Maneuver": 4,
+    "Fuel": 800,
+    "FreeMass": 45,
+    "Armor": 300,
+    "ShieldRe": 108,
+    "WeapType": [
+      143,
+      128,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      2,
+      2,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 9,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 200000,
+    "DeathDelay": 50,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      2
+    ],
+    "Mass": 90,
+    "Length": 10,
+    "InherentAI": 2,
+    "Crew": 3,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 166,
+    "spïn": 166,
+    "sheet": "PICT 20600",
+    "mask": "PICT 20601",
+    "target": "PICT 3038",
+    "yard": "PICT 5038",
+    "comm": "PICT 5338",
+    "thumb": "PICT 5139"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/small pin/",
+    "gonex": "assets/data/ships/small-pin97/"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "name": "Large Pin",
+  "slug": "large-pin",
+  "edition": "conex",
+  "description": "The large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.",
+  "escort": "The Worker for Consolidated Express realy dosent want to quit his job.",
+  "sprite": {
+    "frame_width": 65,
+    "frame_height": 65,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 540,
+    "Shield": 2160,
+    "Accel": 380,
+    "Speed": 250,
+    "Maneuver": 3,
+    "Fuel": 900,
+    "FreeMass": 405,
+    "Armor": 1800,
+    "ShieldRe": 972,
+    "WeapType": [
+      130,
+      134,
+      131,
+      175
+    ],
+    "WeapCount": [
+      6,
+      6,
+      2,
+      1
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      20,
+      4
+    ],
+    "MaxGun": 9,
+    "MaxTur": 9,
+    "TechLevel": 1,
+    "Cost": 133000000,
+    "DeathDelay": 200,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      2
+    ],
+    "Mass": 850,
+    "Length": 90,
+    "InherentAI": 2,
+    "Crew": 50,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 168,
+    "spïn": 168,
+    "sheet": "PICT 20604",
+    "mask": "PICT 20605",
+    "target": "PICT 3040",
+    "yard": "PICT 5040",
+    "comm": "PICT 5340",
+    "thumb": "PICT 5141"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/large pin/",
+    "gonex": "assets/data/ships/large-pin97/"
+  }
+}

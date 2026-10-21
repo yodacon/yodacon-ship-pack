@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Ship Pack Demo · Yodacon</title>
+<meta name="description" content="Fly any ship from the Yodacon Ship Pack — Paul Richeson's ConEx starships (1997–1998) — in a small Canvas 2D overhead game.">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../">← Yodacon Ship Pack</a>
+  <label class="pick">Ship
+    <select id="ship-picker" aria-label="Choose a ship to fly">
+      <option value="conex/yodacon">Yodacon (ConEx 1.2)</option>
+    </select>
+  </label>
+</header>
+
+<main class="layout">
+  <section class="stage" aria-label="Game">
+    <div class="screen" id="screen">
+      <canvas id="game" tabindex="0" aria-label="Game view. Arrow keys or WASD to fly, Space to fire, P to pause."></canvas>
+      <div class="overlay" id="overlay" hidden>
+        <p id="overlay-text">Paused</p>
+        <button type="button" id="resume">Resume</button>
+      </div>
+    </div>
+    <p class="keys"><kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd> turn · <kbd>↑</kbd>/<kbd>W</kbd> thrust · <kbd>↓</kbd>/<kbd>S</kbd> brake, then reverse · <kbd>Space</kbd> fire · <kbd>P</kbd> pause</p>
+    <div class="touch" id="touch" aria-hidden="true">
+      <div class="pad">
+        <button type="button" data-key="left" aria-label="Turn left">⟲</button>
+        <button type="button" data-key="up" aria-label="Thrust">▲</button>
+        <button type="button" data-key="right" aria-label="Turn right">⟳</button>
+        <button type="button" data-key="down" aria-label="Brake">▼</button>
+      </div>
+      <button type="button" class="fire" data-key="fire" aria-label="Fire">FIRE</button>
+    </div>
+  </section>
+
+  <aside class="panel" aria-labelledby="ship-name">
+    <div class="box target">
+      <h2 class="label">Target</h2>
+      <img id="pic-target" width="128" height="64" alt="">
+    </div>
+    <h1 id="ship-name">Yodacon</h1>
+    <p class="edition" id="ship-edition">ConEx 1.2 · 1997 · Escape Velocity</p>
+    <div class="pics">
+      <figure class="box"><img id="pic-yard" width="100" height="100" alt=""><figcaption>Shipyard</figcaption></figure>
+      <figure class="box"><img id="pic-comm" width="100" height="100" alt=""><figcaption>Comm</figcaption></figure>
+    </div>
+    <dl class="stats" id="stats"></dl>
+    <p class="handling" id="handling"></p>
+    <blockquote class="desc" id="ship-desc"></blockquote>
+    <figure class="box landing">
+      <img id="pic-landing" width="333" height="271" alt="A landing view from the ConEx plugins, rendered in Bryce 2">
+      <figcaption>Landing view <span id="landing-id"></span> · <button type="button" id="next-landing">another</button></figcaption>
+    </figure>
+    <p class="links"><a id="link-folder" href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/yodacon/">Ship folder</a> · <a href="../examples/">Code examples</a></p>
+  </aside>
+</main>
+
+<footer class="credit">
+  Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>
+</footer>
+<noscript><p class="credit">The demo game needs JavaScript. The ships themselves are plain PNG files in the <a href="../">pack</a>.</p></noscript>
+<script type="module" src="demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DOM sprite</title>
+<style>
+  body { margin: 0; height: 100vh; display: grid; place-items: center; background: #05060b
+         radial-gradient(#ffffff30 1px, transparent 1px) 0 0 / 24px 24px; color: #cfd6ee;
+         font: 14px/1.4 system-ui, sans-serif; }
+  /* The whole trick: a frame-sized box showing one cell of sheet-alpha.png.
+     The Yodacon's frames are 70×70, 6 per row; we draw it 3× (210 px). */
+  #ship {
+    --scale: 3;
+    width: calc(70px * var(--scale)); height: calc(70px * var(--scale));
+    background: url("conex/ships/yodacon/sheet-alpha.png") no-repeat;
+    background-size: calc(420px * var(--scale)) calc(420px * var(--scale));
+    image-rendering: pixelated;            /* nearest-neighbour: keep 1997 pixels square */
+  }
+  p { position: fixed; bottom: 8px; margin: 0; }
+</style>
+</head>
+<body>
+  <div id="ship" role="img" aria-label="Yodacon"></div>
+  <p>Click here, then use ← → (hold Shift to spin faster).</p>
+<script>
+  const ship = document.getElementById("ship");
+  const SCALE = 3, W = 70, H = 70, COLS = 6;
+  let heading = 0;                         // degrees clockwise from nose-up
+
+  function show() {
+    const frame = Math.floor(heading / 10) % 36;      // frame 00 = nose-up, +10° each
+    const col = frame % COLS, row = Math.floor(frame / COLS);
+    ship.style.backgroundPosition = `${-col * W * SCALE}px ${-row * H * SCALE}px`;
+  }
+
+  addEventListener("keydown", (e) => {
+    const step = e.shiftKey ? 30 : 10;
+    if (e.key === "ArrowLeft") heading = (heading - step + 360) % 360;
+    else if (e.key === "ArrowRight") heading = (heading + step) % 360;
+    else return;
+    e.preventDefault();
+    show();
+    console.log(`heading ${heading}° → frame ${Math.floor(heading / 10)}`);
+  });
+  show();
+  console.log("Ready: press ← or → inside the preview.");
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "name": "Tomaquad",
+  "slug": "tomaquad",
+  "edition": "override",
+  "description": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used to trade commodity exchange.",
+  "escort": "100 Tons of Cargo space could be usefull.",
+  "sprite": {
+    "frame_width": 72,
+    "frame_height": 72,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 100,
+    "Shield": 30,
+    "Accel": 250,
+    "Speed": 250,
+    "Maneuver": 2,
+    "Fuel": 900,
+    "FreeMass": 50,
+    "Armor": 20,
+    "ShieldRe": 50,
+    "WeapType": [
+      129,
+      -1,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      2,
+      0,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 2,
+    "MaxTur": 2,
+    "TechLevel": 1,
+    "Cost": 750000,
+    "DeathDelay": 90,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "Mass": 100,
+    "Length": 90,
+    "InherentAI": 1,
+    "Crew": 19,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0004"
+  },
+  "sources": {
+    "shïp": 184,
+    "spïn": 184,
+    "sheet": "PICT 1104",
+    "mask": "PICT 1105",
+    "target": "PICT 3056",
+    "yard": "PICT 5056",
+    "comm": "PICT 5356",
+    "thumb": "PICT 5157"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/tomaquad/",
+    "gonex": "assets/data/ships/tomaquad/"
+  }
+}

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Canvas 2D Flight · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --link: #8db6ff; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 820px; margin: 0 auto; }
+  canvas { display: block; width: 100%; aspect-ratio: 8 / 5; background: #05060b; border-radius: 8px; image-rendering: pixelated; }
+  canvas:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Canvas 2D game loop</h1>
+  <p>Arrow keys: turn and thrust. The library's <code>drawShip()</code> picks the frame and draws it pixelated.</p>
+  <canvas id="c" width="800" height="500" tabindex="0" aria-label="Flight area: arrow keys to fly"></canvas>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  // Swap for "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"
+  import { loadShip, drawShip } from "../../lib/yodacon-ship-pack.js";
+
+  const q = new URLSearchParams(location.search);
+  const ship = await loadShip(q.get("edition") || "conex", q.get("ship") || "yodacon");
+  document.title = `${ship.name} · Canvas 2D Flight`;
+
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  const SCALE = ship.sprite.frame_width > 64 ? 1 : 2;   // whole numbers only
+
+  // Handling from ship.json (see demo/demo.js for the reasoning).
+  const stats = ship.meta.stats ?? {};
+  const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;
+
+  const s = { x: canvas.width / 2, y: canvas.height / 2, vx: 0, vy: 0, heading: 0 };
+  const keys = {};
+  addEventListener("keydown", (e) => { if (e.key.startsWith("Arrow")) { keys[e.key] = true; e.preventDefault(); } });
+  addEventListener("keyup", (e) => { keys[e.key] = false; });
+
+  const stars = Array.from({ length: 120 }, () => [Math.random() * canvas.width, Math.random() * canvas.height]);
+
+  function update(dt) {
+    if (keys.ArrowLeft) s.heading -= TURN * dt;
+    if (keys.ArrowRight) s.heading += TURN * dt;
+    s.heading = (s.heading + 360) % 360;
+    if (keys.ArrowUp) {
+      const a = (Math.floor(s.heading / 10) * 10 * Math.PI) / 180; // thrust along the frame shown
+      s.vx += Math.sin(a) * ACCEL * dt;
+      s.vy -= Math.cos(a) * ACCEL * dt;                          // screen y points down
+    }
+    if (keys.ArrowDown) { s.vx *= 0.96; s.vy *= 0.96; }
+    const v = Math.hypot(s.vx, s.vy);
+    if (v > MAX) { s.vx *= MAX / v; s.vy *= MAX / v; }
+    s.x = (s.x + s.vx * dt + canvas.width) % canvas.width;       // wrap around the edges
+    s.y = (s.y + s.vy * dt + canvas.height) % canvas.height;
+  }
+
+  function draw() {
+    ctx.fillStyle = "#05060b";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#8a93b8";
+    for (const [x, y] of stars) ctx.fillRect(x, y, 1, 1);
+    drawShip(ctx, ship, s.heading, s.x, s.y, SCALE);
+  }
+
+  // Fixed 60 Hz updates, drawing once per animation frame.
+  const STEP = 1 / 60;
+  let last = performance.now(), acc = 0;
+  requestAnimationFrame(function frame(now) {
+    acc += Math.min(0.25, (now - last) / 1000);
+    last = now;
+    while (acc >= STEP) { update(STEP); acc -= STEP; }
+    draw();
+    requestAnimationFrame(frame);
+  });
+  canvas.focus();
+</script>
+</body>
+</html>

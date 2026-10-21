@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Plain DOM Sprite · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 720px; margin: 0 auto; }
+  .stage {
+    display: grid; place-items: center; height: 320px; border: 1px solid var(--line); border-radius: 8px;
+    background: #05060b radial-gradient(#ffffff40 1px, transparent 1px) 0 0 / 24px 24px;
+  }
+
+  /* The sprite: one frame-sized box showing part of sheet-alpha.png.
+     --w / --h (frame size), --cols, --scale and --col / --row are set from JS. */
+  .ship {
+    width: calc(var(--w) * var(--scale) * 1px);
+    height: calc(var(--h) * var(--scale) * 1px);
+    background-image: var(--sheet);
+    background-repeat: no-repeat;
+    background-size: calc(var(--w) * var(--cols) * var(--scale) * 1px) auto;
+    background-position:
+      calc(var(--col) * var(--w) * var(--scale) * -1px)
+      calc(var(--row) * var(--h) * var(--scale) * -1px);
+    image-rendering: pixelated;      /* keep the 1997 pixels square */
+  }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  button { font: inherit; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  output { font-family: ui-monospace, monospace; color: var(--muted); }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Plain DOM + CSS sprite</h1>
+  <p>No canvas: a <code>&lt;div&gt;</code> whose background is <code>sheet-alpha.png</code>, moved with
+    <code>background-position</code>. Rotate with the buttons or the ← → keys.</p>
+
+  <div class="stage"><div class="ship" id="ship" role="img" aria-label="Loading ship"></div></div>
+
+  <div class="controls">
+    <button type="button" id="left" aria-label="Rotate left 10 degrees">⟲ −10°</button>
+    <button type="button" id="right" aria-label="Rotate right 10 degrees">⟳ +10°</button>
+    <output id="readout" aria-live="polite"></output>
+  </div>
+
+  <p>Try <a href="?edition=override&amp;ship=callisto">?edition=override&amp;ship=callisto</a> or
+    <a href="?edition=conex&amp;ship=dart">?edition=conex&amp;ship=dart</a>.</p>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  // Where the pack lives, relative to this page. Change it to your copy, or to
+  // https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/
+  const PACK = new URL("../../", location.href);
+
+  const q = new URLSearchParams(location.search);
+  const edition = q.get("edition") || "conex";
+  const slug = q.get("ship") || "yodacon";
+  const dir = new URL(`${edition}/ships/${slug}/`, PACK);
+
+  // ship.json says how big a frame is and how the sheet is laid out.
+  const meta = await (await fetch(new URL("ship.json", dir))).json();
+  const { frame_width: w, frame_height: h, columns: cols } = meta.sprite;
+
+  const el = document.getElementById("ship");
+  el.style.setProperty("--sheet", `url("${new URL("sheet-alpha.png", dir)}")`);
+  el.style.setProperty("--w", w);
+  el.style.setProperty("--h", h);
+  el.style.setProperty("--cols", cols);
+  el.style.setProperty("--scale", w > 64 ? 2 : 3);   // whole numbers only
+  el.setAttribute("aria-label", meta.name);
+
+  // Frame 00 points up; each next frame is 10° clockwise; 6 frames per row.
+  let heading = 0;
+  function show() {
+    const frame = Math.floor(heading / 10) % 36;
+    el.style.setProperty("--col", frame % cols);
+    el.style.setProperty("--row", Math.floor(frame / cols));
+    document.getElementById("readout").textContent =
+      `${meta.name} · heading ${heading}° · frame ${String(frame).padStart(2, "0")}`;
+  }
+  const turn = (deg) => { heading = (heading + deg + 360) % 360; show(); };
+
+  document.getElementById("left").onclick = () => turn(-10);
+  document.getElementById("right").onclick = () => turn(10);
+  addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") turn(-10);
+    if (e.key === "ArrowRight") turn(10);
+  });
+  show();
+</script>
+</body>
+</html>

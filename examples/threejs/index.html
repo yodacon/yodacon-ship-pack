@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>three.js Sprite Ship · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --link: #8db6ff; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 1000px; margin: 0 auto; }
+  #view { position: relative; height: min(65vh, 560px); min-height: 280px; border-radius: 8px; overflow: hidden; background: #05060b; }
+  #view canvas { display: block; touch-action: none; }
+  #hud { position: absolute; left: 10px; top: 8px; margin: 0; color: #7ef0a8; font: 13px ui-monospace, Menlo, monospace; pointer-events: none; }
+  nav a[aria-current] { font-weight: 700; text-decoration: none; color: var(--ink); }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+<!-- Pinned versions only. three and its addons must come from the same release. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1>three.js</h1>
+  <nav>Mode: <a id="m-plane" href="?mode=plane">Fly — textured plane</a> ·
+    <a id="m-billboard" href="?mode=billboard">Orbit — billboard sprite</a></nav>
+  <p id="help"></p>
+  <div id="view" tabindex="0" aria-label="3D view"><p id="hud"></p></div>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  import * as THREE from "three";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+  import { loadShipMeta, frameIndex } from "../../lib/yodacon-ship-pack.js";
+
+  const q = new URLSearchParams(location.search);
+  const mode = q.get("mode") === "billboard" ? "billboard" : "plane";
+  const ship = await loadShipMeta(q.get("edition") || "conex", q.get("ship") || "yodacon");
+  const { frame_width: fw, frame_height: fh, columns: cols, frames } = ship.sprite;
+  const rows = Math.ceil(frames / cols);
+  const SIZE = 2;                                   // world units per sprite pixel
+
+  // Keep ?edition=&ship= when switching modes.
+  for (const m of ["plane", "billboard"]) {
+    const a = document.getElementById(`m-${m}`), u = new URLSearchParams(location.search);
+    u.set("mode", m);
+    a.search = u;
+    if (m === mode) a.setAttribute("aria-current", "page");
+  }
+  document.getElementById("help").textContent = mode === "plane"
+    ? "Arrow keys: ← → turn, ↑ thrust, ↓ brake. The sprite lies flat on the grid; the frame follows the heading."
+    : "Drag to orbit, scroll to zoom, ← → turn the ship. The frame follows the heading as seen from the camera.";
+
+  // --- Renderer, scene, camera ----------------------------------------------
+  const view = document.getElementById("view");
+  const renderer = new THREE.WebGLRenderer({ antialias: false });
+  renderer.setPixelRatio(devicePixelRatio);
+  view.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x05060b);
+  const camera = new THREE.PerspectiveCamera(50, 1, 1, 8000);
+  function resize() {
+    renderer.setSize(view.clientWidth, view.clientHeight);
+    camera.aspect = view.clientWidth / view.clientHeight;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(view);
+
+  // The floor: one large quad with a small grid tile repeated across it.
+  const tile = document.createElement("canvas");
+  tile.width = tile.height = 64;
+  const g = tile.getContext("2d");
+  g.fillStyle = "#05060b"; g.fillRect(0, 0, 64, 64);
+  g.fillStyle = "#1f2747"; g.fillRect(0, 0, 64, 2); g.fillRect(0, 0, 2, 64);
+  const floorTex = new THREE.CanvasTexture(tile);
+  floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
+  floorTex.repeat.set(50, 50);                       // 4000 / 50 = one cell per 80 units
+  floorTex.colorSpace = THREE.SRGBColorSpace;
+  floorTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000), new THREE.MeshBasicMaterial({ map: floorTex }));
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+  const starPos = new Float32Array(3 * 1500);
+  for (let i = 0; i < starPos.length; i += 3) {
+    const v = new THREE.Vector3().randomDirection().multiplyScalar(3000 + Math.random() * 1000);
+    starPos.set([v.x, Math.abs(v.y) * 0.8 + 100, v.z], i);       // a dome above the grid
+  }
+  const starGeo = new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xaab3d6, size: 2, sizeAttenuation: false })));
+
+  // --- The sprite sheet as a texture ----------------------------------------
+  // One texture shows one cell of the 6×6 sheet: repeat shrinks the UV range
+  // to a cell, offset moves it. three.js flips images (flipY), so v = 0 is the
+  // BOTTOM row of the sheet: row r starts at v = 1 - (r + 1) / rows.
+  const texture = await new THREE.TextureLoader().loadAsync(ship.urls.sheet);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = texture.minFilter = THREE.NearestFilter;  // pixel art: no blur
+  texture.generateMipmaps = false;
+  texture.repeat.set(1 / cols, 1 / rows);
+  function setFrame(i) {
+    texture.offset.set((i % cols) / cols, 1 - (Math.floor(i / cols) + 1) / rows);
+  }
+  const material = { map: texture, transparent: true, alphaTest: 0.5 }; // alphaTest: crisp edges, no sorting trouble
+
+  let heading = 0;                                  // degrees clockwise from north (−Z)
+  const keys = {};
+  addEventListener("keydown", (e) => { if (e.key.startsWith("Arrow")) { keys[e.key] = true; e.preventDefault(); } });
+  addEventListener("keyup", (e) => { keys[e.key] = false; });
+  const hud = document.getElementById("hud");
+  const clock = new THREE.Clock();
+  const stats = ship.meta.stats ?? {};
+  const TURN = (stats.Maneuver || 3) * 40, ACCEL = (stats.Accel || 300) * 1.2, MAX = (stats.Speed || 300) * 1.2;
+
+  if (mode === "plane") {
+    // A flat quad on the grid. PlaneGeometry stands in XY; rotating −90° about
+    // X lays it down with the texture's top pointing to −Z ("north").
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(fw * SIZE, fh * SIZE), new THREE.MeshBasicMaterial(material));
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = 1;
+    scene.add(plane);
+    const vel = new THREE.Vector3();
+
+    renderer.setAnimationLoop(() => {
+      const dt = Math.min(clock.getDelta(), 0.1);
+      if (keys.ArrowLeft) heading -= TURN * dt;
+      if (keys.ArrowRight) heading += TURN * dt;
+      heading = (heading + 360) % 360;
+      const frame = frameIndex(heading);
+      const a = THREE.MathUtils.degToRad(frame * 10);        // thrust where the sprite points
+      if (keys.ArrowUp) vel.add(new THREE.Vector3(Math.sin(a), 0, -Math.cos(a)).multiplyScalar(ACCEL * dt));
+      if (keys.ArrowDown) vel.multiplyScalar(0.95);
+      vel.clampLength(0, MAX);
+      plane.position.addScaledVector(vel, dt);
+      plane.position.x = THREE.MathUtils.euclideanModulo(plane.position.x + 2000, 4000) - 2000;
+      plane.position.z = THREE.MathUtils.euclideanModulo(plane.position.z + 2000, 4000) - 2000;
+      setFrame(frame);
+      // Chase camera: above and to the south, so north stays up on screen.
+      camera.position.set(plane.position.x, 520, plane.position.z + 360);
+      camera.lookAt(plane.position);
+      hud.textContent = `${ship.name}  heading ${Math.floor(heading)}°  frame ${frame}`;
+      renderer.render(scene, camera);
+    });
+  } else {
+    // A billboard: THREE.Sprite always faces the camera. The ship keeps a true
+    // heading in the world; what the camera sees is that heading minus the
+    // camera's own bearing around the ship, so we pick the frame for that.
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial(material));
+    sprite.scale.set(fw * SIZE, fh * SIZE, 1);
+    sprite.position.y = fh;
+    scene.add(sprite);
+    const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 2, 0), fw * 3, 0x7ef0a8);
+    scene.add(arrow);                                         // the ship's true heading, on the grid
+    camera.position.set(0, 380, 420);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.copy(sprite.position);
+    controls.enableDamping = true;
+    controls.maxPolarAngle = Math.PI * 0.49;                  // stay above the grid
+
+    renderer.setAnimationLoop(() => {
+      const dt = Math.min(clock.getDelta(), 0.1);
+      if (keys.ArrowLeft) heading -= TURN * dt;
+      if (keys.ArrowRight) heading += TURN * dt;
+      heading = (heading + 360) % 360;
+      controls.update();
+      // Camera bearing φ around the ship, measured like the heading
+      // (0 when the camera sits to the south looking north).
+      const phi = THREE.MathUtils.radToDeg(Math.atan2(camera.position.x - sprite.position.x, camera.position.z - sprite.position.z));
+      const seen = heading + phi;
+      setFrame(frameIndex(seen));
+      const a = THREE.MathUtils.degToRad(heading);
+      arrow.setDirection(new THREE.Vector3(Math.sin(a), 0, -Math.cos(a)));
+      hud.textContent = `${ship.name}  heading ${Math.floor(heading)}°  camera ${Math.round((phi + 360) % 360)}°  frame ${frameIndex(seen)}`;
+      renderer.render(scene, camera);
+    });
+  }
+  resize();
+  view.focus();
+</script>
+</body>
+</html>

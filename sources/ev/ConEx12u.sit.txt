@@ -1,0 +1,7 @@
+ConEx12u.sit
+143.00 kB | By Anonymous
+Created: 08/12/2004
+Category: Plugins
+Downloads: 1590
+
+A patch to bring ConEx 1.1 up to ConEx 1.2. If you dont already have ConEx1.1, download the complete ConEx 1.2 package, not this update.

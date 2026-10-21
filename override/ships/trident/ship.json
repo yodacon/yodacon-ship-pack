@@ -1,0 +1,86 @@
+{
+  "name": "Trident",
+  "slug": "trident",
+  "edition": "override",
+  "description": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shiping Company. This tiny little ship is will match with the UE Fighter",
+  "escort": "\"The Consolidated Express Trident Fighter would be a great addiction to your fleat, I'l Bet my Life on it\" says as he begs for a job.",
+  "sprite": {
+    "frame_width": 40,
+    "frame_height": 40,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 1,
+    "Shield": 350,
+    "Accel": 650,
+    "Speed": 300,
+    "Maneuver": 4,
+    "Fuel": 500,
+    "FreeMass": 21,
+    "Armor": 50,
+    "ShieldRe": 1,
+    "WeapType": [
+      142,
+      130,
+      145,
+      -1
+    ],
+    "WeapCount": [
+      6,
+      1,
+      2,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      10,
+      0,
+      0
+    ],
+    "MaxGun": 6,
+    "MaxTur": 2,
+    "TechLevel": 1,
+    "Cost": 50000,
+    "DeathDelay": 25,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      5
+    ],
+    "Mass": 15,
+    "Length": 10,
+    "InherentAI": 5,
+    "Crew": 1,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0001"
+  },
+  "sources": {
+    "shïp": 181,
+    "spïn": 181,
+    "sheet": "PICT 1096",
+    "mask": "PICT 1097",
+    "target": "PICT 3053",
+    "yard": "PICT 5053",
+    "comm": "PICT 5353",
+    "thumb": "PICT 5154"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/trident/",
+    "gonex": "assets/data/ships/trident/"
+  }
+}

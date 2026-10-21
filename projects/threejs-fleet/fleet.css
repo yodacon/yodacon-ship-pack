@@ -1,0 +1,66 @@
+/* Fleet Flyby — a full-window three.js view with HTML overlays on top. */
+:root { --ink: #dfe4f2; --muted: #8f98b3; --accent: #7ef0a8; --link: #8db6ff; --glass: #0a0d18d9; --line: #2a3150; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: #02030a; color: var(--ink); font: 14px/1.45 system-ui, sans-serif; }
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.px { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.view { position: fixed; inset: 0; }
+.view canvas { display: block; touch-action: none; }
+.view.pointing canvas { cursor: pointer; }
+
+.hud {
+  position: fixed; left: 12px; top: 10px; max-width: min(420px, calc(100vw - 24px));
+  padding: 8px 12px; border-radius: 8px; background: var(--glass); border: 1px solid var(--line);
+}
+.hud h1 { margin: 0; font-size: 18px; }
+.crumbs { margin: 0; font-size: 12px; }
+.hint { margin: 2px 0 6px; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.controls label { display: inline-flex; gap: 6px; align-items: center; min-width: 0; max-width: 100%; }
+.controls select { min-width: 0; flex: 1; }
+select { font: inherit; color: inherit; background: #121624; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+
+/* Ship card. */
+.card {
+  position: fixed; right: 12px; top: 10px; width: 300px; max-height: calc(100vh - 60px); overflow: auto;
+  padding: 12px 14px; border-radius: 8px; background: var(--glass); border: 1px solid var(--line);
+}
+.card[hidden] { display: none; }
+.card h2 { margin: 0; font-size: 20px; color: var(--accent); }
+.card p { margin: 2px 0 8px; }
+.close {
+  position: absolute; right: 6px; top: 4px; width: 30px; height: 30px; font-size: 20px; line-height: 1;
+  color: inherit; background: transparent; border: 0; cursor: pointer; border-radius: 6px;
+}
+.pics { display: flex; gap: 10px; }
+figure { margin: 0 0 8px; display: grid; justify-items: center; gap: 2px; }
+figcaption { font-size: 11px; color: var(--muted); }
+.pics img { width: 100px; height: 100px; background: #000; }
+.target img { width: 256px; height: 128px; max-width: 100%; background: #000; }
+.desc { font-size: 13px; }
+.follow { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+/* Target brackets: four corners, positioned from JS over the selected ship. */
+.brackets { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.brackets[hidden] { display: none; }
+.brackets span { position: absolute; width: 10px; height: 10px; border: 2px solid var(--accent); }
+.brackets span:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.brackets span:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.brackets span:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.brackets span:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+
+.credit {
+  position: fixed; left: 0; right: 0; bottom: 0; padding: 4px 12px; font-size: 12px; color: var(--muted);
+  background: linear-gradient(transparent, #02030acc 40%);
+}
+
+@media (max-width: 640px) {
+  .hud { right: 12px; }
+  .card { left: 12px; right: 12px; top: auto; bottom: 64px; width: auto; max-height: 52vh; }
+  .pics img { width: 72px; height: 72px; }
+  .target img { width: 192px; height: 96px; }
+}

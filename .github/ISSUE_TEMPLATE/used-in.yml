@@ -1,0 +1,89 @@
+name: "Used in: list my project"
+description: Put a game, mod, demo or video that flies these ships on the leaderboard.
+title: "Used in: "
+labels: ["used-in"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for flying the Yodacon Ship Pack. A reviewer checks the details
+        below and adds your row to USED-IN.md. The rules are in CONTRIBUTING.md.
+  - type: input
+    id: project
+    attributes:
+      label: Project name
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: One line describing it
+      placeholder: "A top-down courier game where you haul cargo past pirates"
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: Made by
+      description: A name, handle, team or studio, as it should appear on the board.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Where it can be seen or played
+      description: A build, repository, store page or video.
+      placeholder: https://
+    validations:
+      required: true
+  - type: checkboxes
+    id: hulls
+    attributes:
+      label: Ships it flies (either edition)
+      options:
+        - label: Small Pin
+        - label: Medium Pin
+        - label: Large Pin
+        - label: Callisto
+        - label: Dart
+        - label: Defender
+        - label: Gryphon
+        - label: Trident
+        - label: Necromancer
+        - label: Yodacon
+        - label: Tomaquad
+  - type: checkboxes
+    id: editions
+    attributes:
+      label: Which edition's art
+      options:
+        - label: ConEx 1.2 (1997)
+        - label: ConEx Override 1.0 (1998)
+  - type: textarea
+    id: credit
+    attributes:
+      label: Where the credit line appears
+      description: A link to the credits, README or video description, or a screenshot pasted here.
+    validations:
+      required: true
+  - type: dropdown
+    id: redistributes
+    attributes:
+      label: Does the project hand the asset files to other people?
+      description: For example, inside a download, an installer or a public repository.
+      options:
+        - "Yes, and the GPL-2.0 LICENSE and credit line go with them"
+        - "No, the files aren't redistributed (e.g. a video or a hosted web game)"
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: A screenshot with a pack ship on screen
+      description: Optional, but it speeds up review.
+  - type: checkboxes
+    id: update
+    attributes:
+      label: Update
+      options:
+        - label: This updates an existing listing

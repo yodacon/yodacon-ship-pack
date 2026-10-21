@@ -1,0 +1,86 @@
+{
+  "name": "Callisto",
+  "slug": "callisto",
+  "edition": "override",
+  "description": null,
+  "escort": null,
+  "sprite": {
+    "frame_width": 72,
+    "frame_height": 72,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 150,
+    "Shield": 300,
+    "Accel": 450,
+    "Speed": 250,
+    "Maneuver": 2,
+    "Fuel": 1200,
+    "FreeMass": 405,
+    "Armor": 200,
+    "ShieldRe": 2,
+    "WeapType": [
+      163,
+      154,
+      149,
+      132
+    ],
+    "WeapCount": [
+      2,
+      10,
+      1,
+      1
+    ],
+    "AmmoLoad": [
+      5,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 2,
+    "MaxTur": 6,
+    "TechLevel": 1,
+    "Cost": 10000000,
+    "DeathDelay": 100,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 600,
+    "Length": 90,
+    "InherentAI": 3,
+    "Crew": 50,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0004"
+  },
+  "sources": {
+    "shïp": 177,
+    "spïn": 177,
+    "sheet": "PICT 1088",
+    "mask": "PICT 1089",
+    "target": "PICT 3049",
+    "yard": "PICT 5049",
+    "comm": "PICT 5349",
+    "thumb": "PICT 5150"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/callisto/",
+    "gonex": "assets/data/ships/callisto/"
+  }
+}

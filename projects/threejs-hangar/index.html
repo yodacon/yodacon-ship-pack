@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hangar · Yodacon Ship Pack</title>
+<meta name="description" content="three.js: one ConEx ship on a turntable in a hangar, its sprite frame following the turntable, with its pictures on monitors.">
+<link rel="stylesheet" href="hangar.css">
+<!-- Pinned: three and its addons must come from the same release
+     (the same version as examples/threejs). -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="hangar.js"></script>
+</head>
+<body>
+<div id="view" class="view" aria-label="3D hangar. Drag to look around the turntable, scroll to zoom."></div>
+
+<header class="panel">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Hangar</h1>
+  <div class="picker">
+    <button type="button" id="prev" aria-label="Previous ship">◀</button>
+    <select id="ship" aria-label="Ship"></select>
+    <button type="button" id="next" aria-label="Next ship">▶</button>
+  </div>
+  <div class="controls">
+    <label>Turntable <input type="range" id="speed" min="-60" max="60" step="5" value="20"> <output id="speed-out">20°/s</output></label>
+    <label>Lean <input type="range" id="lean" min="0" max="80" step="5" value="25"> <output id="lean-out">25°</output></label>
+  </div>
+  <p id="readout" class="readout" aria-live="polite"></p>
+</header>
+
+<aside class="info" aria-live="polite">
+  <h2 id="name">Loading…</h2>
+  <p id="edition" class="muted"></p>
+  <dl id="stats" class="stats"></dl>
+  <p id="desc" class="desc"></p>
+</aside>
+
+<footer class="credit">
+  Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
+  <a href="https://paulricheson.com">paulricheson.com</a>
+</footer>
+</body>
+</html>

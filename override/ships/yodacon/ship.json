@@ -1,0 +1,86 @@
+{
+  "name": "Yodacon",
+  "slug": "yodacon",
+  "edition": "override",
+  "description": "The Consolidated Express Yodacon is the Biggest/Baddest ship of the ConEx fleet. This escort ship carries 15 tridents that are stored in 5 launch bays, for fast launching.",
+  "escort": "With this ship at your side you are sure never to louse a fight.",
+  "sprite": {
+    "frame_width": 96,
+    "frame_height": 96,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 150,
+    "Shield": 750,
+    "Accel": 120,
+    "Speed": 100,
+    "Maneuver": 2,
+    "Fuel": 1200,
+    "FreeMass": 150,
+    "Armor": 1500,
+    "ShieldRe": 100,
+    "WeapType": [
+      163,
+      161,
+      160,
+      157
+    ],
+    "WeapCount": [
+      5,
+      3,
+      6,
+      1
+    ],
+    "AmmoLoad": [
+      15,
+      120,
+      0,
+      0
+    ],
+    "MaxGun": 9,
+    "MaxTur": 12,
+    "TechLevel": 1,
+    "Cost": 15000000,
+    "DeathDelay": 350,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "Mass": 3000,
+    "Length": 250,
+    "InherentAI": 1,
+    "Crew": 2080,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0002"
+  },
+  "sources": {
+    "shïp": 183,
+    "spïn": 183,
+    "sheet": "PICT 1102",
+    "mask": "PICT 1103",
+    "target": "PICT 3055",
+    "yard": "PICT 5055",
+    "comm": "PICT 5355",
+    "thumb": "PICT 5156"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/yodacon/",
+    "gonex": "assets/data/ships/yodacon/"
+  }
+}

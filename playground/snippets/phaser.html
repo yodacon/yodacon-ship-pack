@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phaser</title>
+<style>html, body { margin: 0; height: 100%; background: #05060b; overflow: hidden; }</style>
+<!-- Pinned exact version. -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+</head>
+<body>
+<script>
+  // Phaser slices sheet-alpha.png into 36 frames by size; frame N = heading N×10°.
+  // An absolute URL (against the page's base) keeps the loader independent of its baseURL.
+  const SHEET = new URL("override/ships/trident/sheet-alpha.png", document.baseURI).href;
+  const MISSILE = new URL("override/weapons/missile-repeater/sheet-alpha.png", document.baseURI).href;
+
+  class Flight extends Phaser.Scene {
+    preload() {
+      this.load.crossOrigin = "anonymous";
+      this.load.spritesheet("ship", SHEET, { frameWidth: 40, frameHeight: 40 });
+      this.load.spritesheet("missile", MISSILE, { frameWidth: 24, frameHeight: 20 });
+    }
+    create() {
+      this.heading = 0;
+      this.ship = this.physics.add.sprite(this.scale.width / 2, this.scale.height / 2, "ship", 0).setScale(2);
+      this.ship.setDamping(true).setDrag(0.6).setMaxVelocity(260);
+      this.keys = this.input.keyboard.createCursorKeys();
+      this.missiles = this.physics.add.group();
+      this.input.keyboard.on("keydown-SPACE", () => this.fire());
+      this.add.text(8, 8, "Click · ← → turn · ↑ thrust · Space fires", { font: "12px monospace", color: "#7ef0a8" });
+      console.log("Phaser", Phaser.VERSION);
+    }
+    fire() {
+      const f = Math.floor(this.heading / 10) % 36, a = Phaser.Math.DegToRad(f * 10);
+      const m = this.missiles.create(this.ship.x, this.ship.y, "missile", f).setScale(2);
+      m.setVelocity(Math.sin(a) * 420, -Math.cos(a) * 420);
+      this.time.delayedCall(1500, () => m.destroy());
+    }
+    update(_, ms) {
+      const dt = ms / 1000;
+      if (this.keys.left.isDown) this.heading -= 200 * dt;
+      if (this.keys.right.isDown) this.heading += 200 * dt;
+      this.heading = (this.heading + 360) % 360;
+      const f = Math.floor(this.heading / 10) % 36;
+      this.ship.setFrame(f);                          // pick the frame instead of rotating the image
+      const a = Phaser.Math.DegToRad(f * 10);
+      this.ship.setAcceleration(this.keys.up.isDown ? Math.sin(a) * 300 : 0, this.keys.up.isDown ? -Math.cos(a) * 300 : 0);
+      this.physics.world.wrap(this.ship, 40);
+    }
+  }
+
+  new Phaser.Game({
+    type: Phaser.AUTO,
+    backgroundColor: "#05060b",
+    pixelArt: true,                                   // nearest-neighbour everywhere
+    scale: { mode: Phaser.Scale.RESIZE, width: innerWidth, height: innerHeight },
+    physics: { default: "arcade" },
+    banner: false,
+    scene: Flight,
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "name": "Tomaquad",
+  "slug": "tomaquad",
+  "edition": "conex",
+  "description": "The Tomaquad is ConEx's version of the Luxery Liner.",
+  "escort": "Talking to the cap'n of the Tomaquad.",
+  "sprite": {
+    "frame_width": 60,
+    "frame_height": 60,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 20,
+    "Shield": 300,
+    "Accel": 185,
+    "Speed": 150,
+    "Maneuver": 2,
+    "Fuel": 400,
+    "FreeMass": 30,
+    "Armor": 200,
+    "ShieldRe": 60,
+    "WeapType": [
+      134,
+      -1,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      2,
+      0,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 2,
+    "MaxTur": 4,
+    "TechLevel": 1,
+    "Cost": 500000,
+    "DeathDelay": 60,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "Mass": 300,
+    "Length": 180,
+    "InherentAI": 1,
+    "Crew": 65,
+    "MissionBit": -1,
+    "InherentGovt": -1
+  },
+  "sources": {
+    "shïp": 175,
+    "spïn": 175,
+    "sheet": "PICT 20619",
+    "mask": "PICT 20620",
+    "target": "PICT 3047",
+    "yard": "PICT 5047",
+    "comm": "PICT 5347",
+    "thumb": "PICT 5148"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/tomaquad/",
+    "gonex": "assets/data/ships/tomaquad97/"
+  }
+}

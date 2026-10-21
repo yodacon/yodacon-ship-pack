@@ -1,0 +1,123 @@
+/* Shipyard — plain CSS. A 1990s spaceport console, in light and dark. */
+:root {
+  --bg: #eef0f6; --panel: #ffffff; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9;
+  --link: #1b4fb8; --accent: #1b4fb8; --accent-ink: #fff; --sel: #dfe7fb; --screen: #05060b;
+  --good: #1d6b3a; --bad: #b3261e;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #090b12; --panel: #121624; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150;
+    --link: #8db6ff; --accent: #7ef0a8; --accent-ink: #06210f; --sel: #1d2645; --screen: #020308;
+    --good: #7ef0a8; --bad: #ff8a80;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, sans-serif; }
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+button { font: inherit; color: inherit; cursor: pointer; border-radius: 6px; }
+button.ghost { background: transparent; border: 1px solid var(--line); padding: 3px 10px; }
+button.small { font-size: 12px; padding: 1px 8px; }
+
+/* Pixel art: never smooth. */
+.px, .sprite, .thumb { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.top {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px;
+  padding: 10px 16px; border-bottom: 1px solid var(--line);
+}
+.top h1 { margin: 0; font-size: 22px; }
+.crumbs { margin: 0; flex-basis: 100%; font-size: 13px; }
+.wallet { margin: 0 0 0 auto; display: flex; gap: 10px; align-items: center; font-variant-numeric: tabular-nums; }
+
+/* Three columns: list · detail · fleet. */
+.yard {
+  display: grid; gap: 16px; padding: 16px; max-width: 1280px; margin: 0 auto;
+  grid-template-columns: 240px minmax(0, 1fr) 220px; align-items: start;
+}
+
+/* Ship list ------------------------------------------------------------------ */
+.list { position: sticky; top: 8px; }
+#ship-list {
+  position: relative;
+  max-height: calc(100vh - 120px); overflow: auto; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 8px; padding: 4px;
+}
+.group { margin: 8px 8px 2px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.option {
+  display: grid; grid-template-columns: 40px 1fr auto; gap: 8px; align-items: center;
+  padding: 4px 8px; border-radius: 6px; cursor: pointer;
+}
+.option:hover { background: color-mix(in srgb, var(--sel) 60%, transparent); }
+.option[aria-selected="true"] { background: var(--sel); font-weight: 600; }
+#ship-list:focus-visible .option[aria-selected="true"] { outline: 2px solid var(--accent); outline-offset: -2px; }
+.thumb { width: 36px; height: 36px; object-fit: contain; background: var(--screen); border-radius: 4px; }
+.option .cost { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.owned-mark { color: var(--good); }
+
+/* Detail ---------------------------------------------------------------------- */
+.detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.detail-head h2 { margin: 0; font-size: 24px; }
+.detail-head p { margin: 2px 0 12px; }
+.pictures { display: grid; grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.pictures figure { margin: 0; display: grid; justify-items: center; gap: 4px; }
+.pictures figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+.pictures img { background: var(--screen); border-radius: 4px; width: 100px; height: 100px; }
+.pictures .wide { grid-column: 2 / 4; }
+.pictures .wide img { width: 256px; max-width: 100%; height: auto; aspect-ratio: 2; }
+.viewer { grid-row: span 2; }
+.spin-box {
+  width: 100%; aspect-ratio: 1; max-width: 280px; display: grid; place-items: center;
+  border-radius: 8px; cursor: grab; touch-action: none; user-select: none;
+  background: var(--screen) radial-gradient(#ffffff38 1px, transparent 1px) 0 0 / 22px 22px;
+}
+.spin-box.dragging { cursor: grabbing; }
+/* The sprite's size, sheet size and position are set from JS (whole-number scale). */
+.sprite { background-repeat: no-repeat; pointer-events: none; }
+
+.buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 16px 0 4px; }
+.price { margin: 0; font-size: 18px; font-variant-numeric: tabular-nums; }
+.buy {
+  background: var(--accent); color: var(--accent-ink); border: 0; padding: 8px 22px;
+  font-weight: 700; letter-spacing: .04em;
+}
+.buy:disabled { opacity: .45; cursor: not-allowed; }
+#buy-note { margin: 0; }
+#buy-note.ok { color: var(--good); }
+#buy-note.no { color: var(--bad); }
+
+.description { font-size: 16px; max-width: 70ch; }
+.escort { font-style: italic; }
+.stats { border-collapse: collapse; width: 100%; max-width: 560px; font-variant-numeric: tabular-nums; }
+.stats caption { text-align: left; font-size: 12px; color: var(--muted); padding-bottom: 4px; }
+.stats th, .stats td { text-align: left; padding: 3px 8px; border-bottom: 1px solid var(--line); }
+.stats th { font-weight: 500; color: var(--muted); width: 45%; }
+
+/* Fleet -------------------------------------------------------------------------- */
+.fleet { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.fleet h2 { margin: 0 0 8px; font-size: 16px; }
+#fleet { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+#fleet li { display: grid; grid-template-columns: 40px 1fr auto; gap: 8px; align-items: center; font-size: 14px; }
+#fleet small { display: block; color: var(--muted); }
+
+.credit { padding: 0 16px 16px; font-size: 13px; color: var(--muted); max-width: 1280px; margin: 0 auto; }
+
+/* Tablet: fleet under the detail. Phone: one column, the list as a short scroller. */
+@media (max-width: 1000px) {
+  .yard { grid-template-columns: 220px minmax(0, 1fr); }
+  .fleet { grid-column: 2; }
+}
+@media (max-width: 680px) {
+  .yard { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .list { position: static; }
+  #ship-list { max-height: 210px; }
+  .fleet { grid-column: auto; }
+  .pictures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .viewer { grid-column: 1 / -1; grid-row: auto; }
+  .pictures .wide { grid-column: 1 / -1; }
+  .wallet { margin-left: 0; }
+}
+#fleet .linkish { border: 0; padding: 0; font-size: 14px; color: var(--link); text-decoration: underline; text-align: left; }

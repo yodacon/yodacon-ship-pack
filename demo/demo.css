@@ -1,0 +1,128 @@
+/* Yodacon Ship Pack — demo game. Dark by default, light via prefers-color-scheme. */
+:root {
+  --bg: #eef0f6;
+  --panel: #ffffff;
+  --ink: #161a24;
+  --muted: #576079;
+  --line: #c4c9d8;
+  --accent: #1d6b45;
+  --link: #1b4fb8;
+  --box: #0b0e16;
+  --box-ink: #8cf5b4;
+  --space: #05060b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #090b12;
+    --panel: #121624;
+    --ink: #dfe4f2;
+    --muted: #8f98b3;
+    --line: #2a3150;
+    --accent: #7ef0a8;
+    --link: #8db6ff;
+    --box: #000;
+    --box-ink: #7ef0a8;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.bar {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.home { font-weight: 600; text-decoration: none; }
+.pick { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+.pick select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; max-width: 70vw;
+}
+
+.layout {
+  display: grid; gap: 16px; padding: 16px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  max-width: 1400px; margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.stage { min-width: 0; }
+.screen {
+  position: relative; background: var(--space); border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  height: min(70vh, 640px); min-height: 300px;
+}
+@media (max-width: 600px) { .screen { height: 62vh; min-height: 260px; } }
+#game { display: block; width: 100%; height: 100%; touch-action: none; image-rendering: pixelated; }
+#game:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.overlay {
+  position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center;
+  background: rgb(0 0 0 / 0.55); color: #fff;
+}
+.overlay[hidden] { display: none; }
+.overlay p { margin: 0; font: 600 20px/1.2 ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.1em; text-transform: uppercase; }
+.overlay button, .landing button {
+  font: inherit; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: 6px; padding: 4px 14px; cursor: pointer;
+}
+.landing button { padding: 0 8px; font-size: 13px; }
+.keys { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+kbd {
+  font: 12px ui-monospace, Menlo, Consolas, monospace; border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 0 4px; margin: 0 1px; background: var(--panel);
+}
+
+/* On-screen controls: shown on touch screens only. */
+.touch { display: none; justify-content: space-between; align-items: center; gap: 16px; margin-top: 10px; user-select: none; -webkit-user-select: none; }
+@media (pointer: coarse) { .touch { display: flex; } .keys { display: none; } }
+.touch button {
+  touch-action: none; font: 600 22px/1 system-ui, sans-serif; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 12px; min-width: 56px; min-height: 56px;
+}
+.touch button.held { background: var(--accent); color: var(--bg); }
+.pad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: 56px 56px; gap: 6px; }
+.pad [data-key="left"] { grid-column: 1; grid-row: 2; }
+.pad [data-key="up"] { grid-column: 2; grid-row: 1; }
+.pad [data-key="right"] { grid-column: 3; grid-row: 2; }
+.pad [data-key="down"] { grid-column: 2; grid-row: 2; }
+.touch .fire { min-width: 96px; min-height: 96px; border-radius: 50%; font-size: 18px; letter-spacing: 0.08em; }
+
+/* The EV-style info panel. */
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0;
+  align-self: start;
+}
+.box { background: var(--box); border: 1px solid var(--line); border-radius: 4px; margin: 0; }
+.box img { display: block; image-rendering: pixelated; max-width: 100%; height: auto; margin: 0 auto; }
+.box figcaption, .label {
+  color: var(--box-ink); font: 600 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.15em;
+  text-transform: uppercase; padding: 6px 8px; margin: 0;
+}
+.target { display: grid; justify-items: center; padding-bottom: 8px; }
+.target .label { justify-self: start; }
+.target img { width: 256px; height: 128px; max-width: 100%; object-fit: contain; }
+.panel h1 { margin: 12px 0 0; font-size: 24px; }
+.edition { margin: 2px 0 10px; color: var(--muted); }
+.pics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pics img { width: 100px; height: 100px; }
+.pics figure { padding-top: 6px; display: grid; justify-items: center; }
+.stats { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 12px 0 0; font-variant-numeric: tabular-nums; }
+.stats dt { color: var(--muted); }
+.stats dd { margin: 0; text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.handling { font-size: 13px; color: var(--muted); margin: 8px 0; }
+.desc { margin: 12px 0; padding: 8px 12px; border-left: 3px solid var(--accent); font-style: italic; }
+.landing { margin-top: 12px; }
+.landing img { width: 100%; }
+.landing figcaption { color: var(--box-ink); }
+.links { margin: 12px 0 0; font-size: 14px; }
+
+.credit { color: var(--muted); font-size: 13px; text-align: center; padding: 8px 16px 24px; margin: 0; }

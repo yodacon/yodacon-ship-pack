@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Phaser Arcade Flight · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --link: #8db6ff; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 860px; margin: 0 auto; }
+  #game { aspect-ratio: 8 / 5; background: #05060b; border-radius: 8px; overflow: hidden; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+<!-- Phaser 3, pinned. The classic build defines the global `Phaser`. -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Phaser 3</h1>
+  <p>Arrow keys: ← → turn, ↑ thrust, ↓ brake. Arcade physics; the frame follows the heading.</p>
+  <div id="game"></div>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  import { loadShipMeta, frameIndex } from "../../lib/yodacon-ship-pack.js";
+
+  // Read the frame size from ship.json before Phaser starts.
+  const q = new URLSearchParams(location.search);
+  const ship = await loadShipMeta(q.get("edition") || "conex", q.get("ship") || "yodacon");
+  const { frame_width: frameWidth, frame_height: frameHeight } = ship.sprite;
+  const stats = ship.meta.stats ?? {};
+  const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;
+  const SCALE = frameWidth > 64 ? 1 : 2;               // whole numbers only
+
+  class Flight extends Phaser.Scene {
+    preload() {
+      this.load.setCORS("anonymous");                   // needed when the pack is on a CDN
+      // sheet-alpha.png is a 6 × 6 grid; Phaser numbers its cells 0–35 the same way the pack does.
+      this.load.spritesheet("ship", ship.urls.sheet, { frameWidth, frameHeight });
+    }
+
+    create() {
+      const { width, height } = this.scale;
+      const stars = this.add.graphics();
+      for (let i = 0; i < 160; i++) {
+        stars.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.2, 0.9));
+        stars.fillRect(Phaser.Math.Between(0, width), Phaser.Math.Between(0, height), 1, 1);
+      }
+
+      this.ship = this.physics.add.sprite(width / 2, height / 2, "ship", 0).setScale(SCALE);
+      this.ship.body.setMaxSpeed(MAX);                  // caps the speed in any direction
+      this.heading = 0;                                 // degrees clockwise from up
+      this.keys = this.input.keyboard.createCursorKeys();
+      this.label = this.add.text(8, 6, "", { fontFamily: "monospace", fontSize: "13px", color: "#7ef0a8" });
+    }
+
+    update(time, delta) {
+      const dt = delta / 1000, k = this.keys, body = this.ship.body;
+      if (k.left.isDown) this.heading -= TURN * dt;
+      if (k.right.isDown) this.heading += TURN * dt;
+      this.heading = Phaser.Math.Wrap(this.heading, 0, 360);
+
+      // Show the frame for the heading; never rotate the sprite itself —
+      // the 36 frames already are the rotation.
+      const frame = frameIndex(this.heading);
+      this.ship.setFrame(frame);
+
+      // Phaser's angle 0 points right (+x); the pack's heading 0 points up.
+      if (k.up.isDown) this.physics.velocityFromAngle(frame * 10 - 90, ACCEL, body.acceleration);
+      else body.setAcceleration(0, 0);
+      body.setDrag(k.down.isDown ? ACCEL : 0);          // drag only acts while not accelerating
+
+      this.physics.world.wrap(this.ship, frameWidth * SCALE / 2);
+      this.label.setText(`${ship.name}  heading ${Math.floor(this.heading)}°  frame ${frame}  speed ${Math.round(body.speed)}`);
+    }
+  }
+
+  new Phaser.Game({
+    type: Phaser.AUTO,
+    parent: "game",
+    width: 800,
+    height: 500,
+    backgroundColor: "#05060b",
+    pixelArt: true,                                     // nearest-neighbour, no antialiasing
+    physics: { default: "arcade", arcade: { debug: false } },
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+    scene: Flight,
+  });
+</script>
+</body>
+</html>

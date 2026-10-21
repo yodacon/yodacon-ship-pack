@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Yodacon Ship Pack</title>
+<meta name="description" content="Free (GPL-2.0-or-later) starship sprites by Paul Richeson from his Escape Velocity plugins ConEx 1.2 (1997) and ConEx Override 1.0 (1998), with a browser library, a demo game and examples for the DOM, Canvas, three.js, Phaser and PixiJS.">
+<style>
+  :root {
+    --bg: #f3f4f9;
+    --surface: #ffffff;
+    --ink: #151925;
+    --muted: #586078;
+    --line: #cdd2e0;
+    --link: #1849b0;
+    --accent: #13774a;
+    --accent-ink: #ffffff;
+    --code-bg: #e8ebf3;
+    --well: #04050a;
+    --space: #04050a;
+    --space-ink: #e6ebff;
+    --space-muted: #a2abcb;
+    --glow: #7ef0a8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #07090f;
+      --surface: #10141f;
+      --ink: #dfe4f2;
+      --muted: #929bb6;
+      --line: #252c45;
+      --link: #8fb7ff;
+      --accent: #7ef0a8;
+      --accent-ink: #04140b;
+      --code-bg: #171c2c;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+  a { color: var(--link); text-underline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  img { max-width: 100%; }
+  h1, h2, h3, h4 { line-height: 1.2; }
+  h2 { font-size: 1.6rem; margin: 0 0 12px; letter-spacing: 0.01em; }
+  h2::before { content: "▸ "; color: var(--accent); }
+  h3 { font-size: 1.15rem; margin: 28px 0 10px; }
+  code, pre, kbd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+  :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+    margin: 8px 0 16px; line-height: 1.45; position: relative; padding-right: 68px;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .copy {
+    position: absolute; top: 6px; right: 6px; font: 12px system-ui, sans-serif; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+  section.block { padding: 40px 0 8px; }
+  .lede { color: var(--muted); max-width: 70ch; }
+
+  /* --- Hero: always deep space, whatever the theme ------------------------ */
+  .hero {
+    color: var(--space-ink);
+    background:
+      radial-gradient(1px 1px at 12% 22%, #fff, transparent), radial-gradient(1px 1px at 32% 68%, #cfd6ff, transparent),
+      radial-gradient(1px 1px at 51% 14%, #fff, transparent), radial-gradient(1px 1px at 68% 52%, #9aa6d8, transparent),
+      radial-gradient(1px 1px at 86% 30%, #fff, transparent), radial-gradient(1px 1px at 92% 80%, #cfd6ff, transparent),
+      radial-gradient(1px 1px at 22% 88%, #9aa6d8, transparent), radial-gradient(1.5px 1.5px at 44% 40%, #fff, transparent),
+      radial-gradient(ellipse at 80% 0%, #17204a 0%, transparent 60%),
+      var(--space);
+    background-size: 240px 240px, 300px 300px, 210px 210px, 260px 260px, 330px 330px, 280px 280px, 230px 230px, 380px 380px, 100% 100%, auto;
+    border-bottom: 1px solid #1d2442;
+  }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; padding-top: 40px; padding-bottom: 32px; }
+  .hero h1 { font-size: clamp(2rem, 6vw, 3.4rem); margin: 0; letter-spacing: 0.02em; }
+  .hero h1 span { color: var(--glow); }
+  .hero p { margin: 10px 0; max-width: 62ch; color: var(--space-muted); }
+  .hero .pitch { font-size: 1.15rem; color: var(--space-ink); }
+  .hero a:not(.btn) { color: #9cc0ff; }
+  .version { font: 600 13px ui-monospace, Menlo, Consolas, monospace; color: var(--glow); border: 1px solid #2c3a68; border-radius: 99px; padding: 2px 10px; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .btn {
+    display: inline-block; padding: 9px 18px; border-radius: 8px; font-weight: 600; text-decoration: none;
+    border: 1px solid #3a4778; color: var(--space-ink); background: rgb(255 255 255 / 0.04);
+  }
+  .btn.primary { background: var(--glow); color: #04140b; border-color: var(--glow); }
+  .btn:hover { filter: brightness(1.15); }
+  .hero-ship { display: grid; place-items: center; width: 220px; height: 220px; }
+  @media (max-width: 720px) {
+    .hero .wrap { grid-template-columns: minmax(0, 1fr); }
+    .hero-ship { display: none; }
+  }
+
+  nav.toc { position: sticky; top: 0; z-index: 2; background: var(--surface); border-bottom: 1px solid var(--line); }
+  nav.toc ul { list-style: none; margin: 0 auto; padding: 8px 16px; max-width: 1160px; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 14px; }
+  nav.toc a { text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  @media (max-width: 600px) { nav.toc { position: static; } }
+
+  /* --- Ship cards --------------------------------------------------------- */
+  .count { color: var(--muted); font-weight: 400; font-size: 0.9em; }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; min-width: 0; }
+  .well { display: grid; place-items: center; height: 150px; background: var(--well); border-radius: 6px; overflow: hidden; }
+  .well img { image-rendering: pixelated; }
+  .card h4 { margin: 10px 0 0; font-size: 1.1rem; }
+  .meta { margin: 0; color: var(--muted); font-size: 13px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .go { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0; font-size: 14px; }
+  .go .fly { font-weight: 700; }
+  .strip { display: flex; flex-wrap: wrap; align-items: end; gap: 6px; margin: auto 0 0; }
+  .strip img { display: block; border-radius: 3px; background: var(--well); }
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .card { padding: 8px; }
+    .well { height: 120px; }
+    .go { font-size: 13px; gap: 2px 10px; }
+    .strip img[width="96"] { width: 72px; height: 36px; }
+    .strip img[width="48"] { width: 36px; height: 36px; }
+  }
+
+  /* --- Text sections ------------------------------------------------------ */
+  .cols { display: grid; gap: 16px 28px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .cols > * { min-width: 0; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .panel h3 { margin-top: 0; }
+  .licence { border-left: 4px solid var(--accent); }
+  .licence p { max-width: 75ch; }
+  ul.links, ol.links { padding-left: 1.2em; }
+  ul.links li, ol.links li { margin: 4px 0; }
+  .lineage { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .lineage li { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); gap: 12px; align-items: baseline; }
+  .lineage .year { font: 700 15px ui-monospace, Menlo, Consolas, monospace; color: var(--accent); text-align: right; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; margin: 8px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; background: var(--surface); }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  caption { caption-side: bottom; text-align: left; padding: 6px 10px; color: var(--muted); font-size: 13px; white-space: normal; }
+  figure { margin: 12px 0; }
+  figure img { display: block; border: 1px solid var(--line); border-radius: 6px; height: auto; }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .tools { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; margin: 8px 0; padding: 0; }
+  .tools dt { font-weight: 600; }
+  .tools dd { margin: 0; color: var(--muted); }
+  @media (max-width: 520px) { .tools { grid-template-columns: minmax(0, 1fr); } .tools dd { margin-bottom: 6px; } }
+  .rank { font-size: 1.05rem; }
+  .rank strong { color: var(--accent); }
+
+  footer { margin-top: 48px; padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  footer p { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Yodacon <span>Ship Pack</span></h1>
+      <p class="pitch">Twenty-one free starships from 1997–98, pixel for pixel: Paul Richeson's ConEx fleet for <i>Escape Velocity</i>, ready for any web page, game engine or 3D scene.</p>
+      <p><span class="version">v<span id="version">1.0.0</span></span> · GPL-2.0-or-later ·
+        Author: <a href="https://paulricheson.com">Paul Richeson, the original author</a></p>
+      <div class="buttons">
+        <a class="btn primary" href="demo/">▶ Play the demo</a>
+        <a class="btn" href="https://github.com/yodacon/yodacon-ship-pack/releases">Download</a>
+        <a class="btn" href="https://github.com/yodacon/yodacon-ship-pack">Source</a>
+      </div>
+    </div>
+    <div class="hero-ship" aria-hidden="true">
+      <yodacon-ship ship="yodacon" edition="override" scale="2" spin><img src="override/ships/yodacon/frames/00.png" width="192" height="192" alt="" style="image-rendering: pixelated"></yodacon-ship>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <ul>
+    <li><a href="#ships">Ships</a></li>
+    <li><a href="#use">Use it</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#clone">Clone/fork</a></li>
+    <li><a href="#licence">Licence</a></li>
+    <li><a href="#origins">Origins</a></li>
+    <li><a href="#made">How they were made</a></li>
+    <li><a href="#flying">Who's flying</a></li>
+    <li><a href="playground/">Playground</a></li>
+    <li><a href="projects/">Sample projects</a></li>
+    <li><a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/TIMELINE.md">Timeline</a></li>
+  </ul>
+</nav>
+
+<main>
+<div class="wrap">
+
+<section class="block" id="ships" aria-labelledby="ships-h">
+  <h2 id="ships-h">The ships</h2>
+  <p class="lede">Every ship is a 36-frame sprite — frame 00 nose-up, 10° clockwise per frame — plus the plugin's
+    target, shipyard, comm and thumbnail pictures. Two editions: the original for <i>Escape Velocity</i>, and
+    the larger, re-rendered fleet for <i>EV Override</i>.</p>
+  <section class="edition" aria-labelledby="ed-conex">
+    <h3 id="ed-conex">ConEx 1.2 · 1997 · <i>Escape Velocity</i> <span class="count">— 10 ships</span></h3>
+    <ul class="cards">
+      <li class="card" id="conex-small-pin">
+        <div class="well"><yodacon-ship ship="small-pin" edition="conex" scale="2" spin><img src="conex/ships/small-pin/frames/00.png" width="72" height="72" alt="Small Pin"></yodacon-ship></div>
+        <h4>Small Pin</h4>
+        <p class="meta">36 × 36 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=small-pin">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/small-pin/">Folder</a> <a href="conex/ships/small-pin/sheet-alpha.png">Sheet</a> <a href="conex/ships/small-pin/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/small-pin/target.png"><img src="conex/ships/small-pin/target.png" width="96" height="48" loading="lazy" alt="Small Pin target picture"></a> <a href="conex/ships/small-pin/yard.png"><img src="conex/ships/small-pin/yard.png" width="48" height="48" loading="lazy" alt="Small Pin shipyard picture"></a> <a href="conex/ships/small-pin/comm.png"><img src="conex/ships/small-pin/comm.png" width="48" height="48" loading="lazy" alt="Small Pin comm picture"></a> <a href="conex/ships/small-pin/thumb.png"><img src="conex/ships/small-pin/thumb.png" width="32" height="32" loading="lazy" alt="Small Pin thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-medium-pin">
+        <div class="well"><yodacon-ship ship="medium-pin" edition="conex" scale="2" spin><img src="conex/ships/medium-pin/frames/00.png" width="100" height="100" alt="Medium Pin"></yodacon-ship></div>
+        <h4>Medium Pin</h4>
+        <p class="meta">50 × 50 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=medium-pin">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/medium-pin/">Folder</a> <a href="conex/ships/medium-pin/sheet-alpha.png">Sheet</a> <a href="conex/ships/medium-pin/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/medium-pin/target.png"><img src="conex/ships/medium-pin/target.png" width="96" height="48" loading="lazy" alt="Medium Pin target picture"></a> <a href="conex/ships/medium-pin/yard.png"><img src="conex/ships/medium-pin/yard.png" width="48" height="48" loading="lazy" alt="Medium Pin shipyard picture"></a> <a href="conex/ships/medium-pin/comm.png"><img src="conex/ships/medium-pin/comm.png" width="48" height="48" loading="lazy" alt="Medium Pin comm picture"></a> <a href="conex/ships/medium-pin/thumb.png"><img src="conex/ships/medium-pin/thumb.png" width="32" height="32" loading="lazy" alt="Medium Pin thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-large-pin">
+        <div class="well"><yodacon-ship ship="large-pin" edition="conex" scale="1" spin><img src="conex/ships/large-pin/frames/00.png" width="65" height="65" alt="Large Pin"></yodacon-ship></div>
+        <h4>Large Pin</h4>
+        <p class="meta">65 × 65 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=large-pin">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/large-pin/">Folder</a> <a href="conex/ships/large-pin/sheet-alpha.png">Sheet</a> <a href="conex/ships/large-pin/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/large-pin/target.png"><img src="conex/ships/large-pin/target.png" width="96" height="48" loading="lazy" alt="Large Pin target picture"></a> <a href="conex/ships/large-pin/yard.png"><img src="conex/ships/large-pin/yard.png" width="48" height="48" loading="lazy" alt="Large Pin shipyard picture"></a> <a href="conex/ships/large-pin/comm.png"><img src="conex/ships/large-pin/comm.png" width="48" height="48" loading="lazy" alt="Large Pin comm picture"></a> <a href="conex/ships/large-pin/thumb.png"><img src="conex/ships/large-pin/thumb.png" width="32" height="32" loading="lazy" alt="Large Pin thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-dart">
+        <div class="well"><yodacon-ship ship="dart" edition="conex" scale="1" spin><img src="conex/ships/dart/frames/00.png" width="80" height="80" alt="Dart"></yodacon-ship></div>
+        <h4>Dart</h4>
+        <p class="meta">80 × 80 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=dart">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/dart/">Folder</a> <a href="conex/ships/dart/sheet-alpha.png">Sheet</a> <a href="conex/ships/dart/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/dart/target.png"><img src="conex/ships/dart/target.png" width="96" height="48" loading="lazy" alt="Dart target picture"></a> <a href="conex/ships/dart/yard.png"><img src="conex/ships/dart/yard.png" width="48" height="48" loading="lazy" alt="Dart shipyard picture"></a> <a href="conex/ships/dart/comm.png"><img src="conex/ships/dart/comm.png" width="48" height="48" loading="lazy" alt="Dart comm picture"></a> <a href="conex/ships/dart/thumb.png"><img src="conex/ships/dart/thumb.png" width="32" height="32" loading="lazy" alt="Dart thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-defender">
+        <div class="well"><yodacon-ship ship="defender" edition="conex" scale="2" spin><img src="conex/ships/defender/frames/00.png" width="72" height="72" alt="Defender"></yodacon-ship></div>
+        <h4>Defender</h4>
+        <p class="meta">36 × 36 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=defender">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/defender/">Folder</a> <a href="conex/ships/defender/sheet-alpha.png">Sheet</a> <a href="conex/ships/defender/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/defender/target.png"><img src="conex/ships/defender/target.png" width="96" height="48" loading="lazy" alt="Defender target picture"></a> <a href="conex/ships/defender/yard.png"><img src="conex/ships/defender/yard.png" width="48" height="48" loading="lazy" alt="Defender shipyard picture"></a> <a href="conex/ships/defender/comm.png"><img src="conex/ships/defender/comm.png" width="48" height="48" loading="lazy" alt="Defender comm picture"></a> <a href="conex/ships/defender/thumb.png"><img src="conex/ships/defender/thumb.png" width="32" height="32" loading="lazy" alt="Defender thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-gryphon">
+        <div class="well"><yodacon-ship ship="gryphon" edition="conex" scale="2" spin><img src="conex/ships/gryphon/frames/00.png" width="64" height="64" alt="Gryphon"></yodacon-ship></div>
+        <h4>Gryphon</h4>
+        <p class="meta">32 × 32 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=gryphon">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/gryphon/">Folder</a> <a href="conex/ships/gryphon/sheet-alpha.png">Sheet</a> <a href="conex/ships/gryphon/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/gryphon/target.png"><img src="conex/ships/gryphon/target.png" width="96" height="48" loading="lazy" alt="Gryphon target picture"></a> <a href="conex/ships/gryphon/yard.png"><img src="conex/ships/gryphon/yard.png" width="48" height="48" loading="lazy" alt="Gryphon shipyard picture"></a> <a href="conex/ships/gryphon/comm.png"><img src="conex/ships/gryphon/comm.png" width="48" height="48" loading="lazy" alt="Gryphon comm picture"></a> <a href="conex/ships/gryphon/thumb.png"><img src="conex/ships/gryphon/thumb.png" width="32" height="32" loading="lazy" alt="Gryphon thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-trident">
+        <div class="well"><yodacon-ship ship="trident" edition="conex" scale="2" spin><img src="conex/ships/trident/frames/00.png" width="70" height="70" alt="Trident"></yodacon-ship></div>
+        <h4>Trident</h4>
+        <p class="meta">35 × 35 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=trident">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/trident/">Folder</a> <a href="conex/ships/trident/sheet-alpha.png">Sheet</a> <a href="conex/ships/trident/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/trident/target.png"><img src="conex/ships/trident/target.png" width="96" height="48" loading="lazy" alt="Trident target picture"></a> <a href="conex/ships/trident/yard.png"><img src="conex/ships/trident/yard.png" width="48" height="48" loading="lazy" alt="Trident shipyard picture"></a> <a href="conex/ships/trident/comm.png"><img src="conex/ships/trident/comm.png" width="48" height="48" loading="lazy" alt="Trident comm picture"></a> <a href="conex/ships/trident/thumb.png"><img src="conex/ships/trident/thumb.png" width="32" height="32" loading="lazy" alt="Trident thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-necromancer">
+        <div class="well"><yodacon-ship ship="necromancer" edition="conex" scale="2" spin><img src="conex/ships/necromancer/frames/00.png" width="100" height="100" alt="Necromancer"></yodacon-ship></div>
+        <h4>Necromancer</h4>
+        <p class="meta">50 × 50 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=necromancer">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/necromancer/">Folder</a> <a href="conex/ships/necromancer/sheet-alpha.png">Sheet</a> <a href="conex/ships/necromancer/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/necromancer/target.png"><img src="conex/ships/necromancer/target.png" width="96" height="48" loading="lazy" alt="Necromancer target picture"></a> <a href="conex/ships/necromancer/yard.png"><img src="conex/ships/necromancer/yard.png" width="48" height="48" loading="lazy" alt="Necromancer shipyard picture"></a> <a href="conex/ships/necromancer/comm.png"><img src="conex/ships/necromancer/comm.png" width="48" height="48" loading="lazy" alt="Necromancer comm picture"></a> <a href="conex/ships/necromancer/thumb.png"><img src="conex/ships/necromancer/thumb.png" width="32" height="32" loading="lazy" alt="Necromancer thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-yodacon">
+        <div class="well"><yodacon-ship ship="yodacon" edition="conex" scale="1" spin><img src="conex/ships/yodacon/frames/00.png" width="70" height="70" alt="Yodacon"></yodacon-ship></div>
+        <h4>Yodacon</h4>
+        <p class="meta">70 × 70 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=yodacon">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/yodacon/">Folder</a> <a href="conex/ships/yodacon/sheet-alpha.png">Sheet</a> <a href="conex/ships/yodacon/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/yodacon/target.png"><img src="conex/ships/yodacon/target.png" width="96" height="48" loading="lazy" alt="Yodacon target picture"></a> <a href="conex/ships/yodacon/yard.png"><img src="conex/ships/yodacon/yard.png" width="48" height="48" loading="lazy" alt="Yodacon shipyard picture"></a> <a href="conex/ships/yodacon/comm.png"><img src="conex/ships/yodacon/comm.png" width="48" height="48" loading="lazy" alt="Yodacon comm picture"></a> <a href="conex/ships/yodacon/thumb.png"><img src="conex/ships/yodacon/thumb.png" width="32" height="32" loading="lazy" alt="Yodacon thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="conex-tomaquad">
+        <div class="well"><yodacon-ship ship="tomaquad" edition="conex" scale="2" spin><img src="conex/ships/tomaquad/frames/00.png" width="120" height="120" alt="Tomaquad"></yodacon-ship></div>
+        <h4>Tomaquad</h4>
+        <p class="meta">60 × 60 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=conex&amp;ship=tomaquad">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/conex/ships/tomaquad/">Folder</a> <a href="conex/ships/tomaquad/sheet-alpha.png">Sheet</a> <a href="conex/ships/tomaquad/ship.json">ship.json</a></p>
+        <p class="strip"><a href="conex/ships/tomaquad/target.png"><img src="conex/ships/tomaquad/target.png" width="96" height="48" loading="lazy" alt="Tomaquad target picture"></a> <a href="conex/ships/tomaquad/yard.png"><img src="conex/ships/tomaquad/yard.png" width="48" height="48" loading="lazy" alt="Tomaquad shipyard picture"></a> <a href="conex/ships/tomaquad/comm.png"><img src="conex/ships/tomaquad/comm.png" width="48" height="48" loading="lazy" alt="Tomaquad comm picture"></a> <a href="conex/ships/tomaquad/thumb.png"><img src="conex/ships/tomaquad/thumb.png" width="32" height="32" loading="lazy" alt="Tomaquad thumbnail picture"></a></p>
+      </li>
+    </ul>
+  </section>
+  <section class="edition" aria-labelledby="ed-override">
+    <h3 id="ed-override">ConEx Override 1.0 · 1998 · <i>EV Override</i> <span class="count">— 11 ships</span></h3>
+    <ul class="cards">
+      <li class="card" id="override-small-pin">
+        <div class="well"><yodacon-ship ship="small-pin" edition="override" scale="2" spin><img src="override/ships/small-pin/frames/00.png" width="80" height="80" alt="Small Pin"></yodacon-ship></div>
+        <h4>Small Pin</h4>
+        <p class="meta">40 × 40 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=small-pin">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/small-pin/">Folder</a> <a href="override/ships/small-pin/sheet-alpha.png">Sheet</a> <a href="override/ships/small-pin/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/small-pin/target.png"><img src="override/ships/small-pin/target.png" width="96" height="48" loading="lazy" alt="Small Pin target picture"></a> <a href="override/ships/small-pin/yard.png"><img src="override/ships/small-pin/yard.png" width="48" height="48" loading="lazy" alt="Small Pin shipyard picture"></a> <a href="override/ships/small-pin/comm.png"><img src="override/ships/small-pin/comm.png" width="48" height="48" loading="lazy" alt="Small Pin comm picture"></a> <a href="override/ships/small-pin/thumb.png"><img src="override/ships/small-pin/thumb.png" width="32" height="32" loading="lazy" alt="Small Pin thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-large-pin">
+        <div class="well"><yodacon-ship ship="large-pin" edition="override" scale="2" spin><img src="override/ships/large-pin/frames/00.png" width="112" height="112" alt="Large Pin"></yodacon-ship></div>
+        <h4>Large Pin</h4>
+        <p class="meta">56 × 56 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=large-pin">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/large-pin/">Folder</a> <a href="override/ships/large-pin/sheet-alpha.png">Sheet</a> <a href="override/ships/large-pin/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/large-pin/target.png"><img src="override/ships/large-pin/target.png" width="96" height="48" loading="lazy" alt="Large Pin target picture"></a> <a href="override/ships/large-pin/yard.png"><img src="override/ships/large-pin/yard.png" width="48" height="48" loading="lazy" alt="Large Pin shipyard picture"></a> <a href="override/ships/large-pin/comm.png"><img src="override/ships/large-pin/comm.png" width="48" height="48" loading="lazy" alt="Large Pin comm picture"></a> <a href="override/ships/large-pin/thumb.png"><img src="override/ships/large-pin/thumb.png" width="32" height="32" loading="lazy" alt="Large Pin thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-callisto">
+        <div class="well"><yodacon-ship ship="callisto" edition="override" scale="1" spin><img src="override/ships/callisto/frames/00.png" width="72" height="72" alt="Callisto"></yodacon-ship></div>
+        <h4>Callisto</h4>
+        <p class="meta">72 × 72 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=callisto">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/callisto/">Folder</a> <a href="override/ships/callisto/sheet-alpha.png">Sheet</a> <a href="override/ships/callisto/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/callisto/target.png"><img src="override/ships/callisto/target.png" width="96" height="48" loading="lazy" alt="Callisto target picture"></a> <a href="override/ships/callisto/yard.png"><img src="override/ships/callisto/yard.png" width="48" height="48" loading="lazy" alt="Callisto shipyard picture"></a> <a href="override/ships/callisto/comm.png"><img src="override/ships/callisto/comm.png" width="48" height="48" loading="lazy" alt="Callisto comm picture"></a> <a href="override/ships/callisto/thumb.png"><img src="override/ships/callisto/thumb.png" width="32" height="32" loading="lazy" alt="Callisto thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-dart">
+        <div class="well"><yodacon-ship ship="dart" edition="override" scale="1" spin><img src="override/ships/dart/frames/00.png" width="104" height="104" alt="Dart"></yodacon-ship></div>
+        <h4>Dart</h4>
+        <p class="meta">104 × 104 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=dart">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/dart/">Folder</a> <a href="override/ships/dart/sheet-alpha.png">Sheet</a> <a href="override/ships/dart/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/dart/target.png"><img src="override/ships/dart/target.png" width="96" height="48" loading="lazy" alt="Dart target picture"></a> <a href="override/ships/dart/yard.png"><img src="override/ships/dart/yard.png" width="48" height="48" loading="lazy" alt="Dart shipyard picture"></a> <a href="override/ships/dart/comm.png"><img src="override/ships/dart/comm.png" width="48" height="48" loading="lazy" alt="Dart comm picture"></a> <a href="override/ships/dart/thumb.png"><img src="override/ships/dart/thumb.png" width="32" height="32" loading="lazy" alt="Dart thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-defender">
+        <div class="well"><yodacon-ship ship="defender" edition="override" scale="2" spin><img src="override/ships/defender/frames/00.png" width="80" height="80" alt="Defender"></yodacon-ship></div>
+        <h4>Defender</h4>
+        <p class="meta">40 × 40 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=defender">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/defender/">Folder</a> <a href="override/ships/defender/sheet-alpha.png">Sheet</a> <a href="override/ships/defender/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/defender/target.png"><img src="override/ships/defender/target.png" width="96" height="48" loading="lazy" alt="Defender target picture"></a> <a href="override/ships/defender/yard.png"><img src="override/ships/defender/yard.png" width="48" height="48" loading="lazy" alt="Defender shipyard picture"></a> <a href="override/ships/defender/comm.png"><img src="override/ships/defender/comm.png" width="48" height="48" loading="lazy" alt="Defender comm picture"></a> <a href="override/ships/defender/thumb.png"><img src="override/ships/defender/thumb.png" width="32" height="32" loading="lazy" alt="Defender thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-gryphon">
+        <div class="well"><yodacon-ship ship="gryphon" edition="override" scale="2" spin><img src="override/ships/gryphon/frames/00.png" width="96" height="96" alt="Gryphon"></yodacon-ship></div>
+        <h4>Gryphon</h4>
+        <p class="meta">48 × 48 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=gryphon">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/gryphon/">Folder</a> <a href="override/ships/gryphon/sheet-alpha.png">Sheet</a> <a href="override/ships/gryphon/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/gryphon/target.png"><img src="override/ships/gryphon/target.png" width="96" height="48" loading="lazy" alt="Gryphon target picture"></a> <a href="override/ships/gryphon/yard.png"><img src="override/ships/gryphon/yard.png" width="48" height="48" loading="lazy" alt="Gryphon shipyard picture"></a> <a href="override/ships/gryphon/comm.png"><img src="override/ships/gryphon/comm.png" width="48" height="48" loading="lazy" alt="Gryphon comm picture"></a> <a href="override/ships/gryphon/thumb.png"><img src="override/ships/gryphon/thumb.png" width="32" height="32" loading="lazy" alt="Gryphon thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-trident">
+        <div class="well"><yodacon-ship ship="trident" edition="override" scale="2" spin><img src="override/ships/trident/frames/00.png" width="80" height="80" alt="Trident"></yodacon-ship></div>
+        <h4>Trident</h4>
+        <p class="meta">40 × 40 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=trident">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/trident/">Folder</a> <a href="override/ships/trident/sheet-alpha.png">Sheet</a> <a href="override/ships/trident/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/trident/target.png"><img src="override/ships/trident/target.png" width="96" height="48" loading="lazy" alt="Trident target picture"></a> <a href="override/ships/trident/yard.png"><img src="override/ships/trident/yard.png" width="48" height="48" loading="lazy" alt="Trident shipyard picture"></a> <a href="override/ships/trident/comm.png"><img src="override/ships/trident/comm.png" width="48" height="48" loading="lazy" alt="Trident comm picture"></a> <a href="override/ships/trident/thumb.png"><img src="override/ships/trident/thumb.png" width="32" height="32" loading="lazy" alt="Trident thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-necromancer">
+        <div class="well"><yodacon-ship ship="necromancer" edition="override" scale="1" spin><img src="override/ships/necromancer/frames/00.png" width="72" height="72" alt="Necromancer"></yodacon-ship></div>
+        <h4>Necromancer</h4>
+        <p class="meta">72 × 72 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=necromancer">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/necromancer/">Folder</a> <a href="override/ships/necromancer/sheet-alpha.png">Sheet</a> <a href="override/ships/necromancer/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/necromancer/target.png"><img src="override/ships/necromancer/target.png" width="96" height="48" loading="lazy" alt="Necromancer target picture"></a> <a href="override/ships/necromancer/yard.png"><img src="override/ships/necromancer/yard.png" width="48" height="48" loading="lazy" alt="Necromancer shipyard picture"></a> <a href="override/ships/necromancer/comm.png"><img src="override/ships/necromancer/comm.png" width="48" height="48" loading="lazy" alt="Necromancer comm picture"></a> <a href="override/ships/necromancer/thumb.png"><img src="override/ships/necromancer/thumb.png" width="32" height="32" loading="lazy" alt="Necromancer thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-yodacon">
+        <div class="well"><yodacon-ship ship="yodacon" edition="override" scale="1" spin><img src="override/ships/yodacon/frames/00.png" width="96" height="96" alt="Yodacon"></yodacon-ship></div>
+        <h4>Yodacon</h4>
+        <p class="meta">96 × 96 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=yodacon">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/yodacon/">Folder</a> <a href="override/ships/yodacon/sheet-alpha.png">Sheet</a> <a href="override/ships/yodacon/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/yodacon/target.png"><img src="override/ships/yodacon/target.png" width="96" height="48" loading="lazy" alt="Yodacon target picture"></a> <a href="override/ships/yodacon/yard.png"><img src="override/ships/yodacon/yard.png" width="48" height="48" loading="lazy" alt="Yodacon shipyard picture"></a> <a href="override/ships/yodacon/comm.png"><img src="override/ships/yodacon/comm.png" width="48" height="48" loading="lazy" alt="Yodacon comm picture"></a> <a href="override/ships/yodacon/thumb.png"><img src="override/ships/yodacon/thumb.png" width="32" height="32" loading="lazy" alt="Yodacon thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-tomaquad">
+        <div class="well"><yodacon-ship ship="tomaquad" edition="override" scale="1" spin><img src="override/ships/tomaquad/frames/00.png" width="72" height="72" alt="Tomaquad"></yodacon-ship></div>
+        <h4>Tomaquad</h4>
+        <p class="meta">72 × 72 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=tomaquad">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/tomaquad/">Folder</a> <a href="override/ships/tomaquad/sheet-alpha.png">Sheet</a> <a href="override/ships/tomaquad/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/tomaquad/target.png"><img src="override/ships/tomaquad/target.png" width="96" height="48" loading="lazy" alt="Tomaquad target picture"></a> <a href="override/ships/tomaquad/yard.png"><img src="override/ships/tomaquad/yard.png" width="48" height="48" loading="lazy" alt="Tomaquad shipyard picture"></a> <a href="override/ships/tomaquad/comm.png"><img src="override/ships/tomaquad/comm.png" width="48" height="48" loading="lazy" alt="Tomaquad comm picture"></a> <a href="override/ships/tomaquad/thumb.png"><img src="override/ships/tomaquad/thumb.png" width="32" height="32" loading="lazy" alt="Tomaquad thumbnail picture"></a></p>
+      </li>
+      <li class="card" id="override-quarter-defender">
+        <div class="well"><yodacon-ship ship="quarter-defender" edition="override" scale="2" spin><img src="override/ships/quarter-defender/frames/00.png" width="80" height="80" alt="1/4 Defender"></yodacon-ship></div>
+        <h4>1/4 Defender</h4>
+        <p class="meta">40 × 40 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=override&amp;ship=quarter-defender">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/override/ships/quarter-defender/">Folder</a> <a href="override/ships/quarter-defender/sheet-alpha.png">Sheet</a> <a href="override/ships/quarter-defender/ship.json">ship.json</a></p>
+        <p class="strip"><a href="override/ships/quarter-defender/target.png"><img src="override/ships/quarter-defender/target.png" width="96" height="48" loading="lazy" alt="1/4 Defender target picture"></a> <a href="override/ships/quarter-defender/yard.png"><img src="override/ships/quarter-defender/yard.png" width="48" height="48" loading="lazy" alt="1/4 Defender shipyard picture"></a> <a href="override/ships/quarter-defender/comm.png"><img src="override/ships/quarter-defender/comm.png" width="48" height="48" loading="lazy" alt="1/4 Defender comm picture"></a></p>
+      </li>
+    </ul>
+  </section>
+</section>
+
+<section class="block" id="use" aria-labelledby="use-h">
+  <h2 id="use-h">Use it in your project</h2>
+  <p class="lede">No build step, no npm. Pick a way to reach the files; the library finds the rest relative to itself.</p>
+  <div class="cols">
+    <div class="panel">
+      <h3>1 · Vendor the folder</h3>
+      <p>Clone or copy the whole pack (with <code>LICENSE</code>) into your site, and use relative paths.</p>
+      <pre><code>&lt;script type="module" src="vendor/yodacon-ship-pack/lib/yodacon-ship-pack.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    <div class="panel">
+      <h3>2 · jsDelivr, pinned</h3>
+      <p>A release tag never changes; CORS headers included, so WebGL works.</p>
+      <pre><code>&lt;script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    <div class="panel">
+      <h3>3 · Link to yodacon.org</h3>
+      <p>The newest release, served from the project's own site.</p>
+      <pre><code>&lt;script type="module" src="https://yodacon.org/ship-pack/lib/yodacon-ship-pack.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>A sprite in HTML: <code>&lt;yodacon-ship&gt;</code></h3>
+      <pre><code>&lt;yodacon-ship ship="yodacon" spin&gt;&lt;/yodacon-ship&gt;
+&lt;yodacon-ship ship="dart" edition="override" heading="90" scale="1"&gt;&lt;/yodacon-ship&gt;</code></pre>
+      <p>Attributes: <code>ship</code>, <code>edition</code> (<code>conex</code> | <code>override</code>),
+        <code>heading</code>, <code>scale</code>, <code>spin</code>, <code>base</code>. All live.</p>
+    </div>
+    <div>
+      <h3>Canvas 2D: <code>drawShip()</code></h3>
+      <pre><code>import { loadShip, drawShip } from "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js";
+
+const ship = await loadShip("conex", "yodacon");
+drawShip(ctx, ship, headingDeg, x, y, 2);   // centred, pixelated</code></pre>
+    </div>
+  </div>
+
+  <h3>Examples — one ship, one framework, one page each</h3>
+  <ul class="links">
+    <li><a href="examples/dom/">Plain DOM + CSS sprite</a> — <code>background-position</code>, no canvas</li>
+    <li><a href="examples/canvas/">Canvas 2D game loop</a> — ~80 lines with <code>drawShip</code></li>
+    <li><a href="examples/web-component/">The <code>&lt;yodacon-ship&gt;</code> element</a> — every ship spinning, attribute playground</li>
+    <li><a href="examples/threejs/">three.js 0.160.0</a> — textured plane and billboard sprite, with the UV math</li>
+    <li><a href="examples/phaser/">Phaser 3.80.1</a> — spritesheet, Arcade physics, <code>pixelArt: true</code></li>
+    <li><a href="examples/pixi/">PixiJS 8.6.6</a> — one texture per frame, ticker flight</li>
+    <li><a href="demo/">The demo game</a> · <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/lib/README.md">Library API reference</a> · <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/examples/README.md">Examples index</a></li>
+  </ul>
+</section>
+
+<section class="block" id="download" aria-labelledby="download-h">
+  <h2 id="download-h">Download</h2>
+  <div class="buttons">
+    <a class="btn primary" href="https://github.com/yodacon/yodacon-ship-pack/releases/latest">Latest release (zip)</a>
+    <a class="btn" style="color: var(--ink); border-color: var(--line)" href="https://github.com/yodacon/yodacon-ship-pack/archive/refs/tags/v1.0.0.zip">Source archive, v1.0.0</a>
+  </div>
+  <p>Need only one edition? <code>conex/</code> (1997) and <code>override/</code> (1998) are each
+    self-contained: ships, weapon, pictures and the original readme. Copy the one you want, with <code>LICENSE</code>.</p>
+  <h3>The original archives</h3>
+  <ul class="links">
+    <li><a href="sources/ev/792_ConEx12.sit.hqx">792_ConEx12.sit.hqx</a> — ConEx 1.2, BinHex as Ambrosia served it; unpacked: <a href="sources/ev/ConEx%201.2.sit">ConEx 1.2.sit</a></li>
+    <li><a href="sources/evo/2437_ConExOverride.sit.hqx">2437_ConExOverride.sit.hqx</a> — ConEx Override 1.0; unpacked: <a href="sources/evo/ConEx%20Override1.0.0.sit">ConEx Override1.0.0.sit</a></li>
+  </ul>
+  <p>Checksums of every file are in <a href="manifest.json">manifest.json</a> and
+    <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/sources/README.md">sources/README.md</a>.</p>
+</section>
+
+<section class="block" id="clone" aria-labelledby="clone-h">
+  <h2 id="clone-h">Clone or fork</h2>
+  <div class="cols">
+    <div>
+      <h3>Clone a release</h3>
+      <pre><code>git clone --branch v1.0.0 https://github.com/yodacon/yodacon-ship-pack</code></pre>
+      <h3>As a git submodule</h3>
+      <pre><code>git submodule add https://github.com/yodacon/yodacon-ship-pack vendor/yodacon-ship-pack</code></pre>
+      <p><a href="https://github.com/yodacon/yodacon-ship-pack/fork">Fork it on GitHub</a> to change the art —
+        keep <code>LICENSE</code> and the credit line.</p>
+    </div>
+    <div>
+      <h3>jsDelivr, pinned</h3>
+      <pre><code>https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js
+https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/conex/ships/yodacon/sheet-alpha.png
+https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/catalog.json</code></pre>
+      <h3>Self-host</h3>
+      <p>It's all static files. Serve the folder from any path, with anything:</p>
+      <pre><code>cd yodacon-ship-pack &amp;&amp; python3 -m http.server 8000
+# → http://localhost:8000/  and  http://localhost:8000/demo/</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="licence" aria-labelledby="licence-h">
+  <h2 id="licence-h">GPL-2.0, in plain words</h2>
+  <div class="panel licence">
+    <p>© 1997–1998 Paul Richeson. Licensed <strong>GPL-2.0-or-later</strong>.</p>
+    <p>Use the ships in anything — free or paid — and change them as you like. Two conditions:
+      <strong>credit</strong> Paul Richeson (ConEx) and the pack, and <strong>keep the art free</strong>: if you
+      distribute the art, it goes out under GPL-2.0-or-later with the <code>LICENSE</code> file.</p>
+    <p>A game that builds the art into itself should be GPL-compatible too. The simplest safe routes: license
+      your project under the GPL, or ship the pack as a separate, unmodified, vendored folder with its
+      <code>LICENSE</code> beside it.</p>
+    <p><strong>In one line:</strong> your project must be GPL-compatible if it builds the art in, or keep the pack as
+      a separate vendored folder with <code>LICENSE</code> and credit.</p>
+    <p>Not legal advice — see the <a href="https://www.gnu.org/licenses/gpl-faq.html">GPL FAQ</a> and the
+      <a href="LICENSE">full licence text</a>.</p>
+    <p>The credit line:</p>
+    <pre><code>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack</code></pre>
+  </div>
+</section>
+
+<section class="block" id="origins" aria-labelledby="origins-h">
+  <h2 id="origins-h">Where they came from</h2>
+  <ol class="lineage">
+    <li><span class="year">1997</span><span><strong>ConEx 1.2</strong> — Paul Richeson's plugin for Ambrosia Software's <i>Escape Velocity</i>: ten ships for the government of Consolidated Express.</span></li>
+    <li><span class="year">1998</span><span><strong>ConEx Override 1.0</strong> — the fleet rebuilt for <i>EV Override</i>: larger sprites, and a new hull, the Callisto.</span></li>
+    <li><span class="year">2005</span><span><strong><a href="https://github.com/yodacon/konex">konex</a></strong> — Joshua Bussdieker's C++/OpenGL remake, which took Override's ten hulls as its cast and added Advisor and Citrus.</span></li>
+    <li><span class="year">2026</span><span><strong><a href="https://github.com/yodacon/gonex">Gonex</a></strong> — a Go/Ebitengine port of konex that restores ConEx's own game.</span></li>
+    <li><span class="year">2026</span><span><strong>This pack</strong> — built by <a href="https://github.com/yodacon/yodacon">Yodacon</a> (<a href="https://yodacon.org">yodacon.org</a>).</span></li>
+  </ol>
+
+  <h3>The originals, rehosted</h3>
+  <ul class="links">
+    <li><a href="sources/ev/792_ConEx12.sit.hqx">sources/ev/792_ConEx12.sit.hqx</a> — ConEx 1.2</li>
+    <li><a href="sources/ev/793_ConEx12u.sit.hqx">sources/ev/793_ConEx12u.sit.hqx</a> — the 1.1 → 1.2 updater</li>
+    <li><a href="sources/evo/2437_ConExOverride.sit.hqx">sources/evo/2437_ConExOverride.sit.hqx</a> — ConEx Override 1.0</li>
+  </ul>
+
+  <div class="tablewrap">
+    <table>
+      <caption>As listed by Cythera Guides' mirror of Ambrosia's add-on archive, captured 2026-10-21.</caption>
+      <thead><tr><th scope="col">Title and Description</th><th scope="col">Category</th><th scope="col">Author</th><th scope="col">Date</th><th scope="col" class="num">Rating</th><th scope="col" class="num">Votes</th><th scope="col" class="num">Downloads</th></tr></thead>
+      <tbody>
+        <tr><td>ConEx12.sit (1.10 MB)</td><td>Plugins</td><td>Anonymous</td><td>1999/12/04</td><td class="num">4.00</td><td class="num">4</td><td class="num">3400</td></tr>
+        <tr><td>ConEx12u.sit (143.00 kB)</td><td>Plugins</td><td>Anonymous</td><td>1999/12/04</td><td class="num">0.00</td><td class="num">0</td><td class="num">1610</td></tr>
+        <tr><td>ConExOverride.sit (2.70 MB)</td><td>Plugins</td><td>Anonymous</td><td>1998/09/26</td><td class="num">1.75</td><td class="num">12</td><td class="num">3919</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure>
+    <a href="sources/screenshots/cythera-ev-conex12.png"><img src="sources/screenshots/cythera-ev-conex12.png" width="1280" height="400" alt="Cythera Guides' EV Addons page listing ConEx12.sit and ConEx12u.sit with their descriptions, dates, ratings and download counts"></a>
+    <figcaption>ConEx 1.2 and its updater on Cythera Guides' mirror of Ambrosia's EV add-ons, captured 2026-10-21.</figcaption>
+  </figure>
+  <figure>
+    <a href="sources/screenshots/cythera-evo-conexoverride.png"><img src="sources/screenshots/cythera-evo-conexoverride.png" width="1280" height="321" alt="Cythera Guides' EV Override Addons page listing ConExOverride.sit"></a>
+    <figcaption>ConEx Override on the same mirror's EV Override add-ons, captured 2026-10-21.</figcaption>
+  </figure>
+
+  <h3>Back-references</h3>
+  <ul class="links">
+    <li><a href="http://www.cytheraguides.com/archives/ambrosia_addons/ev/">Cythera Guides — Ambrosia EV add-ons archive</a></li>
+    <li><a href="http://www.cytheraguides.com/archives/ambrosia_addons/evo/">Cythera Guides — Ambrosia EV Override add-ons archive</a></li>
+    <li><a href="https://web.archive.org/web/20130413003920/http://www.ambrosiasw.com/assets/files/addons/ev/ConEx12.sit.hqx">Ambrosia's own download of ConEx 1.2</a> (Wayback, 13 Apr 2013) — byte-identical to the rehosted copy</li>
+    <li><a href="https://web.archive.org/web/20000531134400/http://www.ambrosiasw.com/games/ev/addons.html">Ambrosia's EV add-on library</a> (Wayback, 31 May 2000; <a href="sources/screenshots/ambrosia-ev-addons-2000.png">capture</a>)</li>
+    <li><a href="https://web.archive.org/web/20021026175510/http://www.ambrosiasw.com/games/evo/addons">Ambrosia's EV Override add-ons</a> (Wayback, 2002)</li>
+    <li><a href="https://web.archive.org/web/19981205225923/http://ftp.ambrosiasw.com/">Ambrosia's FTP server</a> (Wayback, 5 Dec 1998; <a href="sources/screenshots/ambrosia-ftp-1998.png">capture</a>)</li>
+  </ul>
+  <p class="lede"><i>Escape Velocity</i> is Ambrosia Software's. The pack contains only Paul Richeson's work;
+    Ambrosia's logo, which the plugins carried, is left out.</p>
+</section>
+
+<section class="block" id="made" aria-labelledby="made-h">
+  <h2 id="made-h">How they were made</h2>
+  <p>From the ConEx 1.2 readme — <q>The stuff I used to make this plugin, in order from most important to least important</q>:</p>
+  <dl class="tools">
+    <dt>Infini-D</dt><dd>to design the ships</dd>
+    <dt>EV-Edit</dt><dd>to make everything except missions</dd>
+    <dt>Schmelta-V</dt><dd>to make missions</dd>
+    <dt>ResEdit</dt><dd>to renumber resources and fix what EV-Edit broke</dd>
+    <dt>GraphicConverter</dt><dd>to convert all images to PICT and make the target graphics</dd>
+    <dt>Make spïn</dt><dd>to gather the 36 individual PICT files into sprites and masks</dd>
+    <dt>an Iomega Zip drive</dt><dd>to store all the files</dd>
+    <dt>the Escape Velocity Data file</dt><dd>for its TMPL resources, so ResEdit could edit</dd>
+    <dt>Escape Velocity</dt><dd>to test</dd>
+    <dt>DOCMaker</dt><dd>for the readme</dd>
+    <dt>Bryce 2</dt><dd>for the landing screens</dd>
+  </dl>
+  <p>The original readmes: <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/conex/readme/README.md">ConEx 1.2</a> ·
+    <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/override/readme/README.md">ConEx Override 1.0</a>.</p>
+  <p>In 2026 they were extracted with the pack's own pure-Python tools
+    (<a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/tools">tools/</a>: BinHex, StuffIt 5 Arsenic and
+    classic method 13, resource forks, QuickDraw PICT).</p>
+</section>
+
+<section class="block" id="flying" aria-labelledby="flying-h">
+  <h2 id="flying-h">Who's flying them</h2>
+  <p class="rank"><strong>#1</strong> <a href="https://github.com/yodacon/gonex">Gonex</a> — the Go port of konex with the
+    ConEx trade game restored — flies <strong>11 / 11</strong> designs: the 1997 originals and konex's cast, which is ConEx Override's art.</p>
+  <p>The leaderboard counts distinct ship designs out of eleven: the ten 1997 hulls plus Callisto (the 1/4 Defender reuses the Defender's art).</p>
+  <ul class="links">
+    <li><a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/USED-IN.md">The full leaderboard (USED-IN.md)</a></li>
+    <li><a href="https://github.com/yodacon/yodacon-ship-pack/issues/new/choose">List your project</a> — see
+      <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+  </ul>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+      <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+    <p><a href="LICENSE">Licence (GPL-2.0-or-later)</a> · <a href="https://yodacon.org">yodacon.org</a> ·
+      <a href="https://paulricheson.com">paulricheson.com</a></p>
+  </div>
+</footer>
+
+<!-- Everything above works without JavaScript; the library adds the spinning sprites. -->
+<script type="module" src="lib/yodacon-ship-pack.js"></script>
+<script type="module">
+  import { loadCatalog } from "./lib/yodacon-ship-pack.js";
+  loadCatalog().then((c) => { document.getElementById("version").textContent = c.version; }).catch(() => {});
+
+  // A copy button on every code block.
+  if (navigator.clipboard) {
+    for (const pre of document.querySelectorAll("pre")) {
+      const b = Object.assign(document.createElement("button"), { type: "button", className: "copy", textContent: "Copy" });
+      b.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(pre.querySelector("code").textContent); b.textContent = "Copied"; }
+        catch { b.textContent = "Select and copy"; }
+        setTimeout(() => { b.textContent = "Copy"; }, 1500);
+      });
+      pre.append(b);
+    }
+  }
+</script>
+</body>
+</html>

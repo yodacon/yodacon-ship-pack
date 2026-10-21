@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Examples · Yodacon Ship Pack</title>
+<meta name="description" content="One small page for each way of drawing the Yodacon Ship Pack's ships: DOM, Canvas 2D, a web component, three.js, Phaser and PixiJS.">
+<style>
+  :root { --bg: #f2f3f8; --card: #fff; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; color-scheme: light; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --card: #121624; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 1100px; margin: 0 auto; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; padding: 0; list-style: none; }
+  .grid li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; gap: 14px; align-items: flex-start; }
+  .grid img { width: 70px; height: 70px; image-rendering: pixelated; background: #05060b; border-radius: 6px; flex: none; }
+  .grid h2 { margin: 0 0 4px; font-size: 19px; }
+  .grid p { margin: 0 0 6px; }
+  .tag { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  code { font-size: 14px; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<p><a href="../">← Yodacon Ship Pack</a> · <a href="../projects/">Sample projects</a> · <a href="../playground/">Playground</a></p>
+<h1>Examples</h1>
+<p>One small page for each way of drawing the ships. Each loads one ship (any
+<code>?edition=&amp;ship=</code> from the catalogue works) and lets you turn or fly it.
+Frameworks are pinned to exact versions on jsDelivr; nothing needs installing.
+Every folder has a README that walks through the code.</p>
+
+<ul class="grid">
+  <li><img src="../conex/ships/yodacon/frames/00.png" alt="">
+    <div><span class="tag">No library</span><h2><a href="dom/">DOM + CSS</a></h2>
+    <p><code>background-position</code> on <code>sheet-alpha.png</code>. No canvas.</p></div></li>
+  <li><img src="../conex/ships/dart/frames/03.png" alt="">
+    <div><span class="tag">No library</span><h2><a href="canvas/">Canvas 2D</a></h2>
+    <p>An 80-line game loop with the library's <code>drawShip()</code>.</p></div></li>
+  <li><img src="../override/ships/callisto/frames/06.png" alt="">
+    <div><span class="tag">Web component</span><h2><a href="web-component/">&lt;yodacon-ship&gt;</a></h2>
+    <p>Every ship spinning, and the element's attributes.</p></div></li>
+  <li><img src="../conex/ships/gryphon/frames/09.png" alt="">
+    <div><span class="tag">three.js 0.160.0</span><h2><a href="threejs/">three.js</a></h2>
+    <p>A textured quad flown over a grid, and a billboard sprite you orbit.</p></div></li>
+  <li><img src="../conex/ships/trident/frames/12.png" alt="">
+    <div><span class="tag">Phaser 3.80.1</span><h2><a href="phaser/">Phaser</a></h2>
+    <p><code>load.spritesheet</code>, Arcade physics, <code>setFrame</code> from heading.</p></div></li>
+  <li><img src="../override/ships/necromancer/frames/15.png" alt="">
+    <div><span class="tag">PixiJS 8.6.6</span><h2><a href="pixi/">PixiJS</a></h2>
+    <p>36 textures over one source, ticker-driven flight.</p></div></li>
+</ul>
+
+<p>Want more? The <a href="../demo/">demo game</a> is the full version, the
+<a href="../projects/">sample projects</a> are complete little apps, and the
+<a href="../playground/">playground</a> runs any of this in your browser.</p>
+
+<p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997),
+GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+</body>
+</html>

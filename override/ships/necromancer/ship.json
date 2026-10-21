@@ -1,0 +1,86 @@
+{
+  "name": "Necromancer",
+  "slug": "necromancer",
+  "edition": "override",
+  "description": "The Necromancer is a highly classified experimental government project. It is Equipped with Three  Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ships massive power cells. It converts your ships energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missile.",
+  "escort": "The Necromancer is the latest in technology.  It would cost a lot of credits per day, to pay a government ship.",
+  "sprite": {
+    "frame_width": 72,
+    "frame_height": 72,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 50,
+    "Shield": 500,
+    "Accel": 500,
+    "Speed": 225,
+    "Maneuver": 2,
+    "Fuel": 1200,
+    "FreeMass": 500,
+    "Armor": 100,
+    "ShieldRe": 5,
+    "WeapType": [
+      164,
+      163,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      3,
+      1,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      5,
+      0,
+      0
+    ],
+    "MaxGun": 9,
+    "MaxTur": 9,
+    "TechLevel": 1,
+    "Cost": 29000000,
+    "DeathDelay": 80,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 180,
+    "Length": 80,
+    "InherentAI": 3,
+    "Crew": 75,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0004"
+  },
+  "sources": {
+    "shïp": 182,
+    "spïn": 182,
+    "sheet": "PICT 1098",
+    "mask": "PICT 1099",
+    "target": "PICT 3054",
+    "yard": "PICT 5054",
+    "comm": "PICT 5354",
+    "thumb": "PICT 5155"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/necromancer/",
+    "gonex": "assets/data/ships/necromancer/"
+  }
+}

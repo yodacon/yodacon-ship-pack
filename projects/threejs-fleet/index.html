@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Flyby · Yodacon Ship Pack</title>
+<meta name="description" content="three.js: all twenty-one ConEx ships flying in formation, as billboards that turn correctly as you orbit.">
+<link rel="stylesheet" href="fleet.css">
+<!-- Pinned: three and its addons must come from the same release
+     (the same version as examples/threejs). -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="fleet.js"></script>
+</head>
+<body>
+<div id="view" class="view" tabindex="0" aria-label="3D view of the fleet. Drag to orbit, scroll to zoom, click a ship for its details.">
+  <!-- EV-style target brackets drawn over the selected ship. -->
+  <div id="brackets" class="brackets" hidden><span></span><span></span><span></span><span></span></div>
+</div>
+
+<header class="hud">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Fleet Flyby</h1>
+  <p id="status" class="hint">Loading 21 ships…</p>
+  <div class="controls">
+    <label>Backdrop <select id="backdrop"></select></label>
+    <label><input type="checkbox" id="orbit"> Auto-orbit</label>
+    <label><input type="checkbox" id="paused"> Pause fleet</label>
+  </div>
+</header>
+
+<aside id="card" class="card" hidden aria-live="polite">
+  <button type="button" id="close" class="close" aria-label="Close">×</button>
+  <h2 id="card-name"></h2>
+  <p id="card-edition" class="muted"></p>
+  <div class="pics">
+    <figure><img id="card-comm" class="px" width="100" height="100" alt=""><figcaption>Comm</figcaption></figure>
+    <figure><img id="card-yard" class="px" width="100" height="100" alt=""><figcaption>Shipyard</figcaption></figure>
+  </div>
+  <figure class="target"><img id="card-target" class="px" width="256" height="128" alt=""><figcaption>Target display</figcaption></figure>
+  <p id="card-desc" class="desc"></p>
+  <label class="follow"><input type="checkbox" id="follow" checked> Camera follows this ship</label>
+</aside>
+
+<footer class="credit">
+  Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
+  <a href="https://paulricheson.com">paulricheson.com</a> · backdrop: a ConEx landing picture
+</footer>
+</body>
+</html>

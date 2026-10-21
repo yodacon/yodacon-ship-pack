@@ -1,0 +1,85 @@
+{
+  "name": "Trident",
+  "slug": "trident",
+  "edition": "conex",
+  "description": null,
+  "escort": "\"This littel ship would not help your fleet. Leave me alown.\"",
+  "sprite": {
+    "frame_width": 35,
+    "frame_height": 35,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 0,
+    "Shield": 250,
+    "Accel": 435,
+    "Speed": 250,
+    "Maneuver": 4,
+    "Fuel": 300,
+    "FreeMass": 20,
+    "Armor": 100,
+    "ShieldRe": 0,
+    "WeapType": [
+      130,
+      132,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      2,
+      1,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      4,
+      0,
+      0
+    ],
+    "MaxGun": 3,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 900000,
+    "DeathDelay": 40,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 0,
+    "Length": 0,
+    "InherentAI": 3,
+    "Crew": 0,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 172,
+    "spïn": 172,
+    "sheet": "PICT 20612",
+    "mask": "PICT 20613",
+    "target": "PICT 3044",
+    "yard": "PICT 5044",
+    "comm": "PICT 5344",
+    "thumb": "PICT 5145"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/trident/",
+    "gonex": "assets/data/ships/trident97/"
+  }
+}

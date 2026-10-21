@@ -1,0 +1,85 @@
+{
+  "name": "Dart",
+  "slug": "dart",
+  "edition": "conex",
+  "description": "The ConEx dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people where crazy to buy it. Its turning are a little above the bulk freighter, and the acceleration is terrible, the dart has one unique feature, is has a top speed the same as the Confederate Patrol Ship.",
+  "escort": "Whoo Momma, This whip is huge. Do you realy need all the cargo?\u0003",
+  "sprite": {
+    "frame_width": 80,
+    "frame_height": 80,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 1000,
+    "Shield": 150,
+    "Accel": 120,
+    "Speed": 350,
+    "Maneuver": 2,
+    "Fuel": 500,
+    "FreeMass": 200,
+    "Armor": 400,
+    "ShieldRe": 400,
+    "WeapType": [
+      134,
+      -1,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 1,
+    "MaxTur": 2,
+    "TechLevel": 1,
+    "Cost": 1000000,
+    "DeathDelay": 120,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "Mass": 1600,
+    "Length": 300,
+    "InherentAI": 1,
+    "Crew": 70,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 169,
+    "spïn": 169,
+    "sheet": "PICT 20606",
+    "mask": "PICT 20607",
+    "target": "PICT 3041",
+    "yard": "PICT 5041",
+    "comm": "PICT 5341",
+    "thumb": "PICT 5142"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/dart/",
+    "gonex": "assets/data/ships/dart97/"
+  }
+}

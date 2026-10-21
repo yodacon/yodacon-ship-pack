@@ -1,0 +1,85 @@
+{
+  "name": "Gryphon",
+  "slug": "gryphon",
+  "edition": "conex",
+  "description": "This Fast but little ship has great firepower for the buck.",
+  "escort": "This Little Shipp can be a great addition to your fleet.",
+  "sprite": {
+    "frame_width": 32,
+    "frame_height": 32,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 0,
+    "Shield": 400,
+    "Accel": 800,
+    "Speed": 400,
+    "Maneuver": 4,
+    "Fuel": 400,
+    "FreeMass": 30,
+    "Armor": 200,
+    "ShieldRe": 0,
+    "WeapType": [
+      130,
+      132,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      3,
+      1,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      6,
+      0,
+      0
+    ],
+    "MaxGun": 6,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 50000,
+    "DeathDelay": 60,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 0,
+    "Length": 0,
+    "InherentAI": 3,
+    "Crew": 0,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 171,
+    "spïn": 171,
+    "sheet": "PICT 20610",
+    "mask": "PICT 20611",
+    "target": "PICT 3043",
+    "yard": "PICT 5043",
+    "comm": "PICT 5343",
+    "thumb": "PICT 5144"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/gryphon/",
+    "gonex": "assets/data/ships/gryphon97/"
+  }
+}

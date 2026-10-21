@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>PixiJS Flight · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --link: #8db6ff; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 860px; margin: 0 auto; }
+  #stage { height: min(60vh, 520px); min-height: 260px; background: #05060b; border-radius: 8px; overflow: hidden; }
+  #stage canvas { display: block; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1>PixiJS 8</h1>
+  <p>Arrow keys: ← → turn, ↑ thrust, ↓ brake. One texture per frame, cut from the sheet.</p>
+  <div id="stage"></div>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  // PixiJS, pinned to an exact release.
+  import { Application, Assets, Graphics, Rectangle, Sprite, Text, Texture, TextureSource }
+    from "https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.mjs";
+  import { loadShipMeta, frameIndex, frameRect } from "../../lib/yodacon-ship-pack.js";
+
+  const q = new URLSearchParams(location.search);
+  const ship = await loadShipMeta(q.get("edition") || "conex", q.get("ship") || "yodacon");
+  const stats = ship.meta.stats ?? {};
+  const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;
+
+  // Pixel art: every texture samples nearest-neighbour.
+  TextureSource.defaultOptions.scaleMode = "nearest";
+
+  const host = document.getElementById("stage");
+  const app = new Application();
+  await app.init({ resizeTo: host, background: "#05060b", antialias: false, resolution: devicePixelRatio, autoDensity: true });
+  host.append(app.canvas);
+
+  // Load sheet-alpha.png once, then make 36 textures that share its source,
+  // each framing one cell (frameRect gives x, y, w, h in the sheet).
+  const sheet = await Assets.load(ship.urls.sheet);
+  const frames = Array.from({ length: 36 }, (_, i) => {
+    const r = frameRect(ship, i);
+    return new Texture({ source: sheet.source, frame: new Rectangle(r.x, r.y, r.w, r.h) });
+  });
+
+  const stars = new Graphics();
+  for (let i = 0; i < 200; i++) stars.rect(Math.random() * 2000, Math.random() * 1200, 1, 1);
+  stars.fill({ color: 0xaab3d6 });
+  app.stage.addChild(stars);
+
+  const sprite = new Sprite(frames[0]);
+  sprite.anchor.set(0.5);
+  sprite.scale.set(ship.sprite.frame_width > 64 ? 1 : 2);   // whole numbers only
+  sprite.position.set(app.screen.width / 2, app.screen.height / 2);
+  app.stage.addChild(sprite);
+  const label = new Text({ text: "", style: { fontFamily: "monospace", fontSize: 13, fill: 0x7ef0a8 } });
+  label.position.set(8, 6);
+  app.stage.addChild(label);
+
+  const keys = {};
+  addEventListener("keydown", (e) => { if (e.key.startsWith("Arrow")) { keys[e.key] = true; e.preventDefault(); } });
+  addEventListener("keyup", (e) => { keys[e.key] = false; });
+
+  let heading = 0, vx = 0, vy = 0;
+  app.ticker.add((ticker) => {
+    const dt = Math.min(ticker.deltaMS / 1000, 0.1);
+    if (keys.ArrowLeft) heading -= TURN * dt;
+    if (keys.ArrowRight) heading += TURN * dt;
+    heading = (heading + 360) % 360;
+    const frame = frameIndex(heading);
+    sprite.texture = frames[frame];                  // swap the frame; never set sprite.rotation
+
+    const a = (frame * 10 * Math.PI) / 180;            // heading 0 = up, clockwise
+    if (keys.ArrowUp) { vx += Math.sin(a) * ACCEL * dt; vy -= Math.cos(a) * ACCEL * dt; }
+    if (keys.ArrowDown) { vx *= 0.95; vy *= 0.95; }
+    const v = Math.hypot(vx, vy);
+    if (v > MAX) { vx *= MAX / v; vy *= MAX / v; }
+    const { width, height } = app.screen;
+    sprite.x = (sprite.x + vx * dt + width) % width;
+    sprite.y = (sprite.y + vy * dt + height) % height;
+    label.text = `${ship.name}  heading ${Math.floor(heading)}°  frame ${frame}`;
+  });
+</script>
+</body>
+</html>

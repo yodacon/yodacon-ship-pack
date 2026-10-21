@@ -1,0 +1,85 @@
+{
+  "name": "Medium Pin",
+  "slug": "medium-pin",
+  "edition": "conex",
+  "description": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin dident cary enough cargo for the bigger shipments.",
+  "escort": "The caption of the Meduim Pin Wonders if he should work for you.",
+  "sprite": {
+    "frame_width": 50,
+    "frame_height": 50,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 180,
+    "Shield": 1080,
+    "Accel": 400,
+    "Speed": 275,
+    "Maneuver": 3,
+    "Fuel": 900,
+    "FreeMass": 135,
+    "Armor": 900,
+    "ShieldRe": 324,
+    "WeapType": [
+      128,
+      134,
+      150,
+      141
+    ],
+    "WeapCount": [
+      3,
+      3,
+      1,
+      1
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      20,
+      20
+    ],
+    "MaxGun": 9,
+    "MaxTur": 9,
+    "TechLevel": 1,
+    "Cost": 2000000,
+    "DeathDelay": 150,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      2
+    ],
+    "Mass": 270,
+    "Length": 30,
+    "InherentAI": 2,
+    "Crew": 12,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 167,
+    "spïn": 167,
+    "sheet": "PICT 20602",
+    "mask": "PICT 20603",
+    "target": "PICT 3039",
+    "yard": "PICT 5039",
+    "comm": "PICT 5339",
+    "thumb": "PICT 5140"
+  },
+  "also_in": {
+    "konex": null,
+    "gonex": "assets/data/ships/medium-pin97/"
+  }
+}

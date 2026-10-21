@@ -1,0 +1,86 @@
+{
+  "name": "Defender",
+  "slug": "defender",
+  "edition": "override",
+  "description": "The Consolidated Express Defender is a week combate ship. Made for those daring young souls who want to fight, this is the ship for them.",
+  "escort": "The Defender is a small ship that doesnt have mutch cargo space.",
+  "sprite": {
+    "frame_width": 40,
+    "frame_height": 40,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 5,
+    "Shield": 100,
+    "Accel": 300,
+    "Speed": 450,
+    "Maneuver": 3,
+    "Fuel": 600,
+    "FreeMass": 30,
+    "Armor": 50,
+    "ShieldRe": 0,
+    "WeapType": [
+      153,
+      154,
+      150,
+      156
+    ],
+    "WeapCount": [
+      3,
+      1,
+      1,
+      1
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      25,
+      10
+    ],
+    "MaxGun": 4,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 500000,
+    "DeathDelay": 60,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 20,
+    "Length": 10,
+    "InherentAI": 3,
+    "Crew": 5,
+    "MissionBit": -1,
+    "InherentGovt": 177,
+    "Flags": "0x0004"
+  },
+  "sources": {
+    "shïp": 179,
+    "spïn": 179,
+    "sheet": "PICT 1092",
+    "mask": "PICT 1093",
+    "target": "PICT 3051",
+    "yard": "PICT 5051",
+    "comm": "PICT 5351",
+    "thumb": "PICT 5152"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/defender/",
+    "gonex": "assets/data/ships/defender/"
+  }
+}

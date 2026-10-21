@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playground · Yodacon Ship Pack</title>
+<meta name="description" content="Edit and run code against the Yodacon Ship Pack in your browser: web component, DOM, Canvas, three.js, Phaser, PixiJS and raw pixels.">
+<link rel="stylesheet" href="playground.css">
+<script type="module" src="playground.js"></script>
+</head>
+<body>
+<header class="bar">
+  <p class="crumbs"><a href="../">← Ship Pack</a></p>
+  <h1>Playground</h1>
+  <div class="tools" role="toolbar" aria-label="Playground controls">
+    <label class="field">Starter
+      <select id="snippet" aria-label="Starter snippet"></select>
+    </label>
+    <button type="button" id="run" class="primary" title="Run (Ctrl/Cmd + Enter)">▶ Run</button>
+    <label class="check"><input type="checkbox" id="auto"> Auto-run</label>
+    <button type="button" id="reset" title="Put the selected starter back">Reset</button>
+    <button type="button" id="share" title="Copy a link that holds this code">Share</button>
+    <button type="button" id="codepen" title="Open this code in a new CodePen">Open in CodePen</button>
+  </div>
+</header>
+
+<main class="panes">
+  <section class="pane editor-pane" aria-label="Editor">
+    <div class="pane-head"><span>HTML document</span><span id="status" class="status" aria-live="polite"></span></div>
+    <div class="editor">
+      <pre class="gutter" id="gutter" aria-hidden="true">1</pre>
+      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"
+        aria-label="Code editor. Tab indents; press Escape then Tab to move focus out."></textarea>
+    </div>
+  </section>
+
+  <section class="pane preview-pane" aria-label="Preview">
+    <div class="pane-head"><span>Preview</span><span id="sandbox-mode" class="status"></span></div>
+    <div class="frame-wrap"><iframe id="preview" title="Preview of your code"></iframe></div>
+    <div class="console-head pane-head">
+      <span>Console</span>
+      <button type="button" id="clear" class="small">Clear</button>
+    </div>
+    <ol id="console" class="console" aria-live="polite" aria-label="Console output"></ol>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
+    <a href="https://paulricheson.com">paulricheson.com</a></p>
+  <p>The art is free under the GNU GPL, version 2 or later: credit Paul Richeson and the pack, and keep the
+    art and your changes to it under the same licence (<a href="../LICENSE">LICENSE</a>). Your code runs only in
+    your browser; nothing is uploaded unless you press “Open in CodePen”.</p>
+</footer>
+
+<form id="codepen-form" action="https://codepen.io/pen/define" method="POST" target="_blank" hidden>
+  <input type="hidden" name="data" id="codepen-data">
+</form>
+</body>
+</html>

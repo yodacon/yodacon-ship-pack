@@ -1,0 +1,93 @@
+{
+  "captured": "2026-10-21",
+  "columns": [
+    "Title and Description",
+    "Category",
+    "Author",
+    "Date",
+    "Rating",
+    "Votes",
+    "Downloads"
+  ],
+  "source": "Cythera Guides' mirror of Ambrosia Software's add-on archive",
+  "listings": [
+    "http://www.cytheraguides.com/archives/ambrosia_addons/ev/",
+    "http://www.cytheraguides.com/archives/ambrosia_addons/evo/"
+  ],
+  "entries": [
+    {
+      "rehosted": "sources/ev/792_ConEx12.sit.hqx",
+      "sha256": "ded5fc0c7d9412ae174bd28a690d683fef65a571b809731ab626a31589aa4627",
+      "sha1_base32": "ZDTUBHW2GS3P3HGSW2S3BQQFL7K6Z56O",
+      "expanded": "sources/ev/ConEx 1.2.sit",
+      "expanded_sha256": "593d8c50e11cc3d405e06eb3736671afeba76c82527bbd13fd21748ca8032d58",
+      "cythera": {
+        "title": "ConEx12.sit",
+        "size": "1.10 MB",
+        "description": "ConEx 1.2 fixes all the bugs in ConEx 1.1, and gives the ship Dart a sleeker new look! It is equiped with 10 all new ships for the government called Consolidated Express, which is now 11 systems strong. Let the 35 new missions make you travel throught the galaxy with a set of linked missions, teaching you how to fly. Be sure to land on Conex, Exeon, and Cenron, their backgrounds will amaze you. (ConEx 1.1 - 1.2 updater.)",
+        "category": "Plugins",
+        "author": "Anonymous",
+        "date": "1999/12/04",
+        "rating": "4.00",
+        "votes": "4",
+        "downloads": "3400",
+        "file": "http://www.cytheraguides.com/archives/ambrosia_addons/ev/Plugins/792_ConEx12.sit.hqx",
+        "listing": "http://www.cytheraguides.com/archives/ambrosia_addons/ev/#792_ConEx12.sit.hqx"
+      },
+      "ambrosia": {
+        "file": "http://www.ambrosiasw.com/assets/files/addons/ev/ConEx12.sit.hqx",
+        "download": "http://www.ambrosiasw.com/assets/modules/addonfiles/download.php?addon=792",
+        "archived": "https://web.archive.org/web/20130413003920/http://www.ambrosiasw.com/assets/files/addons/ev/ConEx12.sit.hqx",
+        "note": "Wayback Machine's SHA-1 of Ambrosia's file (ZDTUBHW2GS3P3HGSW2S3BQQFL7K6Z56O) matches this copy: byte-identical"
+      }
+    },
+    {
+      "rehosted": "sources/ev/793_ConEx12u.sit.hqx",
+      "sha256": "733635f8be2db77e5c6d5c3c0ead8549ea5e3199d01fdfa19fcf7690c5982940",
+      "sha1_base32": "MGV3RZK6DHJZGUFFJYGRQBX2KDM6E2KI",
+      "expanded": "sources/ev/ConEx 1.2 Patches.sit.1",
+      "expanded_sha256": "84d1f09a2ede7583bb7100105e37dce71f7e5e9f1c2273554d28e857ca8667e1",
+      "cythera": {
+        "title": "ConEx12u.sit",
+        "size": "143.00 kB",
+        "description": "A patch to bring ConEx 1.1 up to ConEx 1.2. If you don't already have ConEx1.1, download the complete ConEx 1.2 package, not this update.",
+        "category": "Plugins",
+        "author": "Anonymous",
+        "date": "1999/12/04",
+        "rating": "0.00",
+        "votes": "0",
+        "downloads": "1610",
+        "file": "http://www.cytheraguides.com/archives/ambrosia_addons/ev/Plugins/793_ConEx12u.sit.hqx",
+        "listing": "http://www.cytheraguides.com/archives/ambrosia_addons/ev/#793_ConEx12u.sit.hqx"
+      },
+      "ambrosia": {
+        "download": "http://www.ambrosiasw.com/assets/modules/addonfiles/download.php?addon=793",
+        "note": "not archived by the Wayback Machine"
+      }
+    },
+    {
+      "rehosted": "sources/evo/2437_ConExOverride.sit.hqx",
+      "sha256": "6546a9820d904abcaae0bbe742b4d7fd2fbab4a6ab318088faf460b325e4b252",
+      "sha1_base32": "NSKUHYABS4EVUB2T6J77JOEJX6FZOVYI",
+      "expanded": "sources/evo/ConEx Override1.0.0.sit",
+      "expanded_sha256": "177c435089ba16228ed757a9f2b3d545d003d9882fb47532f262bac34e179bd1",
+      "cythera": {
+        "title": "ConExOverride.sit",
+        "size": "2.70 MB",
+        "description": "ConEx Override is a major change since the original. I started all over again to make it better and to be compatible with ConEx Override. It has 12 new background pictures (when you land) rendered in Bryce, 10 brand spanken19 new ships, lots and lots of missions, and other gizmos. ConEx stands for Consolidated Express which you might have guessed was the shipping company to the original EV.",
+        "category": "Plugins",
+        "author": "Anonymous",
+        "date": "1998/09/26",
+        "rating": "1.75",
+        "votes": "12",
+        "downloads": "3919",
+        "file": "http://www.cytheraguides.com/archives/ambrosia_addons/evo/Plugins/2437_ConExOverride.sit.hqx",
+        "listing": "http://www.cytheraguides.com/archives/ambrosia_addons/evo/#2437_ConExOverride.sit.hqx"
+      },
+      "ambrosia": {
+        "download": "http://www.ambrosiasw.com/assets/modules/addonfiles/download.php?addon=2437",
+        "note": "not archived by the Wayback Machine"
+      }
+    }
+  ]
+}

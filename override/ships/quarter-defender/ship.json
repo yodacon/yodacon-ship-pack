@@ -1,0 +1,85 @@
+{
+  "name": "1/4 Defender",
+  "slug": "quarter-defender",
+  "edition": "override",
+  "description": null,
+  "escort": null,
+  "sprite": {
+    "frame_width": 40,
+    "frame_height": 40,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": null
+  },
+  "stats": {
+    "Holds": 5,
+    "Shield": 100,
+    "Accel": 300,
+    "Speed": 450,
+    "Maneuver": 3,
+    "Fuel": 600,
+    "FreeMass": 30,
+    "Armor": 50,
+    "ShieldRe": 0,
+    "WeapType": [
+      129,
+      -1,
+      -1,
+      -1
+    ],
+    "WeapCount": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "MaxGun": 4,
+    "MaxTur": 3,
+    "TechLevel": 32767,
+    "Cost": 0,
+    "DeathDelay": 60,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 0,
+    "Length": 0,
+    "InherentAI": 3,
+    "Crew": 0,
+    "MissionBit": -1,
+    "InherentGovt": 178,
+    "Flags": "0x0014"
+  },
+  "sources": {
+    "shïp": 185,
+    "spïn": 185,
+    "sheet": "PICT 1092",
+    "mask": "PICT 1093",
+    "target": "PICT 3057",
+    "yard": "PICT 5057",
+    "comm": "PICT 5357"
+  },
+  "also_in": {
+    "konex": null,
+    "gonex": null
+  }
+}

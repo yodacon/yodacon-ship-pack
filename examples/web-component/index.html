@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>The yodacon-ship Element · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --card: #fff; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --card: #121624; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 1100px; margin: 0 auto; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+  .play { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 700px) { .play { grid-template-columns: minmax(0, 1fr); } }
+  .viewer { display: grid; place-items: center; min-height: 260px; background: #05060b; border-radius: 8px; }
+  form { display: grid; gap: 8px; }
+  label { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  select, input { font: inherit; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .grid figure {
+    margin: 0; display: grid; justify-items: center; align-content: end; gap: 4px; padding: 10px 4px;
+    background: #05060b; color: #cfd6ee; border-radius: 6px; min-height: 150px;
+  }
+  .grid figcaption { font-size: 13px; text-align: center; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+<!-- One line loads the element. From a CDN instead:
+     https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js -->
+<script type="module" src="../../lib/yodacon-ship-pack.js"></script>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <h1><code>&lt;yodacon-ship&gt;</code></h1>
+
+  <h2>Attributes</h2>
+  <div class="play">
+    <div class="viewer"><yodacon-ship id="live" ship="yodacon" edition="conex" heading="0" scale="3"></yodacon-ship></div>
+    <div>
+      <form id="form">
+        <label>ship <select name="ship" id="ship-select"><option value="conex/yodacon">Yodacon</option></select></label>
+        <label>heading <input type="range" name="heading" min="0" max="350" step="10" value="0"> <output name="hv">0</output>°</label>
+        <label>scale <select name="scale"><option>1</option><option>2</option><option selected>3</option><option>4</option></select></label>
+        <label><input type="checkbox" name="spin"> spin</label>
+      </form>
+      <pre><code id="markup"></code></pre>
+    </div>
+  </div>
+
+  <h2>Every ship, spinning</h2>
+  <div id="all"></div>
+
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  import { loadCatalog } from "../../lib/yodacon-ship-pack.js";
+
+  const catalog = await loadCatalog();
+  const live = document.getElementById("live");
+  const form = document.getElementById("form");
+
+  // The grid: one <yodacon-ship spin> per ship, read from catalog.json.
+  for (const ed of catalog.editions) {
+    const h3 = Object.assign(document.createElement("h3"), { textContent: `${ed.title} · ${ed.year}` });
+    const grid = Object.assign(document.createElement("div"), { className: "grid" });
+    for (const s of ed.ships) {
+      const fig = document.createElement("figure");
+      const el = document.createElement("yodacon-ship");
+      el.setAttribute("ship", s.slug);
+      el.setAttribute("edition", ed.key);
+      el.setAttribute("scale", s.frame_width > 64 ? "1" : "2");
+      el.toggleAttribute("spin", true);
+      fig.append(el, Object.assign(document.createElement("figcaption"), { textContent: s.name }));
+      grid.append(fig);
+    }
+    document.getElementById("all").append(h3, grid);
+  }
+
+  // The playground: form controls → attributes. The element reacts to each change.
+  const select = document.getElementById("ship-select");
+  select.replaceChildren(...catalog.editions.flatMap((ed) =>
+    ed.ships.map((s) => new Option(`${s.name} (${ed.title})`, `${ed.key}/${s.slug}`))));
+  select.value = "conex/yodacon";
+
+  function apply() {
+    const [edition, ship] = form.ship.value.split("/");
+    live.setAttribute("edition", edition);
+    live.setAttribute("ship", ship);
+    live.setAttribute("heading", form.heading.value);
+    live.setAttribute("scale", form.scale.value);
+    live.toggleAttribute("spin", form.spin.checked);
+    form.hv.value = form.heading.value;
+    document.getElementById("markup").textContent =
+      `<yodacon-ship ship="${ship}" edition="${edition}" heading="${form.heading.value}" scale="${form.scale.value}"${form.spin.checked ? " spin" : ""}></yodacon-ship>`;
+  }
+  form.addEventListener("input", apply);
+  apply();
+</script>
+</body>
+</html>

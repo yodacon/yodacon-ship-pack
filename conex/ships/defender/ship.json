@@ -1,0 +1,85 @@
+{
+  "name": "Defender",
+  "slug": "defender",
+  "edition": "conex",
+  "description": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alown. None have lived to tell a story. This ship is only powerful in numbers.",
+  "escort": "The caption of the ship says that this ship has great fire power for the price.",
+  "sprite": {
+    "frame_width": 36,
+    "frame_height": 36,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png",
+    "thumb": "thumb.png"
+  },
+  "stats": {
+    "Holds": 0,
+    "Shield": 200,
+    "Accel": 750,
+    "Speed": 450,
+    "Maneuver": 6,
+    "Fuel": 600,
+    "FreeMass": 20,
+    "Armor": 100,
+    "ShieldRe": 20,
+    "WeapType": [
+      130,
+      159,
+      141,
+      150
+    ],
+    "WeapCount": [
+      2,
+      1,
+      1,
+      1
+    ],
+    "AmmoLoad": [
+      0,
+      0,
+      50,
+      20
+    ],
+    "MaxGun": 4,
+    "MaxTur": 3,
+    "TechLevel": 1,
+    "Cost": 200000,
+    "DeathDelay": 40,
+    "TurretYDisp": [
+      0,
+      0,
+      0,
+      3
+    ],
+    "Mass": 10,
+    "Length": 10,
+    "InherentAI": 3,
+    "Crew": 3,
+    "MissionBit": -1,
+    "InherentGovt": 139
+  },
+  "sources": {
+    "shïp": 170,
+    "spïn": 170,
+    "sheet": "PICT 20608",
+    "mask": "PICT 20609",
+    "target": "PICT 3042",
+    "yard": "PICT 5042",
+    "comm": "PICT 5342",
+    "thumb": "PICT 5143"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/defender/",
+    "gonex": "assets/data/ships/defender97/"
+  }
+}

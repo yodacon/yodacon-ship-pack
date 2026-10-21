@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Web component</title>
+<style>
+  body { margin: 0; padding: 16px; background: #05060b; color: #cfd6ee; font: 14px/1.4 system-ui, sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  figure { margin: 0; display: grid; justify-items: center; align-content: end; gap: 4px;
+           padding: 8px 4px; min-height: 130px; background: #0d1020; border-radius: 6px; }
+  figcaption { font-size: 12px; text-align: center; }
+  label { display: inline-flex; gap: 6px; align-items: center; margin: 0 12px 12px 0; }
+</style>
+<!-- One line loads the library and registers <yodacon-ship>.
+     The playground resolves "lib/…" against the pack root. -->
+<script type="module" src="lib/yodacon-ship-pack.js"></script>
+</head>
+<body>
+  <!-- Attributes: ship, edition, heading (degrees), scale (whole number), spin. -->
+  <label>heading <input id="heading" type="range" min="0" max="350" step="10" value="90"></label>
+  <label><input id="spin" type="checkbox"> spin all</label>
+  <yodacon-ship id="hero" ship="yodacon" edition="conex" heading="90" scale="3"></yodacon-ship>
+  <div class="grid" id="grid"></div>
+
+<script type="module">
+  import { loadCatalog } from "./lib/yodacon-ship-pack.js";
+
+  // One element per ship in catalog.json, both editions.
+  const catalog = await loadCatalog();
+  const grid = document.getElementById("grid");
+  for (const ed of catalog.editions) {
+    for (const s of ed.ships) {
+      const fig = document.createElement("figure");
+      const el = document.createElement("yodacon-ship");
+      el.setAttribute("ship", s.slug);
+      el.setAttribute("edition", ed.key);
+      el.setAttribute("scale", s.frame_width > 60 ? "1" : "2");
+      el.setAttribute("heading", "90");
+      fig.append(el, Object.assign(document.createElement("figcaption"),
+        { textContent: `${s.name} · ${ed.year}` }));
+      grid.append(fig);
+    }
+  }
+  console.log(`${grid.children.length} ships from`, catalog.editions.map((e) => e.title).join(" + "));
+
+  // Attributes are live: change them and every sprite updates.
+  const all = () => document.querySelectorAll("yodacon-ship");
+  document.getElementById("heading").oninput = (e) => all().forEach((el) => (el.heading = e.target.value));
+  document.getElementById("spin").onchange = (e) => all().forEach((el) => (el.spin = e.target.checked));
+  document.getElementById("hero").addEventListener("load", (e) => console.log("loaded", e.detail.name));
+</script>
+</body>
+</html>

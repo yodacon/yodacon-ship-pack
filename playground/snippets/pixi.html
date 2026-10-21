@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PixiJS</title>
+<style>html, body { margin: 0; height: 100%; background: #05060b; overflow: hidden; }</style>
+<!-- Pinned exact version (PixiJS v7 API). -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
+</head>
+<body>
+<script type="module">
+  import { loadCatalog } from "./lib/yodacon-ship-pack.js";
+
+  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;   // pixel art
+  const app = new PIXI.Application({ resizeTo: window, background: "#05060b", antialias: false });
+  document.body.append(app.view);
+
+  // Every ship of the 1997 edition flying round a ring, each showing the frame for its course.
+  const catalog = await loadCatalog();
+  const ships = catalog.editions[0].ships;
+  const sprites = [];
+  for (const [i, s] of ships.entries()) {
+    const base = (await PIXI.Assets.load(s.urls.sheet)).baseTexture;
+    // 36 sub-textures, one per cell of the 6×6 sheet.
+    const frames = Array.from({ length: 36 }, (_, f) => new PIXI.Texture(base,
+      new PIXI.Rectangle((f % s.columns) * s.frame_width, Math.floor(f / s.columns) * s.frame_height, s.frame_width, s.frame_height)));
+    const sprite = new PIXI.Sprite(frames[0]);
+    sprite.anchor.set(0.5);
+    sprite.scale.set(s.frame_width > 60 ? 1 : 2);
+    sprite.frames = frames;
+    sprite.phase = (i / ships.length) * Math.PI * 2;
+    app.stage.addChild(sprite);
+    sprites.push(sprite);
+  }
+  console.log("PixiJS", PIXI.VERSION, "·", sprites.length, "ships");
+
+  let t = 0;
+  app.ticker.add((delta) => {
+    t += delta / 240;
+    const cx = app.screen.width / 2, cy = app.screen.height / 2, r = Math.min(cx, cy) * 0.7;
+    for (const sp of sprites) {
+      const a = sp.phase + t;
+      sp.position.set(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+      // Velocity on screen (y down) is (-sin a, cos a); heading = clockwise from up.
+      const vx = -Math.sin(a), vy = Math.cos(a);
+      const heading = (Math.atan2(vx, -vy) * 180 / Math.PI + 360) % 360;
+      sp.texture = sp.frames[Math.floor(heading / 10) % 36];
+    }
+  });
+</script>
+</body>
+</html>

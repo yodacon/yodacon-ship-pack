@@ -1,0 +1,19 @@
+{
+  "name": "Missile Repeater",
+  "slug": "missile-repeater",
+  "edition": "override",
+  "description": null,
+  "sprite": {
+    "frame_width": 24,
+    "frame_height": 20,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "sources": {
+    "spïn": 236,
+    "sheet": "PICT 1108",
+    "mask": "PICT 1109"
+  }
+}

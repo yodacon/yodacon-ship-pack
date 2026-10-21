@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shipyard · Yodacon Ship Pack</title>
+<meta name="description" content="An Escape Velocity-style shipyard in plain DOM: every ship of ConEx 1.2 and ConEx Override 1.0, with pictures, stats and a fleet to buy.">
+<link rel="stylesheet" href="shipyard.css">
+<script type="module" src="shipyard.js"></script>
+</head>
+<body>
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1>Shipyard</h1>
+  <p class="wallet">Credits: <strong id="credits" aria-live="polite">—</strong>
+    <button type="button" id="restart" class="ghost">New pilot</button></p>
+</header>
+
+<main class="yard">
+  <!-- Left: every ship in catalog.json, grouped by edition. -->
+  <nav class="list" aria-label="Ships for sale">
+    <div id="ship-list" role="listbox" aria-label="Ships" tabindex="0"></div>
+  </nav>
+
+  <!-- Right: the selected ship. -->
+  <article class="detail" id="detail" aria-live="polite" aria-busy="true">
+    <header class="detail-head">
+      <h2 id="name">Loading the shipyard…</h2>
+      <p id="edition" class="muted"></p>
+    </header>
+
+    <div class="pictures">
+      <figure class="viewer">
+        <!-- The rotating sprite: one <div> whose background is sheet-alpha.png. -->
+        <div id="spin-box" class="spin-box" tabindex="0" role="img"
+             aria-label="Ship sprite. Drag, or use the arrow keys, to turn it.">
+          <div id="sprite" class="sprite"></div>
+        </div>
+        <figcaption><span id="heading">0°</span> · drag or ← → to turn ·
+          <button type="button" id="autospin" class="ghost small" aria-pressed="true">Spinning</button></figcaption>
+      </figure>
+      <figure><img id="yard" class="px" width="100" height="100" alt=""><figcaption>Shipyard</figcaption></figure>
+      <figure><img id="comm" class="px" width="100" height="100" alt=""><figcaption>Comm</figcaption></figure>
+      <figure class="wide"><img id="target" class="px" width="128" height="64" alt=""><figcaption>Target display</figcaption></figure>
+    </div>
+
+    <div class="buy-row">
+      <p class="price">Price: <strong id="price">—</strong></p>
+      <button type="button" id="buy" class="buy">Buy</button>
+      <p id="buy-note" class="muted" role="status"></p>
+    </div>
+
+    <p id="description" class="description"></p>
+    <p id="escort" class="escort muted"></p>
+
+    <table class="stats">
+      <caption>Specifications (from the plugin’s shïp resource)</caption>
+      <tbody id="stats"></tbody>
+    </table>
+  </article>
+
+  <aside class="fleet" aria-labelledby="fleet-title">
+    <h2 id="fleet-title">Your fleet</h2>
+    <p id="fleet-empty" class="muted">No ships yet. Pick one and press Buy.</p>
+    <ul id="fleet"></ul>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
+    <a href="https://paulricheson.com">paulricheson.com</a>. Descriptions are the 1997/98 originals, spelling and all.</p>
+</footer>
+</body>
+</html>

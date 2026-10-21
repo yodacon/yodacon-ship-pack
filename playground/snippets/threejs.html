@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>three.js</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05060b; overflow: hidden; }
+  p { position: fixed; left: 8px; top: 6px; margin: 0; color: #7ef0a8; font: 12px ui-monospace, monospace; }
+</style>
+<!-- Pinned: three and its addons must come from the same release. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<p id="hud"></p>
+<script type="module">
+  import * as THREE from "three";
+  import { loadShipMeta, frameIndex } from "./lib/yodacon-ship-pack.js";
+
+  const ship = await loadShipMeta("override", "necromancer");
+  const { columns: cols, frames, frame_width: fw, frame_height: fh } = ship.sprite;
+  const rows = Math.ceil(frames / cols);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: false });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.append(renderer.domElement);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 1, 5000);
+  camera.position.set(0, -260, 420);          // looking down at a tilted "deck"
+  camera.lookAt(0, 0, 0);
+  scene.add(new THREE.GridHelper(1200, 24, 0x2f3a62, 0x161c33).rotateX(Math.PI / 2));
+
+  // The sprite sheet as ONE texture: repeat shrinks the UV window to one cell,
+  // offset slides it. flipY puts row 0 at the TOP, so row r starts at v = 1 - (r+1)/rows.
+  const tex = await new THREE.TextureLoader().loadAsync(ship.urls.sheet);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.magFilter = tex.minFilter = THREE.NearestFilter;   // pixel art: no blur
+  tex.generateMipmaps = false;
+  tex.repeat.set(1 / cols, 1 / rows);
+  const setFrame = (i) => tex.offset.set((i % cols) / cols, 1 - (Math.floor(i / cols) + 1) / rows);
+
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(fw * 3, fh * 3),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.5 }),
+  );
+  scene.add(plane);
+
+  // The ship flies a circle; the frame follows its heading (the plane itself never rotates).
+  const hud = document.getElementById("hud");
+  renderer.setAnimationLoop((t) => {
+    const a = t / 2400;
+    plane.position.set(Math.cos(a) * 220, Math.sin(a) * 220, 0);
+    // Velocity is (-sin a, cos a): counter-clockwise, so the heading
+    // (degrees clockwise from screen-up) is -a, wrapped into 0…360.
+    const heading = (360 - THREE.MathUtils.radToDeg(a) % 360 + 360) % 360;
+    const f = frameIndex(heading);
+    setFrame(f);
+    hud.textContent = `${ship.name} · heading ${heading.toFixed(0)}° · frame ${f}`;
+    renderer.render(scene, camera);
+  });
+  addEventListener("resize", () => {
+    renderer.setSize(innerWidth, innerHeight);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+  });
+  console.log("three.js r" + THREE.REVISION, "·", ship.name, `${fw}×${fh}`);
+</script>
+</body>
+</html>
