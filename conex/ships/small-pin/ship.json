@@ -2,8 +2,10 @@
   "name": "Small Pin",
   "slug": "small-pin",
   "edition": "conex",
-  "description": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun Pirates, and still cary a reasonable amout of cargo.",
+  "description": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun pirates, and still carry a reasonable amount of cargo.",
   "escort": "The pilot would be glad to work for you.",
+  "description_original": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun Pirates, and still cary a reasonable amout of cargo.",
+  "escort_original": "The pilot would be glad to work for you.",
   "sprite": {
     "frame_width": 36,
     "frame_height": 36,

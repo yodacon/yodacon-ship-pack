@@ -6,7 +6,7 @@ lets you use the pack whether or not you're on the board.
 
 ## What qualifies
 
-- **It flies at least one ship from this pack**, from either edition. Sprites,
+- **It flies at least one ship from this pack**, from any edition. Sprites,
   yard, comm, target or icon pictures all count, edited or not.
 - **People can see it.** A playable build, a public repository, a store page, or
   a video of the ships in play. "Coming soon" pages wait until there is
@@ -70,8 +70,9 @@ A declined application can be sent again once the problem is fixed.
 
 ## For reviewers
 
-Rank is distinct designs flown (out of eleven: the ten 1997 hulls and the
-Callisto; either edition counts, and the 1/4 Defender counts as the Defender),
+Rank is distinct designs flown (out of thirteen: the ten 1997 hulls, the
+Callisto, Advisor and Citrus; any edition counts, and the 1/4 Defender counts as
+the Defender),
 then the date first listed. Keep
 `Listed` as the first-listing date even when a row is updated. Check the credit
 and the licence; don't judge how good the game is.

@@ -25,7 +25,7 @@ drawShip(ctx, ship, heading, x, y, scale);          // centred, frame from headi
   (capped at ¼ s after a stall); `draw()` runs once per animation frame.
 
 Use `?edition=override&ship=dart` to fly another ship. For a CDN copy, import
-from `https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js`.
+from `https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js`.
 
 ## Docs
 

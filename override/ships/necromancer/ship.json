@@ -2,8 +2,10 @@
   "name": "Necromancer",
   "slug": "necromancer",
   "edition": "override",
-  "description": "The Necromancer is a highly classified experimental government project. It is Equipped with Three  Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ships massive power cells. It converts your ships energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missile.",
-  "escort": "The Necromancer is the latest in technology.  It would cost a lot of credits per day, to pay a government ship.",
+  "description": "The Necromancer is a highly classified experimental government project. It is equipped with three Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ship's massive power cells. It converts your ship's energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missiles.",
+  "escort": "The Necromancer is the latest in technology. It would cost a lot of credits per day, to pay a government ship.",
+  "description_original": "The Necromancer is a highly classified experimental government project. It is Equipped with Three  Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ships massive power cells. It converts your ships energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missile.",
+  "escort_original": "The Necromancer is the latest in technology.  It would cost a lot of credits per day, to pay a government ship.",
   "sprite": {
     "frame_width": 72,
     "frame_height": 72,

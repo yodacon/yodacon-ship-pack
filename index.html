@@ -93,10 +93,12 @@
   }
   .btn.primary { background: var(--glow); color: #04140b; border-color: var(--glow); }
   .btn:hover { filter: brightness(1.15); }
-  .hero-ship { display: grid; place-items: center; width: 220px; height: 220px; }
+  .hero-art { margin: 0; max-width: 335px; }
+  .hero-art img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 8px 30px rgb(0 0 0 / 0.5); }
+  .hero-art figcaption { margin-top: 6px; font-size: 0.8rem; color: var(--space-muted); text-align: center; }
   @media (max-width: 720px) {
     .hero .wrap { grid-template-columns: minmax(0, 1fr); }
-    .hero-ship { display: none; }
+    .hero-art { justify-self: center; }
   }
 
   nav.toc { position: sticky; top: 0; z-index: 2; background: var(--surface); border-bottom: 1px solid var(--line); }
@@ -163,8 +165,8 @@
   <div class="wrap">
     <div>
       <h1>Yodacon <span>Ship Pack</span></h1>
-      <p class="pitch">Twenty-one free starships from 1997–98, pixel for pixel: Paul Richeson's ConEx fleet for <i>Escape Velocity</i>, ready for any web page, game engine or 3D scene.</p>
-      <p><span class="version">v<span id="version">1.0.0</span></span> · GPL-2.0-or-later ·
+      <p class="pitch">Twenty-three free starships from 1997–2005, pixel for pixel: Paul Richeson's ConEx fleet for <i>Escape Velocity</i>, ready for any web page, game engine or 3D scene.</p>
+      <p><span class="version">v<span id="version">2.0.0</span></span> · GPL-2.0-or-later ·
         Author: <a href="https://paulricheson.com">Paul Richeson, the original author</a></p>
       <div class="buttons">
         <a class="btn primary" href="demo/">▶ Play the demo</a>
@@ -172,9 +174,10 @@
         <a class="btn" href="https://github.com/yodacon/yodacon-ship-pack">Source</a>
       </div>
     </div>
-    <div class="hero-ship" aria-hidden="true">
-      <yodacon-ship ship="yodacon" edition="override" scale="2" spin><img src="override/ships/yodacon/frames/00.png" width="192" height="192" alt="" style="image-rendering: pixelated"></yodacon-ship>
-    </div>
+    <figure class="hero-art">
+      <img src="conex/readme/pictures/2022.png" width="335" height="273" alt="ConEx, An Escape Velocity Plugin, by Paul Richeson: the title picture, a ConEx shuttle over green mountains">
+      <figcaption>ConEx's title picture · Paul Richeson, 28 November 1997</figcaption>
+    </figure>
   </div>
 </header>
 
@@ -200,8 +203,8 @@
 <section class="block" id="ships" aria-labelledby="ships-h">
   <h2 id="ships-h">The ships</h2>
   <p class="lede">Every ship is a 36-frame sprite — frame 00 nose-up, 10° clockwise per frame — plus the plugin's
-    target, shipyard, comm and thumbnail pictures. Two editions: the original for <i>Escape Velocity</i>, and
-    the larger, re-rendered fleet for <i>EV Override</i>.</p>
+    target, shipyard, comm and thumbnail pictures. Three sets: the original for <i>Escape Velocity</i>,
+    the larger, re-rendered fleet for <i>EV Override</i>, and two ships Paul rendered for konex.</p>
   <section class="edition" aria-labelledby="ed-conex">
     <h3 id="ed-conex">ConEx 1.2 · 1997 · <i>Escape Velocity</i> <span class="count">— 10 ships</span></h3>
     <ul class="cards">
@@ -359,6 +362,26 @@
       </li>
     </ul>
   </section>
+  <section class="edition" aria-labelledby="ed-konex">
+    <h3 id="ed-konex">konex · 2005 <span class="count">— 2 ships</span></h3>
+    <p>Two more ships Paul Richeson rendered, first published in konex, Joshua Bussdieker's C++/OpenGL remake; rehosted from konex with their target, shipyard and comm pictures.</p>
+    <ul class="cards">
+      <li class="card" id="konex-advisor">
+        <div class="well"><yodacon-ship ship="advisor" edition="konex" scale="2" spin><img src="konex/ships/advisor/frames/00.png" width="128" height="128" alt="Advisor"></yodacon-ship></div>
+        <h4>Advisor</h4>
+        <p class="meta">64 × 64 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=konex&amp;ship=advisor">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/konex/ships/advisor/">Folder</a> <a href="konex/ships/advisor/sheet-alpha.png">Sheet</a> <a href="konex/ships/advisor/ship.json">ship.json</a></p>
+        <p class="strip"><a href="konex/ships/advisor/target.png"><img src="konex/ships/advisor/target.png" width="48" height="48" loading="lazy" alt="Advisor target picture"></a> <a href="konex/ships/advisor/yard.png"><img src="konex/ships/advisor/yard.png" width="48" height="48" loading="lazy" alt="Advisor shipyard picture"></a> <a href="konex/ships/advisor/comm.png"><img src="konex/ships/advisor/comm.png" width="48" height="48" loading="lazy" alt="Advisor comm picture"></a></p>
+      </li>
+      <li class="card" id="konex-citrus">
+        <div class="well"><yodacon-ship ship="citrus" edition="konex" scale="2" spin><img src="konex/ships/citrus/frames/00.png" width="128" height="128" alt="Citrus"></yodacon-ship></div>
+        <h4>Citrus</h4>
+        <p class="meta">64 × 64 px · 36 frames</p>
+        <p class="go"><a class="fly" href="demo/?edition=konex&amp;ship=citrus">Fly it</a> <a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/konex/ships/citrus/">Folder</a> <a href="konex/ships/citrus/sheet-alpha.png">Sheet</a> <a href="konex/ships/citrus/ship.json">ship.json</a></p>
+        <p class="strip"><a href="konex/ships/citrus/target.png"><img src="konex/ships/citrus/target.png" width="48" height="48" loading="lazy" alt="Citrus target picture"></a> <a href="konex/ships/citrus/yard.png"><img src="konex/ships/citrus/yard.png" width="48" height="48" loading="lazy" alt="Citrus shipyard picture"></a> <a href="konex/ships/citrus/comm.png"><img src="konex/ships/citrus/comm.png" width="48" height="48" loading="lazy" alt="Citrus comm picture"></a></p>
+      </li>
+    </ul>
+  </section>
 </section>
 
 <section class="block" id="use" aria-labelledby="use-h">
@@ -373,7 +396,7 @@
     <div class="panel">
       <h3>2 · jsDelivr, pinned</h3>
       <p>A release tag never changes; CORS headers included, so WebGL works.</p>
-      <pre><code>&lt;script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"&gt;&lt;/script&gt;</code></pre>
+      <pre><code>&lt;script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js"&gt;&lt;/script&gt;</code></pre>
     </div>
     <div class="panel">
       <h3>3 · Link to yodacon.org</h3>
@@ -392,7 +415,7 @@
     </div>
     <div>
       <h3>Canvas 2D: <code>drawShip()</code></h3>
-      <pre><code>import { loadShip, drawShip } from "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js";
+      <pre><code>import { loadShip, drawShip } from "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js";
 
 const ship = await loadShip("conex", "yodacon");
 drawShip(ctx, ship, headingDeg, x, y, 2);   // centred, pixelated</code></pre>
@@ -415,7 +438,7 @@ drawShip(ctx, ship, headingDeg, x, y, 2);   // centred, pixelated</code></pre>
   <h2 id="download-h">Download</h2>
   <div class="buttons">
     <a class="btn primary" href="https://github.com/yodacon/yodacon-ship-pack/releases/latest">Latest release (zip)</a>
-    <a class="btn" style="color: var(--ink); border-color: var(--line)" href="https://github.com/yodacon/yodacon-ship-pack/archive/refs/tags/v1.0.0.zip">Source archive, v1.0.0</a>
+    <a class="btn" style="color: var(--ink); border-color: var(--line)" href="https://github.com/yodacon/yodacon-ship-pack/archive/refs/tags/v2.0.0.zip">Source archive, v2.0.0</a>
   </div>
   <p>Need only one edition? <code>conex/</code> (1997) and <code>override/</code> (1998) are each
     self-contained: ships, weapon, pictures and the original readme. Copy the one you want, with <code>LICENSE</code>.</p>
@@ -433,7 +456,7 @@ drawShip(ctx, ship, headingDeg, x, y, 2);   // centred, pixelated</code></pre>
   <div class="cols">
     <div>
       <h3>Clone a release</h3>
-      <pre><code>git clone --branch v1.0.0 https://github.com/yodacon/yodacon-ship-pack</code></pre>
+      <pre><code>git clone --branch v2.0.0 https://github.com/yodacon/yodacon-ship-pack</code></pre>
       <h3>As a git submodule</h3>
       <pre><code>git submodule add https://github.com/yodacon/yodacon-ship-pack vendor/yodacon-ship-pack</code></pre>
       <p><a href="https://github.com/yodacon/yodacon-ship-pack/fork">Fork it on GitHub</a> to change the art —
@@ -441,9 +464,9 @@ drawShip(ctx, ship, headingDeg, x, y, 2);   // centred, pixelated</code></pre>
     </div>
     <div>
       <h3>jsDelivr, pinned</h3>
-      <pre><code>https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js
-https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/conex/ships/yodacon/sheet-alpha.png
-https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/catalog.json</code></pre>
+      <pre><code>https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js
+https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/conex/ships/yodacon/sheet-alpha.png
+https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/catalog.json</code></pre>
       <h3>Self-host</h3>
       <p>It's all static files. Serve the folder from any path, with anything:</p>
       <pre><code>cd yodacon-ship-pack &amp;&amp; python3 -m http.server 8000
@@ -476,7 +499,8 @@ https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/catalog.json</code>
   <ol class="lineage">
     <li><span class="year">1997</span><span><strong>ConEx 1.2</strong> — Paul Richeson's plugin for Ambrosia Software's <i>Escape Velocity</i>: ten ships for the government of Consolidated Express.</span></li>
     <li><span class="year">1998</span><span><strong>ConEx Override 1.0</strong> — the fleet rebuilt for <i>EV Override</i>: larger sprites, and a new hull, the Callisto.</span></li>
-    <li><span class="year">2005</span><span><strong><a href="https://github.com/yodacon/konex">konex</a></strong> — Joshua Bussdieker's C++/OpenGL remake, which took Override's ten hulls as its cast and added Advisor and Citrus.</span></li>
+    <li><span class="year">1998</span><span><strong>ConEx GL</strong> — Joshua Bussdieker's first standalone ConEx, in C and OpenGL, kept in a private repository before konex. No code survives in public; this is Paul Richeson's account.</span></li>
+    <li><span class="year">2005</span><span><strong><a href="https://github.com/yodacon/konex">konex</a></strong> — Joshua Bussdieker's C++/OpenGL remake, which took Override's ten hulls as its cast, plus Advisor and Citrus, two more ships rendered by Paul Richeson.</span></li>
     <li><span class="year">2026</span><span><strong><a href="https://github.com/yodacon/gonex">Gonex</a></strong> — a Go/Ebitengine port of konex that restores ConEx's own game.</span></li>
     <li><span class="year">2026</span><span><strong>This pack</strong> — built by <a href="https://github.com/yodacon/yodacon">Yodacon</a> (<a href="https://yodacon.org">yodacon.org</a>).</span></li>
   </ol>
@@ -548,8 +572,8 @@ https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/catalog.json</code>
 <section class="block" id="flying" aria-labelledby="flying-h">
   <h2 id="flying-h">Who's flying them</h2>
   <p class="rank"><strong>#1</strong> <a href="https://github.com/yodacon/gonex">Gonex</a> — the Go port of konex with the
-    ConEx trade game restored — flies <strong>11 / 11</strong> designs: the 1997 originals and konex's cast, which is ConEx Override's art.</p>
-  <p>The leaderboard counts distinct ship designs out of eleven: the ten 1997 hulls plus Callisto (the 1/4 Defender reuses the Defender's art).</p>
+    ConEx trade game restored — flies <strong>13 / 13</strong> designs: the 1997 originals and konex's cast, which is ConEx Override's art plus Advisor and Citrus.</p>
+  <p>The leaderboard counts distinct ship designs out of thirteen: the ten 1997 hulls, the Callisto, Advisor and Citrus (the 1/4 Defender reuses the Defender's art).</p>
   <ul class="links">
     <li><a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/USED-IN.md">The full leaderboard (USED-IN.md)</a></li>
     <li><a href="https://github.com/yodacon/yodacon-ship-pack/issues/new/choose">List your project</a> — see

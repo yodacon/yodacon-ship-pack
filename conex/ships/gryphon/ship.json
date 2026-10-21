@@ -2,8 +2,10 @@
   "name": "Gryphon",
   "slug": "gryphon",
   "edition": "conex",
-  "description": "This Fast but little ship has great firepower for the buck.",
-  "escort": "This Little Shipp can be a great addition to your fleet.",
+  "description": "This fast but little ship has great firepower for the buck.",
+  "escort": "This little ship can be a great addition to your fleet.",
+  "description_original": "This Fast but little ship has great firepower for the buck.",
+  "escort_original": "This Little Shipp can be a great addition to your fleet.",
   "sprite": {
     "frame_width": 32,
     "frame_height": 32,

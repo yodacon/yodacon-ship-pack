@@ -2,8 +2,10 @@
   "name": "Dart",
   "slug": "dart",
   "edition": "conex",
-  "description": "The ConEx dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people where crazy to buy it. Its turning are a little above the bulk freighter, and the acceleration is terrible, the dart has one unique feature, is has a top speed the same as the Confederate Patrol Ship.",
-  "escort": "Whoo Momma, This whip is huge. Do you realy need all the cargo?\u0003",
+  "description": "The ConEx Dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people were crazy to buy it. Its turning is a little above the bulk freighter, and the acceleration is terrible, but the Dart has one unique feature, it has a top speed the same as the Confederate Patrol Ship.",
+  "escort": "Whoo Momma, This whip is huge. Do you really need all the cargo?\u0003",
+  "description_original": "The ConEx dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people where crazy to buy it. Its turning are a little above the bulk freighter, and the acceleration is terrible, the dart has one unique feature, is has a top speed the same as the Confederate Patrol Ship.",
+  "escort_original": "Whoo Momma, This whip is huge. Do you realy need all the cargo?\u0003",
   "sprite": {
     "frame_width": 80,
     "frame_height": 80,

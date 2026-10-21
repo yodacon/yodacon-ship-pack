@@ -22,7 +22,7 @@ and custom elements).
 never changes, and jsDelivr sends CORS headers, so WebGL can use the images):
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js"></script>
 <yodacon-ship ship="dart" edition="override" scale="1" spin></yodacon-ship>
 ```
 
@@ -73,17 +73,17 @@ import {
   PACK_BASE, VERSION, CREDIT,
   loadCatalog, loadShip, loadShipMeta, loadWeapon, loadImage,
   frameIndex, frameHeading, frameRect, drawShip,
-} from "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js";
+} from "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js";
 ```
 
 | Export | Returns |
 | --- | --- |
 | `PACK_BASE` | Absolute URL of the pack root, ending in `/` |
-| `VERSION`, `CREDIT` | `"1.0.0"`; the credit line to display |
+| `VERSION`, `CREDIT` | `"2.0.0"`; the credit line to display |
 | `loadCatalog(base?)` | `catalog.json`, with `url` and `urls` (absolute) added to every ship and weapon, and `edition` (key) on each |
 | `loadShipMeta(edition, slug, base?)` | `{edition, slug, name, meta, sprite, urls}` — `meta` is `ship.json`; no images loaded |
 | `loadShip(edition, slug, base?)` | The same plus `sheet`, the decoded `sheet-alpha.png` (`HTMLImageElement`) |
-| `loadWeapon(edition, slug = "missile-repeater", base?)` | Same shape, for `weapons/` |
+| `loadWeapon(slug = "missile-repeater", base?)` | Same shape, from the pack's `weapons/` folder (one stand-in missile, a line drawn by the builder). The 1.0 form `loadWeapon(edition, slug, base)` still works |
 | `loadImage(url)` | A decoded, CORS-enabled `HTMLImageElement` (cached) |
 | `frameIndex(heading)` | `floor(heading / 10) mod 36`, always 0–35 |
 | `frameHeading(i)` | The heading frame `i` shows: `i × 10` |

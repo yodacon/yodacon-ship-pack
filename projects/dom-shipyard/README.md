@@ -7,7 +7,7 @@
 An *Escape Velocity*-style shipyard built from nothing but HTML elements: no
 canvas, no WebGL, no framework, no build step.
 
-- Every ship of both editions, read from [`catalog.json`](../../catalog.json),
+- Every ship of every edition, read from [`catalog.json`](../../catalog.json),
   is listed on the left with its icon and price.
 - Pick one to see its shipyard, comm and target pictures, its stats from
   `ship.json`, and Paul Richeson's own 1997/98 description and escort line.
@@ -55,7 +55,7 @@ and `image-rendering: pixelated`, so the 1997 pixels stay square.
    ```js
    const PACK = new URL("./vendor/yodacon-ship-pack/", location.href);
    // or
-   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/");
+   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/");
    ```
 
 4. Serve it over http(s). `fetch()` does not work from `file://`.

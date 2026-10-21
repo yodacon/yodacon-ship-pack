@@ -1,0 +1,45 @@
+{
+  "name": "Advisor",
+  "slug": "advisor",
+  "edition": "konex",
+  "description": null,
+  "escort": null,
+  "rendered_by": "Paul Richeson",
+  "sprite": {
+    "frame_width": 64,
+    "frame_height": 64,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png",
+    "thumb": null,
+    "target": "target.png",
+    "yard": "yard.png",
+    "comm": "comm.png"
+  },
+  "stats": {
+    "MaxVelocity": 1000,
+    "TurnSpeed": 220,
+    "Acceleration": 900,
+    "Mass": 5000,
+    "CollisionRadius": 16,
+    "Damage": 100
+  },
+  "stats_units": "konex's own (specs.xml), not Escape Velocity's",
+  "sources": {
+    "frames": "sources/konex/advisor/00.tga … 35.tga",
+    "target": "sources/konex/advisor/target.tga",
+    "yard": "sources/konex/advisor/yard.tga",
+    "comm": "sources/konex/advisor/comm.tga"
+  },
+  "also_in": {
+    "konex": "dist/data/ships/advisor/",
+    "gonex": "assets/data/ships/advisor/"
+  }
+}

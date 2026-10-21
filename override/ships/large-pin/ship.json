@@ -3,7 +3,9 @@
   "slug": "large-pin",
   "edition": "override",
   "description": "The Consolidated Express Large Pin",
-  "escort": "The most popular ship in the galixy",
+  "escort": "The most popular ship in the galaxy",
+  "description_original": "The Consolidated Express Large Pin",
+  "escort_original": "The most popular ship in the galixy",
   "sprite": {
     "frame_width": 56,
     "frame_height": 56,

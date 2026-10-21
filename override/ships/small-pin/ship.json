@@ -2,8 +2,10 @@
   "name": "Small Pin",
   "slug": "small-pin",
   "edition": "override",
-  "description": "The Small Pin is three times a Shuttlecraft in almost every way. Consolidated Express designed this ship to out run attacking ships, while makeing a design that is easy to mass produce.",
+  "description": "The Small Pin is three times a Shuttlecraft in almost every way. Consolidated Express designed this ship to outrun attacking ships, while making a design that is easy to mass produce.",
   "escort": "The Cap'n of the S-Pin is more than willing to be your escort.",
+  "description_original": "The Small Pin is three times a Shuttlecraft in almost every way. Consolidated Express designed this ship to out run attacking ships, while makeing a design that is easy to mass produce.",
+  "escort_original": "The Cap'n of the S-Pin is more than willing to be your escort.",
   "sprite": {
     "frame_width": 40,
     "frame_height": 40,

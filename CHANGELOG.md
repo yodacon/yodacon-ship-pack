@@ -3,6 +3,56 @@
 Versions follow the files: a new or corrected picture is a minor release, a
 moved or renamed file a major one. A tag's files never change.
 
+## 2.0.0 — 2026-10-21
+
+**Breaking: the plugins' weapon sprite is gone.** The Missile Repeater art in
+ConEx and ConEx Override is not Paul Richeson's, so the pack no longer carries
+it:
+
+- removed `conex/weapons/` and `override/weapons/`, and the pictures of the
+  weapon from `pictures/` (ConEx 1.2: PICT 210, 211; ConEx Override: 1108, 1109,
+  6076, 6077)
+- in its place, `weapons/missile-repeater/`: a stand-in missile for testing,
+  a plain 16×16 line drawn by `tools/build_pack.py`, turned 10° per frame, with
+  sheet, mask and alpha sheet in the ships' layout. `catalog.json` lists it
+  under a top-level `weapons`; `loadWeapon(slug, base)` loads it, and the 1.0
+  form `loadWeapon(edition, slug, base)` still works
+
+**New: the konex edition.** Two more ships by Paul Richeson, Advisor and
+Citrus, which first flew in konex (2005) and were never in a plugin:
+
+- `konex/ships/advisor/`, `konex/ships/citrus/`: 36 RGBA frames (konex's 64×64
+  textures, the plugins' rotation order), sheet, mask, sheet with alpha,
+  target, shipyard and comm pictures, and `ship.json` with konex's own stats
+- `sources/konex/`: konex's original TGA files and `specs.xml`, rehosted from
+  yodacon/konex (CVS revision 1.3, 9 August 2005), so the pack still builds
+  from `sources/` alone
+
+**Text**
+
+- The readmes and ship descriptions have their spelling corrected; each
+  `ship.json` keeps the exact 1997–98 wording in `description_original` and
+  `escort_original`, and the archives in `sources/` are unchanged
+- In the readmes, the GeoCities home page and mailbox are marked inactive, the
+  beta testers' 1997 e-mail addresses are left out, and the 1997–98 terms are
+  marked as replaced by the GPL
+- The edition READMEs no longer list what is held back from `pictures/`
+- ConEx's 1997 title picture and fleet picture lead the README and the
+  showcase page, credited to Paul Richeson, 28 November 1997
+
+**Lineage and credit**
+
+- ConEx GL (1998), Joshua Bussdieker's first standalone ConEx in C and OpenGL,
+  kept in a private repository before konex, on Paul Richeson's account
+- Advisor and Citrus were rendered by Paul Richeson; konex itself is Joshua
+  Bussdieker's
+
+**Fixes**
+
+- The demo flies konex's units and gives a small edition ConEx 1.2's fleet as
+  targets; the fleet flyby spaces any number of flights evenly round its lap
+  (a third flight would have sat on top of the first)
+
 ## 1.0.0 — 2026-10-21
 
 First release: Paul Richeson's two Escape Velocity plugins, every ship picture

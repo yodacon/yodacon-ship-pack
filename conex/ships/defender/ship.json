@@ -2,8 +2,10 @@
   "name": "Defender",
   "slug": "defender",
   "edition": "conex",
-  "description": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alown. None have lived to tell a story. This ship is only powerful in numbers.",
-  "escort": "The caption of the ship says that this ship has great fire power for the price.",
+  "description": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alone. None have lived to tell a story. This ship is only powerful in numbers.",
+  "escort": "The captain of the ship says that this ship has great firepower for the price.",
+  "description_original": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alown. None have lived to tell a story. This ship is only powerful in numbers.",
+  "escort_original": "The caption of the ship says that this ship has great fire power for the price.",
   "sprite": {
     "frame_width": 36,
     "frame_height": 36,

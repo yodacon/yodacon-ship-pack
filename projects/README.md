@@ -8,9 +8,9 @@ To try code without copying anything, use the [playground](../playground/).
 
 | Project | What it is |
 | --- | --- |
-| [**Shipyard**](dom-shipyard/) | **Pure DOM.** An *Escape Velocity*-style shipyard: every ship of both editions, with its pictures, stats and 1997/98 description, a sprite you can drag to turn, and a fleet you buy with credits (kept in `localStorage`). |
-| [**DOM Dogfight**](dom-dogfight/) | **Pure DOM game.** Fly the Yodacon against waves of Defenders and their Missile Repeaters. Every object is a `<div>`; the game runs on a fixed timestep with circle collisions and touch controls. |
-| [**Fleet Flyby**](threejs-fleet/) | **three.js.** All 21 ships in two formations along a spline, as billboards that turn correctly as you orbit, in front of a landing picture. Click a ship to see its pictures. |
+| [**Shipyard**](dom-shipyard/) | **Pure DOM.** An *Escape Velocity*-style shipyard: every ship of every edition, with its pictures, stats and 1997/98 description, a sprite you can drag to turn, and a fleet you buy with credits (kept in `localStorage`). |
+| [**DOM Dogfight**](dom-dogfight/) | **Pure DOM game.** Fly the Yodacon against waves of missile-firing Defenders. Every object is a `<div>`; the game runs on a fixed timestep with circle collisions and touch controls. |
+| [**Fleet Flyby**](threejs-fleet/) | **three.js.** Every ship in formation along a spline, as billboards that turn correctly as you orbit, in front of a landing picture. Click a ship to see its pictures. |
 | [**Hangar**](threejs-hangar/) | **three.js.** One ship on a turntable in a lit, fogged hangar. Its sprite frame follows the turntable, and its shipyard, target and comm pictures play on wall monitors. |
 
 [![Shipyard](dom-shipyard/screenshot.png)](dom-shipyard/)

@@ -39,7 +39,7 @@ body:
   - type: checkboxes
     id: hulls
     attributes:
-      label: Ships it flies (either edition)
+      label: Ships it flies (any edition)
       options:
         - label: Small Pin
         - label: Medium Pin
@@ -52,6 +52,8 @@ body:
         - label: Necromancer
         - label: Yodacon
         - label: Tomaquad
+        - label: Advisor
+        - label: Citrus
   - type: checkboxes
     id: editions
     attributes:
@@ -59,6 +61,7 @@ body:
       options:
         - label: ConEx 1.2 (1997)
         - label: ConEx Override 1.0 (1998)
+        - label: konex (2005)
   - type: textarea
     id: credit
     attributes:

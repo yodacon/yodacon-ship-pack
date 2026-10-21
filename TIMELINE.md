@@ -97,7 +97,8 @@ Guides' mirror of Ambrosia's add-on archive
 
 | When | What | By |
 | --- | --- | --- |
-| **19 Jul – 31 Aug 2005** | **konex**: a standalone C++/OpenGL remake of ConEx, kept in CVS on 2nd-gen.net (712 file entries in that range). Its cast is ConEx Override's ten ships, plus Advisor and Citrus of its own | Joshua Bussdieker |
+| **1998** | **ConEx GL**: the first standalone ConEx, a C and OpenGL program kept in a private repository, written before konex. No code or archive of it is public; the entry rests on Paul Richeson's account | Joshua Bussdieker |
+| **19 Jul – 31 Aug 2005** | **konex**: a standalone C++/OpenGL remake of ConEx, kept in CVS on 2nd-gen.net (712 file entries in that range). Its cast is ConEx Override's ten ships, plus Advisor and Citrus, two more ships rendered by Paul Richeson | Joshua Bussdieker |
 | 3 Oct 2023 | konex brought into git from an old backup; now [yodacon/konex](https://github.com/yodacon/konex) | |
 | **27 Aug 2026** | **Yodacon** begins: the ConEx 1.2 archive is found again, expanded and its 538 resources dumped and rebuilt byte for byte ([yodacon/yodacon](https://github.com/yodacon/yodacon)) | Team Yodacon |
 | 27 Aug 2026 | **Gonex**: a Go and Ebitengine port of konex that restores ConEx's game, flying the 1997 originals beside konex's cast ([yodacon/gonex](https://github.com/yodacon/gonex)) | Team Yodacon |
@@ -105,7 +106,8 @@ Guides' mirror of Ambrosia's add-on archive
 ## Now: the ship files, as a package
 
 **21 October 2026: the Yodacon Ship Pack.** Paul Richeson releases the ships
-of both plugins under GPL-2.0-or-later, so anyone can use them. The pack
+of both plugins, and in 2.0.0 his Advisor and Citrus from konex, under
+GPL-2.0-or-later, so anyone can use them. The pack
 rehosts the original archives, recovers every picture from them with its own
 extractor, decodes nine pictures that earlier tools had shown as black, and
 adds the readmes, a web component, examples for the DOM, Canvas, three.js,

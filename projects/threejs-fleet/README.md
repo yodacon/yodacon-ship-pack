@@ -27,7 +27,8 @@ in the distance. Orbit around them and they turn the right way.
   stay hard and there is no transparency sorting to manage.
 - **Formation.** Each flight's leader runs the `CatmullRomCurve3`; the others
   hold V-shaped slots behind it in the leader's frame (tangent, right, up),
-  with a slight bob. The 1997 and 1998 flights are half a lap apart.
+  with a slight bob. Each edition is its own flight (1997, 1998, and konex),
+  spaced evenly round the lap.
 - **Backdrop.** A large plane about 6000 units out, its edges faded into
   space with an alpha map drawn on a canvas. Choose from the eleven ConEx
   Override landing pictures (Bryce renders, 1998) and three ConEx 1.2 ones.
@@ -60,7 +61,7 @@ on the same version.
    `fleet.js`:
 
    ```js
-   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/");
+   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/");
    ```
 
 3. Serve it over http(s).

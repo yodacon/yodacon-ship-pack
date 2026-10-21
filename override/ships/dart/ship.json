@@ -2,8 +2,10 @@
   "name": "Dart",
   "slug": "dart",
   "edition": "override",
-  "description": "The Consolidated Express Dart Freighter is the most massive ship ever built. The design was designed at the end of the 21st century. But when ConEx put the ship out on the market, there was a high demand. The Dart Freighter's best defence is that it can out run most ships, the only problem it is terrable accelaterion.",
-  "escort": "You could cary as much as you want and still have space.",
+  "description": "The Consolidated Express Dart Freighter is the most massive ship ever built. It was designed at the end of the 21st century. But when ConEx put the ship out on the market, there was a high demand. The Dart Freighter's best defence is that it can outrun most ships, the only problem is its terrible acceleration.",
+  "escort": "You could carry as much as you want and still have space.",
+  "description_original": "The Consolidated Express Dart Freighter is the most massive ship ever built. The design was designed at the end of the 21st century. But when ConEx put the ship out on the market, there was a high demand. The Dart Freighter's best defence is that it can out run most ships, the only problem it is terrable accelaterion.",
+  "escort_original": "You could cary as much as you want and still have space.",
   "sprite": {
     "frame_width": 104,
     "frame_height": 104,

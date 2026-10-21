@@ -2,8 +2,10 @@
   "name": "Tomaquad",
   "slug": "tomaquad",
   "edition": "conex",
-  "description": "The Tomaquad is ConEx's version of the Luxery Liner.",
+  "description": "The Tomaquad is ConEx's version of the Luxury Liner.",
   "escort": "Talking to the cap'n of the Tomaquad.",
+  "description_original": "The Tomaquad is ConEx's version of the Luxery Liner.",
+  "escort_original": "Talking to the cap'n of the Tomaquad.",
   "sprite": {
     "frame_width": 60,
     "frame_height": 60,

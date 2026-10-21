@@ -2,8 +2,10 @@
   "name": "Gryphon",
   "slug": "gryphon",
   "edition": "override",
-  "description": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. Which now holds a crew of 25, no 2 as the original.",
-  "escort": "The Gryphon is a well built ship that has great fire power.",
+  "description": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. It now holds a crew of 25, not 2 as the original.",
+  "escort": "The Gryphon is a well built ship that has great firepower.",
+  "description_original": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. Which now holds a crew of 25, no 2 as the original.",
+  "escort_original": "The Gryphon is a well built ship that has great fire power.",
   "sprite": {
     "frame_width": 48,
     "frame_height": 48,

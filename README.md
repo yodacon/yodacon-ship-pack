@@ -1,11 +1,12 @@
 # Yodacon Ship Pack
 
-**Twenty-one starships from 1997–98, free for your game, your web page or your
-3D scene, under GPL-2.0-or-later.**
+**Twenty-three starships by Paul Richeson, free for your game, your web page or
+your 3D scene, under GPL-2.0-or-later.**
 
 Paul Richeson designed these ships for *ConEx*, his plugin for Ambrosia's
 *Escape Velocity*, rendered them in Infini-D, and published them in 1997. A
-year later he rebuilt them larger for *ConEx Override*. This pack recovers
+year later he rebuilt them larger for *ConEx Override*, and two more of his
+ships, Advisor and Citrus, first flew in konex in 2005. This pack recovers
 every picture of every ship from the original archives, byte for byte, and
 hands them to you ready to use: rotation frames with transparency, sprite
 sheets, masks, and the targeting, shipyard, comm and icon pictures, with the
@@ -16,6 +17,14 @@ ships' own stats and descriptions.
 **[Download](https://github.com/yodacon/yodacon-ship-pack/releases)** ·
 [Examples](examples/) · [Playground](playground/) · [Sample projects](projects/) ·
 [Timeline](TIMELINE.md) · [Who's using it](USED-IN.md)
+
+<p>
+<img src="conex/readme/pictures/2022.png" width="335" height="273" alt="ConEx, An Escape Velocity Plugin, by Paul Richeson: the title picture, a ConEx shuttle over green mountains">
+<img src="conex/readme/pictures/2023.png" width="500" height="250" alt="The ConEx 1.2 fleet with each ship named: S-Pin, M-Pin, L-Pin, Dart, Defender, Gryphon, Trident, Necromancer, Yodacon, Tomaquad">
+</p>
+
+*ConEx's title picture and fleet, by Paul Richeson, 28 November 1997, from the
+ConEx 1.2 readme.*
 
 ![The ten ConEx 1.2 ships: rotation frame, target, shipyard, comm and icon](conex/contact-sheet.png)
 
@@ -53,11 +62,16 @@ The pack exists to change both things:
 | --- | --- | --- | --- | --- |
 | [**ConEx 1.2**](conex/) | 1997 | *Escape Velocity* | Small Pin, Medium Pin, Large Pin, Dart, Defender, Gryphon, Trident, Necromancer, Yodacon, Tomaquad | 32–80 px |
 | [**ConEx Override 1.0**](override/) | 1998 | *EV Override* | Small Pin, Large Pin, Callisto, Dart, Defender, Gryphon, Trident, Necromancer, Yodacon, Tomaquad, 1/4 Defender | 40–104 px |
+| [**konex**](konex/) | 2005 | konex | Advisor, Citrus: rendered by Paul Richeson, rehosted from konex with their target, shipyard and comm pictures | 64 px |
 
-Each edition also has its weapon sprite (the Missile Repeater), every picture
-in the plugin decoded to PNG, including the landing views (ConEx Override's
+Each plugin edition also has every picture in the plugin decoded to PNG, including the landing views (ConEx Override's
 are the Bryce renders), and the original readme converted to Markdown. Each
 edition's README lists its ships with stats.
+
+One weapon sprite belongs to the pack as a whole: [`weapons/missile-repeater/`](weapons/missile-repeater/),
+a stand-in missile for testing. It is a plain line, 16×16, drawn by the builder
+and turned 10° per frame, with a mask and an alpha sheet laid out like the ships'.
+(The plugins' own Missile Repeater art is not Paul Richeson's, so the pack leaves it out.)
 
 ### One ship's folder
 
@@ -81,7 +95,7 @@ right, top to bottom.
 **Scaling.** These are 1990s pixels. Scale by whole numbers with
 nearest-neighbour filtering (`image-rendering: pixelated`) to keep them sharp.
 
-[`catalog.json`](catalog.json) lists every ship of both editions with its
+[`catalog.json`](catalog.json) lists every ship of every edition with its
 paths and frame size, for code to load. [`manifest.json`](manifest.json) has a
 SHA-256 for every file in the pack.
 
@@ -89,7 +103,7 @@ SHA-256 for every file in the pack.
 
 | What | Where |
 | --- | --- |
-| The whole pack, one zip | [Releases](https://github.com/yodacon/yodacon-ship-pack/releases/latest) (`yodacon-ship-pack-1.0.0.zip`), or the tag's source archive: [v1.0.0.zip](https://github.com/yodacon/yodacon-ship-pack/archive/refs/tags/v1.0.0.zip) |
+| The whole pack, one zip | [Releases](https://github.com/yodacon/yodacon-ship-pack/releases/latest) (`yodacon-ship-pack-2.0.0.zip`), or the tag's source archive: [v2.0.0.zip](https://github.com/yodacon/yodacon-ship-pack/archive/refs/tags/v2.0.0.zip) |
 | One edition | the [`conex/`](conex/) or [`override/`](override/) folder |
 | One ship | its folder, e.g. [`conex/ships/yodacon/`](conex/ships/yodacon/) |
 | The 1990s originals | [`sources/`](sources/README.md): both `.sit.hqx` archives, their expanded `.sit` files and the 1.1 → 1.2 updater |
@@ -101,7 +115,7 @@ copy against a release.
 
 ```sh
 # a copy of a fixed version
-git clone --branch v1.0.0 https://github.com/yodacon/yodacon-ship-pack
+git clone --branch v2.0.0 https://github.com/yodacon/yodacon-ship-pack
 
 # inside your own repository, pinned to a commit
 git submodule add https://github.com/yodacon/yodacon-ship-pack vendor/yodacon-ship-pack
@@ -119,7 +133,7 @@ the 1990s bytes.
 
 ```html
 <script type="module"
-  src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"></script>
+  src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js"></script>
 <yodacon-ship ship="yodacon" spin></yodacon-ship>
 ```
 
@@ -221,7 +235,7 @@ Everything is plain Python with Pillow, in [`tools/`](tools/):
 | `sit13.py` | StuffIt method 13: LZ77 with Huffman codes |
 | `rfork.py`, `tmpl.py` | Mac resource forks, read and written byte-identically; records decoded by the plugin's own `TMPL`s |
 | `pict.py` | QuickDraw PICT: packed bitmaps and pixmaps, 16-bit direct colour, QuickTime JPEG |
-| `build_pack.py` | builds both editions, `catalog.json`, `manifest.json` and the release zip |
+| `build_pack.py` | builds all three editions, `catalog.json`, `manifest.json` and the release zip |
 | `catalogue.py`, `capture_page.mjs`, `stamp_capture.py` | the catalogue rows and their dated screenshots |
 
 Every layer is checked. The ConEx 1.2 resource fork was first compared,
@@ -239,7 +253,8 @@ created on 9 November 1997), is in [TIMELINE.md](TIMELINE.md).
 | --- | --- | --- | --- |
 | 1997 | **ConEx 1.2** | Paul Richeson | Designed, rendered and published in an *Escape Velocity* plugin |
 | 1998 | **ConEx Override 1.0** | Paul Richeson | Rebuilt at larger sizes for *EV Override*; the Callisto joins, the Medium Pin leaves |
-| 2005 | **[konex](https://github.com/yodacon/konex)** | Joshua Bussdieker | A standalone C++/OpenGL remake whose cast is ConEx Override's ten ships, plus Advisor and Citrus |
+| 1998 | **ConEx GL** | Joshua Bussdieker | The first standalone ConEx, in C and OpenGL, kept in a private repository; no code survives in public (Paul Richeson's account) |
+| 2005 | **[konex](https://github.com/yodacon/konex)** | Joshua Bussdieker | A standalone C++/OpenGL remake whose cast is ConEx Override's ten ships, plus Advisor and Citrus, two more ships Paul Richeson rendered for it |
 | 2026 | **[Gonex](https://github.com/yodacon/gonex)** | Team Yodacon | A Go port of konex that restores ConEx's game, and flies the 1997 originals beside konex's |
 | 2026 | **Yodacon Ship Pack** | Paul Richeson and Team Yodacon | This: every picture, recovered, documented and free |
 

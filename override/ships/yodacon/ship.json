@@ -3,7 +3,9 @@
   "slug": "yodacon",
   "edition": "override",
   "description": "The Consolidated Express Yodacon is the Biggest/Baddest ship of the ConEx fleet. This escort ship carries 15 tridents that are stored in 5 launch bays, for fast launching.",
-  "escort": "With this ship at your side you are sure never to louse a fight.",
+  "escort": "With this ship at your side you are sure never to lose a fight.",
+  "description_original": "The Consolidated Express Yodacon is the Biggest/Baddest ship of the ConEx fleet. This escort ship carries 15 tridents that are stored in 5 launch bays, for fast launching.",
+  "escort_original": "With this ship at your side you are sure never to louse a fight.",
   "sprite": {
     "frame_width": 96,
     "frame_height": 96,

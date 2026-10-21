@@ -1,6 +1,6 @@
 # ConEx 1.2 (1997) — Escape Velocity
 
-10 ships, 1 weapon sprite, 91 pictures and the
+10 ships, 89 pictures and the
 original readme (14 chapters), from `sources/ev/792_ConEx12.sit.hqx`.
 
 ![Contact sheet](contact-sheet.png)
@@ -22,10 +22,6 @@ The numbers are the plugin's own ship records (`shïp`); each `ship.json` has
 every field, the shipyard description and the escort pitch.
 
 - [`ships/`](ships/): one folder per ship, as described in the pack's README
-- [`weapons/`](weapons/): A-75 Missile Repeater
 - [`pictures/`](pictures/): every picture in the plugin, named by resource ID —
   sprite sheets and masks, targets, shipyards, comms, icons and landing views
 - [`readme/`](readme/README.md): Paul Richeson's readme, converted to Markdown
-
-Held back from `pictures/`:
-- PICT 8100: Ambrosia Software's logo, Ambrosia's trademark, not ConEx art.

@@ -6,7 +6,7 @@ editions spinning in a grid.
 ## Walk-through
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/lib/yodacon-ship-pack.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js"></script>
 
 <yodacon-ship ship="yodacon"></yodacon-ship>                         <!-- ConEx 1.2, nose up, ×2 -->
 <yodacon-ship ship="dart" edition="override" heading="90"></yodacon-ship>

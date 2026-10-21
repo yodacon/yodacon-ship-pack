@@ -4,6 +4,8 @@
   "edition": "override",
   "description": null,
   "escort": null,
+  "description_original": null,
+  "escort_original": null,
   "sprite": {
     "frame_width": 40,
     "frame_height": 40,

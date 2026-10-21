@@ -25,7 +25,7 @@
 <script type="module">
   import { loadCatalog } from "./lib/yodacon-ship-pack.js";
 
-  // One element per ship in catalog.json, both editions.
+  // One element per ship in catalog.json, every edition.
   const catalog = await loadCatalog();
   const grid = document.getElementById("grid");
   for (const ed of catalog.editions) {

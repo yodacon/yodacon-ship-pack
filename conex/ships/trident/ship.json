@@ -3,7 +3,9 @@
   "slug": "trident",
   "edition": "conex",
   "description": null,
-  "escort": "\"This littel ship would not help your fleet. Leave me alown.\"",
+  "escort": "\"This little ship would not help your fleet. Leave me alone.\"",
+  "description_original": null,
+  "escort_original": "\"This littel ship would not help your fleet. Leave me alown.\"",
   "sprite": {
     "frame_width": 35,
     "frame_height": 35,

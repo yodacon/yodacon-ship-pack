@@ -8,7 +8,7 @@ A complete little arcade game in which every object on screen is a `<div>`.
 No canvas, no WebGL, no game engine, no build step.
 
 - You fly the 1997 **Yodacon**. Waves of ConEx **Defenders** come in from the
-  edges, chase you, ram you and fire **A-75 Missile Repeater** missiles.
+  edges, chase you, ram you and fire missiles (the pack's stand-in line sprite).
   Each wave is bigger and quicker. Two hits kill a Defender.
 - Until you touch a control the computer flies your ship (attract mode), so
   the page is never still. Press any flight key or on-screen button to take
@@ -51,7 +51,7 @@ No canvas, no WebGL, no game engine, no build step.
    ```js
    const PACK = new URL("./vendor/yodacon-ship-pack/", location.href);
    // or
-   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/");
+   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/");
    ```
 
 3. Serve it over http(s).
@@ -66,7 +66,7 @@ Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997),
 GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack
 ```
 
-The ships and the weapon sprite are © 1997–1998 Paul Richeson
+The ships are © 1997–1998 Paul Richeson
 ([paulricheson.com](https://paulricheson.com)), under the GNU GPL version 2 or
 later. Show the credit where players can see it, ship the pack's
 [LICENSE](../../LICENSE) with the art, and keep the game GPL-compatible. See

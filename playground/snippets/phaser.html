@@ -12,13 +12,13 @@
   // Phaser slices sheet-alpha.png into 36 frames by size; frame N = heading N×10°.
   // An absolute URL (against the page's base) keeps the loader independent of its baseURL.
   const SHEET = new URL("override/ships/trident/sheet-alpha.png", document.baseURI).href;
-  const MISSILE = new URL("override/weapons/missile-repeater/sheet-alpha.png", document.baseURI).href;
+  const MISSILE = new URL("weapons/missile-repeater/sheet-alpha.png", document.baseURI).href;
 
   class Flight extends Phaser.Scene {
     preload() {
       this.load.crossOrigin = "anonymous";
       this.load.spritesheet("ship", SHEET, { frameWidth: 40, frameHeight: 40 });
-      this.load.spritesheet("missile", MISSILE, { frameWidth: 24, frameHeight: 20 });
+      this.load.spritesheet("missile", MISSILE, { frameWidth: 16, frameHeight: 16 });
     }
     create() {
       this.heading = 0;

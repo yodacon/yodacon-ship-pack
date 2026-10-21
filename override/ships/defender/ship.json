@@ -2,8 +2,10 @@
   "name": "Defender",
   "slug": "defender",
   "edition": "override",
-  "description": "The Consolidated Express Defender is a week combate ship. Made for those daring young souls who want to fight, this is the ship for them.",
-  "escort": "The Defender is a small ship that doesnt have mutch cargo space.",
+  "description": "The Consolidated Express Defender is a weak combat ship. Made for those daring young souls who want to fight, this is the ship for them.",
+  "escort": "The Defender is a small ship that doesn't have much cargo space.",
+  "description_original": "The Consolidated Express Defender is a week combate ship. Made for those daring young souls who want to fight, this is the ship for them.",
+  "escort_original": "The Defender is a small ship that doesnt have mutch cargo space.",
   "sprite": {
     "frame_width": 40,
     "frame_height": 40,

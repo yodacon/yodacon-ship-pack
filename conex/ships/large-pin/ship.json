@@ -2,8 +2,10 @@
   "name": "Large Pin",
   "slug": "large-pin",
   "edition": "conex",
-  "description": "The large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.",
-  "escort": "The Worker for Consolidated Express realy dosent want to quit his job.",
+  "description": "The Large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.",
+  "escort": "The worker for Consolidated Express really doesn't want to quit his job.",
+  "description_original": "The large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.",
+  "escort_original": "The Worker for Consolidated Express realy dosent want to quit his job.",
   "sprite": {
     "frame_width": 65,
     "frame_height": 65,

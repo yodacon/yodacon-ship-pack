@@ -9,7 +9,7 @@
 
 // Where the pack lives. This file sits in projects/dom-shipyard/, two folders
 // below the pack root. In your own project, point this at your copy of the
-// pack, or at https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/
+// pack, or at https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/
 const PACK = new URL("../../", import.meta.url);
 
 const START_CREDITS = 25_000_000;

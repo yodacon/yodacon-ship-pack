@@ -1,6 +1,6 @@
 {
   "name": "Yodacon Ship Pack",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "GPL-2.0-or-later",
   "author": "Paul Richeson",
   "credit": "Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack",
@@ -30,7 +30,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun Pirates, and still cary a reasonable amout of cargo."
+          "description": "The Small Pin is three times a Shuttlecraft in almost every way, and very easy to mass produce. Consolidated Express made this ship because they needed a ship that could outrun pirates, and still carry a reasonable amount of cargo."
         },
         {
           "slug": "medium-pin",
@@ -46,7 +46,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin dident cary enough cargo for the bigger shipments."
+          "description": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin didn't carry enough cargo for the bigger shipments."
         },
         {
           "slug": "large-pin",
@@ -62,7 +62,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits."
+          "description": "The Large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits."
         },
         {
           "slug": "dart",
@@ -78,7 +78,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The ConEx dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people where crazy to buy it. Its turning are a little above the bulk freighter, and the acceleration is terrible, the dart has one unique feature, is has a top speed the same as the Confederate Patrol Ship."
+          "description": "The ConEx Dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people were crazy to buy it. Its turning is a little above the bulk freighter, and the acceleration is terrible, but the Dart has one unique feature, it has a top speed the same as the Confederate Patrol Ship."
         },
         {
           "slug": "defender",
@@ -94,7 +94,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alown. None have lived to tell a story. This ship is only powerful in numbers."
+          "description": "The ConEx Defender is mainly used as fighters for the Large Pin. There have been some that have been known to use this ship to fight against the confederation, alone. None have lived to tell a story. This ship is only powerful in numbers."
         },
         {
           "slug": "gryphon",
@@ -110,7 +110,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "This Fast but little ship has great firepower for the buck."
+          "description": "This fast but little ship has great firepower for the buck."
         },
         {
           "slug": "trident",
@@ -142,7 +142,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Necromancer is a highly experimental government project. It is Equiped with three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile."
+          "description": "The Necromancer is a highly experimental government project. It is equipped with three A-75 Missile Repeaters. The weapon is mounted on top of your ship's power cells. Using the E=MC2 principle it converts your ship's power to Consolidated Arms Mk. 83 guided missiles."
         },
         {
           "slug": "yodacon",
@@ -158,7 +158,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The shape of this ship makes it one of  the hardest ships in history to mass produce.  When the plans where showed to High Command they imediatly stared building it, for they though the galixy needed a totally unice design."
+          "description": "The shape of this ship makes it one of the hardest ships in history to mass produce. When the plans were shown to High Command they immediately started building it, for they thought the galaxy needed a totally unique design."
         },
         {
           "slug": "tomaquad",
@@ -174,18 +174,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Tomaquad is ConEx's version of the Luxery Liner."
-        }
-      ],
-      "weapons": [
-        {
-          "slug": "missile-repeater",
-          "name": "A-75 Missile Repeater",
-          "path": "conex/weapons/missile-repeater/",
-          "frame_width": 24,
-          "frame_height": 20,
-          "columns": 6,
-          "frames": 36
+          "description": "The Tomaquad is ConEx's version of the Luxury Liner."
         }
       ]
     },
@@ -213,7 +202,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Small Pin is three times a Shuttlecraft in almost every way. Consolidated Express designed this ship to out run attacking ships, while makeing a design that is easy to mass produce."
+          "description": "The Small Pin is three times a Shuttlecraft in almost every way. Consolidated Express designed this ship to outrun attacking ships, while making a design that is easy to mass produce."
         },
         {
           "slug": "large-pin",
@@ -261,7 +250,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Consolidated Express Dart Freighter is the most massive ship ever built. The design was designed at the end of the 21st century. But when ConEx put the ship out on the market, there was a high demand. The Dart Freighter's best defence is that it can out run most ships, the only problem it is terrable accelaterion."
+          "description": "The Consolidated Express Dart Freighter is the most massive ship ever built. It was designed at the end of the 21st century. But when ConEx put the ship out on the market, there was a high demand. The Dart Freighter's best defence is that it can outrun most ships, the only problem is its terrible acceleration."
         },
         {
           "slug": "defender",
@@ -277,7 +266,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Consolidated Express Defender is a week combate ship. Made for those daring young souls who want to fight, this is the ship for them."
+          "description": "The Consolidated Express Defender is a weak combat ship. Made for those daring young souls who want to fight, this is the ship for them."
         },
         {
           "slug": "gryphon",
@@ -293,7 +282,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. Which now holds a crew of 25, no 2 as the original."
+          "description": "The Consolidated Express Gryphon was originally designed as a carried fighter ship. Until the administration noticed that it was a very sturdy ship. Then they enlarged the ship by a factor of 3. It now holds a crew of 25, not 2 as the original."
         },
         {
           "slug": "trident",
@@ -309,7 +298,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shiping Company. This tiny little ship is will match with the UE Fighter"
+          "description": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shipping Company. This tiny little ship is a match for the UE Fighter"
         },
         {
           "slug": "necromancer",
@@ -325,7 +314,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Necromancer is a highly classified experimental government project. It is Equipped with Three  Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ships massive power cells. It converts your ships energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missile."
+          "description": "The Necromancer is a highly classified experimental government project. It is equipped with three Consolidated Arms Multi Phase Dimension Missile Repeaters (CAMPDeMR). The weapon is mounted on top of your ship's massive power cells. It converts your ship's energy into Consolidated Arms Multi Phase Dimension Mk. 83 smart guided missiles."
         },
         {
           "slug": "yodacon",
@@ -357,7 +346,7 @@
             "comm": "comm.png",
             "thumb": "thumb.png"
           },
-          "description": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used to trade commodity exchange."
+          "description": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used for commodity exchange."
         },
         {
           "slug": "quarter-defender",
@@ -374,18 +363,58 @@
           },
           "description": null
         }
-      ],
-      "weapons": [
+      ]
+    },
+    {
+      "key": "konex",
+      "title": "konex",
+      "year": 2005,
+      "game": "konex",
+      "source": "sources/konex",
+      "path": "konex/",
+      "ships": [
         {
-          "slug": "missile-repeater",
-          "name": "Missile Repeater",
-          "path": "override/weapons/missile-repeater/",
-          "frame_width": 24,
-          "frame_height": 20,
+          "slug": "advisor",
+          "name": "Advisor",
+          "path": "konex/ships/advisor/",
+          "frame_width": 64,
+          "frame_height": 64,
           "columns": 6,
-          "frames": 36
+          "frames": 36,
+          "pictures": {
+            "target": "target.png",
+            "yard": "yard.png",
+            "comm": "comm.png"
+          },
+          "description": null
+        },
+        {
+          "slug": "citrus",
+          "name": "Citrus",
+          "path": "konex/ships/citrus/",
+          "frame_width": 64,
+          "frame_height": 64,
+          "columns": 6,
+          "frames": 36,
+          "pictures": {
+            "target": "target.png",
+            "yard": "yard.png",
+            "comm": "comm.png"
+          },
+          "description": null
         }
       ]
+    }
+  ],
+  "weapons": [
+    {
+      "slug": "missile-repeater",
+      "name": "Missile (line)",
+      "path": "weapons/missile-repeater/",
+      "frame_width": 16,
+      "frame_height": 16,
+      "columns": 6,
+      "frames": 36
     }
   ]
 }

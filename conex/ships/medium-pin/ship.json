@@ -2,8 +2,10 @@
   "name": "Medium Pin",
   "slug": "medium-pin",
   "edition": "conex",
-  "description": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin dident cary enough cargo for the bigger shipments.",
-  "escort": "The caption of the Meduim Pin Wonders if he should work for you.",
+  "description": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin didn't carry enough cargo for the bigger shipments.",
+  "escort": "The captain of the Medium Pin Wonders if he should work for you.",
+  "description_original": "The Medium Pin is 3 times the Small Pin in almost every way. This ship is also easy to mass produce. It was made because Consolidated Express noticed how popular the Small Pin was, and the Small Pin dident cary enough cargo for the bigger shipments.",
+  "escort_original": "The caption of the Meduim Pin Wonders if he should work for you.",
   "sprite": {
     "frame_width": 50,
     "frame_height": 50,

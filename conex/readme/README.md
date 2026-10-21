@@ -1,6 +1,6 @@
 # ConEx 1.2 — the original readme
 
-Paul Richeson's own documentation for ConEx 1.2, as it shipped inside the archive (a DOCMaker document, `ConEx Readme 1.2`, last saved 28 November 1997). Text and pictures are converted as they are, 1990s spelling included. Each chapter's pictures stand at its head; DOCMaker floated them beside the text.
+Paul Richeson's own documentation for ConEx 1.2, as it shipped inside the archive (a DOCMaker document, `ConEx Readme 1.2`, last saved 28 November 1997). The pictures are converted as they are; the text has its spelling corrected and its dead addresses marked (the exact 1990s text is in the archive in `sources/`). Each chapter's pictures stand at its head; DOCMaker floated them beside the text.
 
 ## ConEx
 
@@ -8,20 +8,20 @@ Paul Richeson's own documentation for ConEx 1.2, as it shipped inside the archiv
 
 ![ConEx, picture 2023](pictures/2023.png)
 
-http://www.geocities.com/SiliconValley/Way/9298  
+`www.geocities.com/SiliconValley/Way/9298` *(inactive: GeoCities closed in 2009, and this page was never archived)*  
   
 Credits  
 Creator:  
 Paul Richeson  
 E-Mail:  
-conex@geocities.com  
-Beta Testers:  
-Ryan             rpierce@ptialaska.net  
-David     goldragonne@earthlink.net  
-Jesse               rpbrun@televar.com  
-John       john@wibbble.demon.co.uk  
-Daniel  research_labs@hotmail.com  
-I Am Looking For New Beta Testers, Please E-Mail me about it.d li
+`conex@geocities.com` *(inactive)*  
+Beta testers (their 1997 e-mail addresses are left out):  
+Ryan  
+David  
+Jesse  
+John  
+Daniel  
+I am looking for new beta testers, please e-mail me about it.
 
 ## New Things Added
 
@@ -50,18 +50,18 @@ Dart
 Defender  
 Gryphon  
 Trident  
-Necromencer  
+Necromancer  
 Yodacon  
 Tomaquad  
 Weapons  
 Missile Repeater  
 Missions  
 35 All New Missions  
-Uses Resources150-185  
+Uses resources 150–185  
 Planets  
 Exeon, Conex, Cenron  
 Graphics  
-Do to space limitations, I will not show the pictures here, But you can stop at the plants in the Systems ConEx, and Exeon.
+Due to space limitations, I will not show the pictures here, but you can stop at the planets in the systems ConEx and Exeon.
 
 ## S-Pin
 
@@ -88,7 +88,7 @@ The Medium Pin is 3 times the Small Pin in almost every way. This ship is also e
 ![L-Pin, picture 2008](pictures/2008.png)
 
 ConEx L-Pin  
-The large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.
+The Large Pin is the most massive courier ship in the galaxy. It was made by Consolidated Express because the Small and the Medium Pin made huge profits.
 
 ## Dart
 
@@ -97,7 +97,7 @@ The large Pin is the most massive courier ship in the galaxy. It was made by Con
 ![Dart, picture 2005](pictures/2005.png)
 
 ConEx Dart  
-The ConEx Dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people where crazy to buy it. Its turning are a little above the bulk freighter, and the acceleration is terrible. But the Dart has one unique feature, is has a top speed the same as the Confederate Patrol Ship.
+The ConEx Dart is the most massive ship ever built. The design for it is a couple centuries old. But when ConEx put it out on the market, people were crazy to buy it. Its turning is a little above the bulk freighter, and the acceleration is terrible. But the Dart has one unique feature, it has a top speed the same as the Confederate Patrol Ship.
 
 ## Defender
 
@@ -115,7 +115,7 @@ The ConEx Defender is mainly used as fighters for the Large Pin. There have been
 ![Gryphon, picture 2024](pictures/2024.png)
 
 ConEx Gryphon  
-This Fast but little ship has little fire power, but  almost indestructible.
+This fast but little ship has little firepower, but is almost indestructible.
 
 ## Trident
 
@@ -126,14 +126,14 @@ This Fast but little ship has little fire power, but  almost indestructible.
 ConEx Trident  
 This ship is a little less powerful than the Confed. Patrol ship.
 
-## Necromencer
+## Necromancer
 
-![Necromencer, picture 2027](pictures/2027.png)
+![Necromancer, picture 2027](pictures/2027.png)
 
-![Necromencer, picture 2031](pictures/2031.png)
+![Necromancer, picture 2031](pictures/2031.png)
 
-ConEx Necromencer  
-The Necromancer is a highly experimental government project. It is Equipped with Three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile.
+ConEx Necromancer  
+The Necromancer is a highly experimental government project. It is equipped with three A-75 Missile Repeaters. The weapon is mounted on top of your ship's power cells. Using the E=MC2 principle it converts your ship's power to Consolidated Arms Mk. 83 guided missiles.
 
 ## Yodacon
 
@@ -142,7 +142,7 @@ The Necromancer is a highly experimental government project. It is Equipped with
 ![Yodacon, picture 2032](pictures/2032.png)
 
 ConEx Yodacon  
-The shape of this ship makes it one of  the hardest ships in history to mass produce.  When the plans where showed to High Command they immediately stared building it, for they though the galaxy needed a totally unique design.
+The shape of this ship makes it one of the hardest ships in history to mass produce. When the plans were shown to High Command they immediately started building it, for they thought the galaxy needed a totally unique design.
 
 ## Tomaquad
 
@@ -180,24 +180,24 @@ The Tomaquad is ConEx's version of the Luxury Liner.
 Consolidated Express  
 An Escape Velocity Plugin  
 By: Paul Richeson  
-conex@geocities.com  
-ConEx is property of Paul Richeson. Any reproduction of this material is Ok as long as this read-me is included. Do not distribute modified versions of this plugin.  You can place this plugin on public domain or any other public server as long as you e-mail me, telling who you are, who you work for, and what is the purpose. If you are a magazine company, or a company that sells CDs for a profit, do the same as it is for public domain.  
+`conex@geocities.com` *(inactive)*  
+ConEx is property of Paul Richeson. Any reproduction of this material is OK as long as this read-me is included. Do not distribute modified versions of this plugin. You can place this plugin on public domain or any other public server as long as you e-mail me, telling who you are, who you work for, and what is the purpose. If you are a magazine company, or a company that sells CDs for a profit, do the same as it is for public domain. *(These 1997–98 terms are replaced by GPL-2.0-or-later: see the pack's LICENSE.)*  
 The stuff I used to make this plugin  
-inorder from most important to least important  
+in order from most important to least important  
 Infini-D  
 To Design the Ships  
 EV-Edit  
-To make every thing except missions  
+To make everything except missions  
 Schmelta-V  
 To Make missions  
 ResEdit  
-To change the Resource numbers so they go in order, and to fix what EV-Edit  screwed up.  
+To change the Resource numbers so they go in order, and to fix what EV-Edit screwed up.  
 Graphic Converter  
 To convert all the images to PICT so that EV can read them, and make the target graphics.  
 Make spïn  
 To gather all the 36 Individual PICT files and make Sprites and Masks.  
-Iomega Zip Dirve  
-To store all the  files  
+Iomega Zip Drive  
+To store all the files  
 Escape Velocity Data  
 To get the TMPL Resources so I can use ResEdit.  
 Escape Velocity  
@@ -212,7 +212,7 @@ To make the screen at ConEx
 During the great war...  
 The confederation needed military shipments...  
 That's where Consolidated Express came in...  
-ConEx grew incredibly large, and bought Levo for a Head Quoters and named the Planet "ConEx" in the "ConEx" system (used to be Levo system)...  
+ConEx grew incredibly large, and bought Levo for a headquarters and named the Planet "ConEx" in the "ConEx" system (used to be Levo system)...  
 With ConEx's HQ in the center of the Galaxy it made even more profits than during the Great war...  
 Now ConEx is recruiting more people so they can withstand all the shipments...  
 Will you Join?

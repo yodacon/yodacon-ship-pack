@@ -1,6 +1,6 @@
 # ConEx Override 1.0 (1998) — Escape Velocity Override
 
-11 ships, 1 weapon sprite, 87 pictures and the
+11 ships, 83 pictures and the
 original readme (12 chapters), from `sources/evo/2437_ConExOverride.sit.hqx`.
 
 ![Contact sheet](contact-sheet.png)
@@ -23,10 +23,6 @@ The numbers are the plugin's own ship records (`shïp`); each `ship.json` has
 every field, the shipyard description and the escort pitch.
 
 - [`ships/`](ships/): one folder per ship, as described in the pack's README
-- [`weapons/`](weapons/): Missile Repeater
 - [`pictures/`](pictures/): every picture in the plugin, named by resource ID —
   sprite sheets and masks, targets, shipyards, comms, icons and landing views
 - [`readme/`](readme/README.md): Paul Richeson's readme, converted to Markdown
-
-Held back from `pictures/`:
-- PICT 8100: Ambrosia Software's logo, Ambrosia's trademark, not ConEx art.

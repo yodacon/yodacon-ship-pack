@@ -2,8 +2,10 @@
   "name": "Trident",
   "slug": "trident",
   "edition": "override",
-  "description": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shiping Company. This tiny little ship is will match with the UE Fighter",
-  "escort": "\"The Consolidated Express Trident Fighter would be a great addiction to your fleat, I'l Bet my Life on it\" says as he begs for a job.",
+  "description": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shipping Company. This tiny little ship is a match for the UE Fighter",
+  "escort": "\"The Consolidated Express Trident Fighter would be a great addition to your fleet, I'll bet my life on it,\" he says as he begs for a job.",
+  "description_original": "The Consolidated Express Trident Fighter was designed as a fighter ship for the ConEx shiping Company. This tiny little ship is will match with the UE Fighter",
+  "escort_original": "\"The Consolidated Express Trident Fighter would be a great addiction to your fleat, I'l Bet my Life on it\" says as he begs for a job.",
   "sprite": {
     "frame_width": 40,
     "frame_height": 40,

@@ -18,12 +18,20 @@ import {
 //   turn rate  = Maneuver × 40   degrees/s    (2 → 80°/s, 6 → 240°/s)
 // EV ran its own units at 30 fps; these factors keep the same ranking and a
 // playable feel at any sprite size. Each value has a floor so nothing is stuck.
+// The konex edition's ships carry konex's specs.xml instead:
+//   top speed  = MaxVelocity  × 0.3  (1000 → 300, as fast as EV's quickest)
+//   thrust     = Acceleration × 0.4  (900 → 360)
+//   turn rate  = TurnSpeed, already degrees/s, capped at 240
 const SPEED_K = 0.6, ACCEL_K = 0.6, TURN_K = 40;
-const handlingOf = (stats = {}) => ({
+const handlingOf = (stats = {}) => stats.MaxVelocity ? {
+  maxSpeed: Math.max(60, stats.MaxVelocity * 0.3),
+  accel: Math.max(60, (stats.Acceleration || 0) * 0.4),
+  turn: Math.max(60, Math.min(240, stats.TurnSpeed || 0)),
+} : {
   maxSpeed: Math.max(60, (stats.Speed || 0) * SPEED_K),
   accel: Math.max(60, (stats.Accel || 0) * ACCEL_K),
   turn: Math.max(60, (stats.Maneuver || 0) * TURN_K),
-});
+};
 
 const STEP = 1 / 60;                 // fixed simulation step, seconds
 const WORLD = 2400;                  // square arena, wraps at the edges
@@ -114,13 +122,18 @@ async function start(edition, slug) {
 
   // The player, the edition's missile sprite, and a few other ships as targets
   // (Defenders first: they were the plugin's fighters).
-  const others = ed.ships.filter((s) => s.slug !== slug && s.slug !== "quarter-defender");
+  // An edition with too few ships (konex has two) borrows ConEx 1.2's fleet as
+  // targets. The missile is the pack's own, the same for every edition.
+  const pool = (e) => e.ships.filter((s) => !(e === ed && s.slug === slug) && s.slug !== "quarter-defender");
+  const conex = catalog.editions.find((e) => e.key === "conex");
+  const targetEd = pool(ed).length >= 3 ? ed : conex;
+  const others = pool(targetEd);
   others.sort((a, b) => (b.slug === "defender") - (a.slug === "defender"));
   const targetSlugs = others.slice(0, 4).map((s) => s.slug);
   const [player, missile, ...targetShips] = await Promise.all([
     loadShip(edition, slug, catalog.base),
-    loadWeapon(edition, "missile-repeater", catalog.base),
-    ...targetSlugs.map((t) => loadShip(edition, t, catalog.base)),
+    loadWeapon("missile-repeater", catalog.base),
+    ...targetSlugs.map((t) => loadShip(targetEd.key, t, catalog.base)),
   ]);
   if (id !== loadId) return; // the user picked another ship meanwhile
 
@@ -339,13 +352,15 @@ function drawMinimap(W) {
 
 function drawHud() {
   const g = game, s = g.ship;
-  const speed = Math.hypot(s.vx, s.vy) / SPEED_K;
+  // Speed in the ship's own units: EV's Speed, or konex's MaxVelocity.
+  const st = g.player.meta.stats ?? {};
+  const speed = Math.hypot(s.vx, s.vy) / (st.MaxVelocity ? 0.3 : SPEED_K);
   ctx.font = `${Math.round(12 * dpr)}px ui-monospace, Menlo, Consolas, monospace`;
   ctx.fillStyle = "#7ef0a8";
   ctx.textBaseline = "top";
   const lines = [
     g.player.name.toUpperCase(),
-    `SPEED ${speed.toFixed(0).padStart(3)} / ${g.player.meta.stats?.Speed ?? "?"}`,
+    `SPEED ${speed.toFixed(0).padStart(3)} / ${st.MaxVelocity ?? st.Speed ?? "?"}`,
     `HEADING ${String(Math.floor(s.heading)).padStart(3, "0")}°  FRAME ${String(frameIndex(s.heading)).padStart(2, "0")}`,
     `KILLS ${g.score}`,
   ];
@@ -368,6 +383,9 @@ const STATS = [
   ["Speed", "Speed"], ["Accel", "Acceleration"], ["Maneuver", "Maneuver"],
   ["Shield", "Shield"], ["Armor", "Armor"], ["Holds", "Cargo (tons)"],
   ["Cost", "Cost (credits)"], ["Crew", "Crew"], ["Mass", "Mass (tons)"], ["Length", "Length (m)"],
+  // konex's specs.xml, for the konex edition
+  ["MaxVelocity", "Max velocity (konex)"], ["Acceleration", "Acceleration (konex)"],
+  ["TurnSpeed", "Turn speed (konex)"],
 ];
 
 function showPanel(ed, entry, ship) {
@@ -394,8 +412,10 @@ function showPanel(ed, entry, ship) {
       Object.assign(document.createElement("dd"), { textContent: v.toLocaleString("en-US") }));
   }
   const h = game.handling;
-  $("handling").textContent = `In this demo: top speed ${Math.round(h.maxSpeed)} px/s, thrust ${Math.round(h.accel)} px/s², turn ${Math.round(h.turn)}°/s (Speed × ${SPEED_K}, Accel × ${ACCEL_K}, Maneuver × ${TURN_K}).`;
-  $("ship-desc").textContent = ship.meta.description?.replace(/\s+/g, " ").trim() ?? "";
+  $("handling").textContent = `In this demo: top speed ${Math.round(h.maxSpeed)} px/s, thrust ${Math.round(h.accel)} px/s², turn ${Math.round(h.turn)}°/s (${stats.MaxVelocity ? "MaxVelocity × 0.3, Acceleration × 0.4, TurnSpeed" : `Speed × ${SPEED_K}, Accel × ${ACCEL_K}, Maneuver × ${TURN_K}`}).`;
+  const desc = ship.meta.description?.replace(/\s+/g, " ").trim() ?? "";
+  $("ship-desc").textContent = desc;
+  $("ship-desc").hidden = !desc;  // konex's ships have no 1990s description
   $("link-folder").href = `https://github.com/yodacon/yodacon-ship-pack/tree/main/${entry.path}`;
   resize();
 }

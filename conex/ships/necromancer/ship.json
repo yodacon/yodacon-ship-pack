@@ -2,8 +2,10 @@
   "name": "Necromancer",
   "slug": "necromancer",
   "edition": "conex",
-  "description": "The Necromancer is a highly experimental government project. It is Equiped with three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile.",
+  "description": "The Necromancer is a highly experimental government project. It is equipped with three A-75 Missile Repeaters. The weapon is mounted on top of your ship's power cells. Using the E=MC2 principle it converts your ship's power to Consolidated Arms Mk. 83 guided missiles.",
   "escort": "",
+  "description_original": "The Necromancer is a highly experimental government project. It is Equiped with three A-75 Missile Repeaters. The weapon is mounted on top of your ships power cells.  Using the E=MC2 principle it converts your ships power to Consolidated Arms Mk. 83 guided missile.",
+  "escort_original": "",
   "sprite": {
     "frame_width": 50,
     "frame_height": 50,

@@ -14,7 +14,7 @@
 const PACK_ROOT = new URL("../", location.href).href;
 
 /** Where CodePen should load the pack from: a tagged release on jsDelivr (CORS-enabled). */
-const CDN_ROOT = "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/";
+const CDN_ROOT = "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/";
 
 /** Starter snippets: complete HTML documents in ./snippets/. */
 const SNIPPETS = [

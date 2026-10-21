@@ -100,4 +100,6 @@ contained Ambrosia's game art: hulls that ConEx borrowed from the game (ConEx
 are not in these archives. The one Ambrosia item the plugins do carry, the
 Ambrosia logo (PICT 8100), is left out of the pack's decoded pictures. It is
 still inside the original archives above, which are kept byte for byte, and
-the pack's licence does not cover it.
+the pack's licence does not cover it. The same goes for the Missile Repeater
+weapon art in both plugins (ConEx 1.2's PICT 210–211, ConEx Override's
+1108–1109 and 6076–6077), which is not Paul Richeson's either.

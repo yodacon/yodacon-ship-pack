@@ -27,7 +27,7 @@ camera around it.
 - **The hangar.** A box seen from inside, deck plates and a hazard ring drawn
   on canvases, ceiling ribs and strip lights, a spotlight on the pedestal, a
   hemisphere fill, a blue rim light, and `THREE.Fog` so the far end fades out.
-- **Picker.** ◀ ▶ or the menu pick any of the 21 ships. The URL hash follows
+- **Picker.** ◀ ▶ or the menu pick any ship in the pack. The URL hash follows
   (`#override/callisto`) so links open on a ship. The panel shows the ship's
   stats and description from its `ship.json`.
 - Turntable speed (including reverse and stop) and lean are sliders.
@@ -57,7 +57,7 @@ the pack's `examples/threejs`. `OrbitControls` comes from the same release via
    `hangar.js`:
 
    ```js
-   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/");
+   const PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/");
    ```
 
 3. Serve it over http(s).

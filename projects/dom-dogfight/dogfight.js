@@ -12,7 +12,7 @@
 // Ships by Paul Richeson (ConEx, 1997–1998). GPL-2.0-or-later.
 
 // The pack root: two folders up from this file. In your own project use your
-// copy of the pack, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/
+// copy of the pack, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/
 const PACK = new URL("../../", import.meta.url);
 
 const q = new URLSearchParams(location.search);
@@ -27,11 +27,12 @@ const $ = (id) => document.getElementById(id);
 
 // --- Sprites ---------------------------------------------------------------------
 // Load an entry's JSON (ship.json or weapon.json) and its sheet, and return what
-// a sprite needs: sheet URL, frame size and columns.
+// a sprite needs: sheet URL, frame size and columns. Weapons belong to the pack
+// as a whole (edition null): weapons/<slug>/.
 async function loadSheet(edition, kind, slug) {
-  const dir = new URL(`${edition}/${kind}/${slug}/`, PACK);
+  const dir = new URL(edition ? `${edition}/${kind}/${slug}/` : `${kind}/${slug}/`, PACK);
   const r = await fetch(new URL(kind === "ships" ? "ship.json" : "weapon.json", dir));
-  if (!r.ok) throw new Error(`${edition}/${kind}/${slug}: HTTP ${r.status}`);
+  if (!r.ok) throw new Error(`${dir}: HTTP ${r.status}`);
   const meta = await r.json();
   const url = new URL("sheet-alpha.png", dir).href;
   const img = new Image();
@@ -362,7 +363,7 @@ try {
   sheets = {
     player: await loadSheet(pe, "ships", ps),
     enemy: await loadSheet("conex", "ships", "defender"),
-    missile: await loadSheet("conex", "weapons", "missile-repeater"),
+    missile: await loadSheet(null, "weapons", "missile-repeater"),
   };
   $("player-name").textContent = sheets.player.name;
   $("best").textContent = best;

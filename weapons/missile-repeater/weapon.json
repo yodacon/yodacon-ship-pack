@@ -1,0 +1,20 @@
+{
+  "name": "Missile (line)",
+  "slug": "missile-repeater",
+  "description": "A stand-in missile for testing: a straight line, 12 px long and 2 px wide, turned 10° per frame. Drawn by tools/build_pack.py; it replaces the plugins' Missile Repeater sprite, which is not Paul Richeson's art.",
+  "made_by": "tools/build_pack.py (Yodacon Ship Pack, 2026)",
+  "sprite": {
+    "frame_width": 16,
+    "frame_height": 16,
+    "columns": 6,
+    "rows": 6,
+    "frames": 36,
+    "rotation": "frame 00 nose-up, 10 degrees clockwise per frame"
+  },
+  "files": {
+    "sheet": "sheet.png",
+    "mask": "mask.png",
+    "sheet_alpha": "sheet-alpha.png",
+    "frames": "frames/{NN}.png"
+  }
+}

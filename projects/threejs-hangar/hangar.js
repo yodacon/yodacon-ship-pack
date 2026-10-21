@@ -12,7 +12,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // The pack root, two folders above this file. In your own project use your
-// copy, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/
+// copy, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/
 const PACK = new URL("../../", import.meta.url);
 
 const $ = (id) => document.getElementById(id);

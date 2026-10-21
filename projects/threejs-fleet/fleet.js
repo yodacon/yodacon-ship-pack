@@ -11,7 +11,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // The pack root, two folders above this file. In your own project use your
-// copy, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/
+// copy, or https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/
 // (jsDelivr sends CORS headers, which WebGL textures need).
 const PACK = new URL("../../", import.meta.url);
 
@@ -116,6 +116,7 @@ scene.add(new THREE.Line(
 
 // --- The ships ----------------------------------------------------------------------------
 const ships = [];               // { sprite, tex, entry, edition, flight, slot, cols, rows }
+let flightCount = 1;            // one flight per edition in catalog.json
 const UP = new THREE.Vector3(0, 1, 0);
 
 function setFrame(ship, i) {
@@ -126,6 +127,7 @@ async function loadFleet() {
   const r = await fetch(new URL("catalog.json", PACK));
   if (!r.ok) throw new Error(`catalog.json: HTTP ${r.status}`);
   const catalog = await r.json();
+  flightCount = catalog.editions.length;
   const jobs = [];
   catalog.editions.forEach((ed, flight) => {
     // Biggest ships lead: sort each flight by sprite size.
@@ -222,8 +224,8 @@ function update() {
   controls.autoRotate = $("orbit").checked;
 
   for (const ship of ships) {
-    // Each flight's leader runs the route; the two flights are half a lap apart.
-    const u = (t / LAP_SECONDS + ship.flight * 0.5) % 1;
+    // Each flight's leader runs the route; the flights are spaced evenly round the lap.
+    const u = (t / LAP_SECONDS + ship.flight / flightCount) % 1;
     route.getPointAt(u, lead);
     route.getTangentAt(u, tangent);
     right.crossVectors(tangent, UP).normalize();
@@ -275,7 +277,7 @@ function update() {
 // --- Start ------------------------------------------------------------------------------------
 try {
   await Promise.all([loadFleet(), setBackdrop(BACKDROPS[0])]);
-  $("status").textContent = `${ships.length} ships in two flights. Drag to orbit, scroll to zoom, click a ship (or press [ ]).`;
+  $("status").textContent = `${ships.length} ships in ${flightCount} flights. Drag to orbit, scroll to zoom, click a ship (or press [ ]).`;
   renderer.setAnimationLoop(update);
 } catch (err) {
   $("status").textContent = `Could not load the fleet: ${err.message}`;

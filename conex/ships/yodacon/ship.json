@@ -2,8 +2,10 @@
   "name": "Yodacon",
   "slug": "yodacon",
   "edition": "conex",
-  "description": "The shape of this ship makes it one of  the hardest ships in history to mass produce.  When the plans where showed to High Command they imediatly stared building it, for they though the galixy needed a totally unice design.",
-  "escort": "The Caption of the Yodacon is willing to be your escort.",
+  "description": "The shape of this ship makes it one of the hardest ships in history to mass produce. When the plans were shown to High Command they immediately started building it, for they thought the galaxy needed a totally unique design.",
+  "escort": "The Captain of the Yodacon is willing to be your escort.",
+  "description_original": "The shape of this ship makes it one of  the hardest ships in history to mass produce.  When the plans where showed to High Command they imediatly stared building it, for they though the galixy needed a totally unice design.",
+  "escort_original": "The Caption of the Yodacon is willing to be your escort.",
   "sprite": {
     "frame_width": 70,
     "frame_height": 70,

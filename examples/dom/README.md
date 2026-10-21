@@ -21,7 +21,7 @@ The element has `role="img"` and the ship's name as `aria-label`, since a
 background image is invisible to screen readers.
 
 To use the CDN instead of a local copy, set
-`PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v1.0.0/")`.
+`PACK = new URL("https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/")`.
 
 ## Docs
 

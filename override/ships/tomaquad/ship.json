@@ -2,8 +2,10 @@
   "name": "Tomaquad",
   "slug": "tomaquad",
   "edition": "override",
-  "description": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used to trade commodity exchange.",
-  "escort": "100 Tons of Cargo space could be usefull.",
+  "description": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used for commodity exchange.",
+  "escort": "100 tons of cargo space could be useful.",
+  "description_original": "The Consolidated Express Tomaquad Luxury Liner is a transport ship for large shipments. Most commonly used to trade commodity exchange.",
+  "escort_original": "100 Tons of Cargo space could be usefull.",
   "sprite": {
     "frame_width": 72,
     "frame_height": 72,
