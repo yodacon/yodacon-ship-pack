@@ -31,6 +31,11 @@ and the pack's ships as the fleets. `projects/konquest/`.
       the order ([research 08](docs/research/2026-10-21-08-konquest-brains.md))
 - [x] The Yodacon console look ([docs/STYLE.md](docs/STYLE.md))
 - [x] Planets from the pack's generated set
+- [x] Played to the end through the page by scripted players (`playtest/`,
+      `tools/drive_page.mjs`): an ending screen with Rematch, a How to play
+      panel; found and fixed a news crash that froze End turn
+
+Konquest is done and playable.
 
 ## Project: treadcore, the crates.io game
 

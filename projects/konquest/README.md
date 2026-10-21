@@ -18,8 +18,15 @@ else's, it fights. The last player with planets or fleets wins.
 - **Standing order**: tick it to send the same ships every turn the planet
   can afford them.
 - **Hot seat**: add several human players; the board is hidden between turns.
-- **Watch**: `?watch` sets up Weak, Normal and Hard computer players against
-  each other. `?seed=N` replays a galaxy.
+- **Opponents**: Easy, Medium and Hard, named by how they play, not by
+  Konquest's labels. Easy is Konquest's "Hard" brain, which the source calls
+  Defensive (it waits for 30 ships); Medium is its Normal brain; Hard is
+  BecAI, Konquest's planner. A 200-game tournament set the order
+  ([research 08](../../docs/research/2026-10-21-08-konquest-brains.md)).
+- **Watch**: `?watch` sets Easy, Medium and Hard against each other.
+  `?seed=N` replays a galaxy; **Rematch** at the end replays the same one.
+- **How to play** opens beside the board; **Sound** toggles the confirmation
+  beeps (made in Web Audio, remembered between visits).
 
 ## The rules, and where they come from
 
@@ -40,13 +47,21 @@ Each rule names the C++ file it comes from:
 | Options | blind map, cumulative production, production after conquest, neutrals show ships / stats, neutral production | all five, plus neutral production |
 
 What differs: the random numbers (a seeded generator, so a game can be
-replayed, instead of Qt's), the planets (drawn in code; the pack has no planet
-renders yet), and the fleets (drawn as ships on their way, which Konquest
-does not show).
+replayed, instead of Qt's), the planets (the pack's generated set, sized by
+production), and the fleets (drawn as ships on their way, which Konquest does
+not show). The look follows [docs/STYLE.md](../../docs/STYLE.md).
 
 ```sh
-node --test projects/konquest/test.mjs    # 21 tests, one or more per rule
+node --test projects/konquest/test.mjs           # 26 tests, one or more per rule
+node projects/konquest/tournament.mjs 200        # the opponents, played against each other
+make serve &                                     # then play whole games through the page:
+node tools/drive_page.mjs 'http://localhost:8000/projects/konquest/?seed=7' projects/konquest/playtest/greedy.js
 ```
+
+`playtest/` holds scripted players that drive the real page (clicks, Send,
+End turn) to the end of a game: `greedy.js` throws everything at the nearest
+planet, `careful.js` keeps a home guard and checks the ending and Rematch,
+and `hard-human.js` plays the human seat with BecAI to reach a victory.
 
 ## Copying it
 

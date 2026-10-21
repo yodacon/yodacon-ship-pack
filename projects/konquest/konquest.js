@@ -72,6 +72,9 @@ $("setup").addEventListener("close", () => {
 // --- A game ----------------------------------------------------------------------------
 
 async function start(config) {
+  lastConfig = config;
+  $("ending").hidden = true;
+  $("cover").hidden = true;
   // A hull that fails to load (offline, a CDN hiccup) must not stop the game:
   // its fleets are drawn as markers instead, and it is retried next game.
   await Promise.all(config.players.map(async (_, seat) => {
@@ -89,9 +92,10 @@ async function start(config) {
 
 const humansAlive = () => game.players.some((p, i) => p.type === "human" && !isDead(game, i));
 
+let lastConfig = null;
 function nextHuman() {
   render();
-  if (game.over) return;
+  if (game.over) { showEnding(); return; }
   if (!humansAlive()) {                         // computers only: watch it play out
     waiting = true;
     setTimeout(() => { waiting = false; addNews(endTurn(game)); nextHuman(); }, AI_DELAY);
@@ -107,6 +111,31 @@ function nextHuman() {
   }
 }
 $("cover-go").addEventListener("click", () => { $("cover").hidden = true; render(); });
+
+// The end: who won, from the point of view of the humans at the table.
+function showEnding() {
+  const w = game.players[game.winner];
+  const humans = game.players.filter((p) => p.type === "human");
+  const title = $("ending-title");
+  title.className = "ending-title";
+  if (w.type === "human") {
+    title.textContent = humans.length > 1 ? `${w.name} wins` : "Victory";
+    title.classList.add("won");
+  } else if (humans.length) {
+    title.textContent = "Defeat";
+    title.classList.add("lost");
+  } else {
+    title.textContent = `${w.name} wins`;
+  }
+  const s = w.stats;
+  $("ending-text").textContent = `${owns(w.name)} the galaxy after ${game.turn} turns: ` +
+    `${s.planetsConquered} planets conquered, ${s.enemyShipsDestroyed} ships destroyed.`;
+  $("ending").hidden = false;
+  $("rematch").focus();
+}
+$("rematch").addEventListener("click", () => start(lastConfig));
+$("ending-new").addEventListener("click", () => { renderSetup(); $("setup").showModal(); });
+$("ending-look").addEventListener("click", () => { $("ending").hidden = true; });
 
 $("end-turn").addEventListener("click", () => {
   if (!game || game.over || waiting) return;
@@ -231,7 +260,7 @@ function render() {
   $("who").innerHTML = "";
   if (game.over) {
     const w = game.players[game.winner];
-    $("who").append(chip(w.color), `${w.name} owns the galaxy.`);
+    $("who").append(chip(w.color), `${owns(w.name)} the galaxy.`);
   } else if (!humansAlive()) {
     $("who").append("Computers playing");
   } else {
@@ -383,6 +412,9 @@ function drawFleets() {
 }
 new ResizeObserver(() => game && drawFleets()).observe($("board"));
 
+// "You own", "Easy owns": the default human is called You.
+const owns = (name) => `${name} ${name === "You" ? "own" : "owns"}`;
+
 // --- News and standings -----------------------------------------------------------------------
 
 function addNews(items, first = false) {
@@ -405,12 +437,14 @@ function newsItem(n) {
   img.src = hullUrl(n.player, "comm.png");
   img.alt = `${who.name}'s ${HULLS[n.player][1]}`;
   const name = (i) => i === NEUTRAL ? "the neutrals" : game.players[i].name;
+  // Functions, so only the message for this kind is built (a reinforcement
+  // has no defender to name).
   const text = {
-    reinforced: `Reinforcements (${n.ships} ship${n.ships === 1 ? "" : "s"}) have arrived for planet ${n.planet}.`,
-    held: `Planet ${n.planet} has held against an attack from ${who.name}.`,
-    fell: `Planet ${n.planet} has fallen to ${who.name}${n.defender === NEUTRAL ? "" : `, taken from ${name(n.defender)}`}.`,
-    won: `${who.name} owns the entire galaxy.`,
-  }[n.kind];
+    reinforced: () => `Reinforcements (${n.ships} ship${n.ships === 1 ? "" : "s"}) have arrived for planet ${n.planet}.`,
+    held: () => `Planet ${n.planet} has held against an attack from ${who.name}.`,
+    fell: () => `Planet ${n.planet} has fallen to ${who.name}${n.defender === NEUTRAL ? "" : `, taken from ${name(n.defender)}`}.`,
+    won: () => `${owns(who.name)} the entire galaxy.`,
+  }[n.kind]();
   const span = document.createElement("span");
   span.append(chip(who.color), text);
   li.append(img, span);
@@ -434,6 +468,9 @@ function renderStandings() {
 }
 
 // --- Go -------------------------------------------------------------------------------------
+
+// For play-test scripts (projects/konquest/playtest/): read-only access to the game.
+globalThis.konquest = { get game() { return game; } };
 
 const params = new URLSearchParams(location.search);
 if (params.has("watch")) seats = [{ name: "Easy", type: "easy" }, { name: "Medium", type: "medium" }, { name: "Hard", type: "hard" }];

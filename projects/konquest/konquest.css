@@ -55,7 +55,7 @@ body { padding: 12px 16px 24px; }
 .tip dd { margin: 0; }
 
 /* ---- the side: engraved panels ---- */
-.side { display: grid; gap: 12px; align-content: start; }
+.side { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; }
 .yc-panel form p { margin: 6px 0; }
 #send-route { color: var(--yc-phos); font-weight: 700; margin-top: 0; }
 label { display: inline-flex; align-items: center; gap: 6px; margin: 4px 10px 4px 0; }
@@ -99,3 +99,19 @@ legend { color: var(--yc-ice); font: 700 11px/1 var(--yc-title); letter-spacing:
   .game.yc-console { padding: 6px; border-width: 2px; }
   .standings th, .standings td { padding: 3px 2px; }
 }
+
+/* ---- the end of a game, and the rules ---- */
+.ending-title { margin: 0; font: 700 clamp(22px, 4vw, 36px)/1.1 var(--yc-title); letter-spacing: 0.3em; color: var(--yc-ice);
+  text-shadow: 0 0 22px rgb(190 225 255 / 0.4); }
+.ending-title.lost { color: var(--yc-hal); text-shadow: 0 0 22px rgb(255 42 26 / 0.45); }
+.ending-title.won { color: var(--yc-phos); text-shadow: 0 0 22px rgb(92 255 92 / 0.5); }
+.ending-text { margin: 0; font: 400 15px/1.5 var(--yc-mono); letter-spacing: 0.04em; text-transform: none; color: var(--yc-text); }
+.cover p { margin: 0; }
+.help > summary { list-style: none; cursor: pointer; margin-bottom: -10px; }
+.help[open] > summary { margin-bottom: 8px; }
+.help > summary::-webkit-details-marker { display: none; }
+.help > summary::after { content: " ▸"; }
+.help[open] > summary::after { content: " ▾"; }
+.help ol { margin: 0; padding-left: 1.3em; font-size: 0.85rem; display: grid; gap: 4px; }
+.help b { color: var(--yc-phos); }
+.help p { font-size: 0.8rem; margin: 8px 0 0; }

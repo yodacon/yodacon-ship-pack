@@ -11,7 +11,7 @@
 // with the URL, the UTC capture time and each part's rectangle.
 // tools/stamp_capture.py stacks the parts and dates them.
 import { spawn } from "node:child_process";
-import { mkdirSync, writeFileSync, mkdtempSync } from "node:fs";
+import { mkdirSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -118,4 +118,6 @@ try {
   cdp.ws.close();
 } finally {
   chrome.kill();
+  await new Promise((r) => setTimeout(r, 300));
+  rmSync(profile, { recursive: true, force: true });   // ~30 MB each
 }

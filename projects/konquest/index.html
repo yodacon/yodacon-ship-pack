@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Konquest · Yodacon Ship Pack</title>
 <meta name="description" content="KDE's Konquest in the browser, with its exact rules, and Paul Richeson's ConEx ships flying the fleets.">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../lib/yodacon-style.css">
 <link rel="stylesheet" href="konquest.css">
 <script type="module" src="konquest.js"></script>
@@ -30,6 +31,13 @@
       <p id="cover-text"></p>
       <button type="button" id="cover-go" class="yc-plate yc-go">I'm ready</button>
     </div>
+    <div id="ending" class="cover" hidden>
+      <p id="ending-title" class="ending-title"></p>
+      <p id="ending-text" class="ending-text"></p>
+      <p><button type="button" id="rematch" class="yc-plate yc-go">Rematch</button>
+        <button type="button" id="ending-new" class="yc-plate">New game</button>
+        <button type="button" id="ending-look" class="yc-plate">See the board</button></p>
+    </div>
     <div id="tip" class="tip" role="tooltip" hidden></div>
   </section>
 
@@ -45,6 +53,25 @@
       </form>
       <ul id="orders" class="orders"></ul>
     </section>
+
+    <details class="yc-panel help" id="help">
+      <summary class="yc-panel-title">How to play</summary>
+      <ol>
+        <li>Each player starts with one planet. Every turn, every planet builds ships:
+          its <b>production</b>.</li>
+        <li>Click one of your planets, then any other planet, choose how many ships, and
+          <b>Send</b>. Do this as often as you like, then <b>End turn</b>.</li>
+        <li>Fleets take <b>half the distance, rounded up</b>, in turns. Hover a planet to see
+          how far it is.</li>
+        <li>On your own planet, a fleet reinforces it. Anywhere else, it fights one ship at a
+          time: attackers hit with their <b>home planet's</b> kill percentage, defenders with
+          their own.</li>
+        <li>Neutral planets build one ship a turn. Win by owning every planet.</li>
+      </ol>
+      <p class="muted">Leave enough ships at home: a planet with none falls to the smallest fleet.
+        Easy waits until it has 30 ships; Medium attacks whatever is nearest and weaker;
+        Hard plans every fleet.</p>
+    </details>
 
     <section class="yc-panel" aria-labelledby="news-h">
       <h2 id="news-h">News</h2>

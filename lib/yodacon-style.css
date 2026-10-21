@@ -27,6 +27,7 @@
 }
 
 /* ---- the page: space ---------------------------------------------------------------- */
+.yc-space, .yc-space *, .yc-space *::before, .yc-space *::after { box-sizing: border-box; }
 .yc-space {
   margin: 0;
   background-color: var(--yc-void);
