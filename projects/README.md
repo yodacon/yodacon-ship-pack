@@ -19,6 +19,9 @@ To try code without copying anything, use the [playground](../playground/).
 | [**Dock**](dock/) | **Canvas game.** Bring ten hulls home to a turning Large Pin carrier with a main engine, a retro and inertia. The tractor beam takes you when you are behind its stern, slow and on the carrier's own sprite frame. |
 | [**Crossing**](crossing/) | **Canvas game.** Frogger: hop through five lanes of traffic, ride Tomaquads, Darts, the Large Pin, Yodacons and Callistos across the ion stream, and fill five bays. Everything flies on frames 9 and 27. |
 | [**Salvo**](salvo/) | **Canvas game.** Battleship by the salvo rule, ConEx against Override and konex pirates, one shot per ship afloat, against a probability-map opponent. Sunk pirates show their 1997 targeting pictures. |
+| [**Flak**](flak/) | **Canvas game.** Missile Command: raiders dive on a fleet at anchor on the frame for their line of attack, Defender batteries turn to aim, Necromancers split into Tridents, kills chain. |
+| [**Formation**](formation/) | **Canvas game.** Snake: rescued ships fall in behind the Yodacon and follow its path, each on the frame for its own heading; every hull drawn at one length, measured from its sprite. |
+| [**Refit**](refit/) | **Canvas puzzle.** Match-3: ships turn on their frames to face the way they move; four in a row leaves a Yodacon bomb, five or an L leaves a Large Pin that clears a row and column. |
 | [**Fleet Tactics**](fleet-tactics/) | **DOM card game.** Draft ships within a budget, then fight card by card against a computer that drafts for value and focuses fire. Hull, firepower and initiative come from each ship's 1997 record. |
 | [**Orbital Defence**](orbital-defence/) | **Canvas game.** Hold a planet against waves of ConEx ships. Fire the planet's cannon, and between waves buy Advisor patrols that orbit and fire on their own, or repair. |
 | [**Slingshot**](slingshot/) | **Canvas game.** Gravity golf with the 1997 Dart: drag back and let go, and only the planets steer it through the gate. Six levels against par. |
@@ -50,6 +53,12 @@ To try code without copying anything, use the [playground](../playground/).
 [![Crossing](crossing/screenshot.png)](crossing/)
 
 [![Salvo](salvo/screenshot.png)](salvo/)
+
+[![Flak](flak/screenshot.png)](flak/)
+
+[![Formation](formation/screenshot.png)](formation/)
+
+[![Refit](refit/screenshot.png)](refit/)
 
 [![Fleet Tactics](fleet-tactics/screenshot.png)](fleet-tactics/)
 

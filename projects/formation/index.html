@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formation · Yodacon Ship Pack</title>
+<meta name="description" content="Snake with the pack's ships: rescue stranded hulls and they fall in behind you, each on the frame for its own heading.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="formation.css">
+<script type="module" src="formation.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Formation</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value" id="length">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Speed</span><span class="yc-value" id="speed">105</span></span>
+    <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">0</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The minefield">
+    <canvas id="screen" width="800" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Stranded</h2>
+      <p id="next" class="next yc-crt">–</p>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> steer; the Yodacon never stops. On a touch screen,
+        hold the left or right half of the field. Gamepad: stick or d-pad. <kbd>Enter</kbd> or <kbd>Space</kbd> starts.</p>
+      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Every rescued ship joins the line and follows your exact path, drawn on the frame for its own heading, so the
+        formation bends through the frames as it turns. A stranded ship tumbles through all 36 frames while it waits. Each rescue
+        scores ten points for every ship in the line, triple for the Large Pin and the 1998 Yodacon, speeds you up and lays
+        another mine.</p>
+      <p class="muted">The hulls run from 24 to 87 pixels long; here each is scaled to 34, measured from its own sprite, so the line reads as a line.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

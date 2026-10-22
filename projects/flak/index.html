@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flak · Yodacon Ship Pack</title>
+<meta name="description" content="Missile Command with the pack's ships: raiders dive on their real headings, Defender batteries turn to aim, and you burst flak in their path.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="flak.css">
+<script type="module" src="flak.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Flak</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Wave</span><span class="yc-value" id="wave">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Fleet</span><span class="yc-value" id="afloat">6/6</span></span>
+    <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">0</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The anchorage">
+    <canvas id="screen" width="800" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted">Click (or tap) where the flak should burst; the nearest battery with rounds fires. <kbd>1</kbd> <kbd>2</kbd>
+        <kbd>3</kbd> (or <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>) fire a chosen battery at the crosshair, <kbd>Space</kbd> the nearest.
+        The arrow keys move the crosshair (<kbd>Shift</kbd> for big steps).</p>
+      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Six ships lie at anchor: the Yodacon, Callisto, Large Pin, Tomaquad, Advisor and Citrus. Raiders dive on them
+        on the sprite frame for their line of attack: Tridents, fast Gryphons, Necromancers that split into three Tridents, Darts
+        that take two bursts, and every fifth wave the 1998 Yodacon. Ten rounds a battery a wave; the centre battery's shells are
+        faster. A kill bursts too, so kills can chain.</p>
+      <p class="muted">Rounds left and ships afloat score at the end of each wave. Every 10,000 points a lost ship comes back.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+  The gas giant is the pack's generated art.</p>
+</footer>
+</body>
+</html>

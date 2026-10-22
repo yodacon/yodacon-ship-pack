@@ -44,6 +44,12 @@ moved or renamed file a major one. A tag's files never change.
   lengths read from the sprite's alpha
 - **Salvo**: Battleship by the salvo rule with a probability-map opponent and
   the targeting pictures
+- **Flak**: Missile Command; raiders on the frame for their dive, Defender
+  batteries that turn to aim, splitting Necromancers
+- **Formation**: Snake; rescued hulls follow your path on their own headings,
+  all drawn at one measured length
+- **Refit**: match-3; ships turn to face the way they move, Yodacon and Large
+  Pin specials
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`
