@@ -23,6 +23,7 @@ if (!url || !scriptPath) {
   console.error("usage: drive_page.mjs <url> <player.js> [screenshot.png] [--timeout ms] [--width px]");
   process.exit(2);
 }
+const body = readFileSync(scriptPath, "utf8");             // before the browser starts: a bad path costs nothing
 
 const port = 9400 + Math.floor(Math.random() * 400);
 const profile = mkdtempSync(join(tmpdir(), "drive-"));   // removed on exit: profiles are ~30 MB
@@ -40,6 +41,8 @@ setTimeout(() => { console.error(`timed out after ${timeout} ms`); done(1); }, t
 // Stopped from outside (Ctrl-C, kill, a timeout wrapper): take the browser down
 // too, or it keeps rendering the page with nobody watching.
 for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(sig, () => done(130));
+// And if this script itself throws.
+for (const ev of ["uncaughtException", "unhandledRejection"]) process.on(ev, (e) => { console.error(e); done(1); });
 
 let ws;
 for (let i = 0; i < 50 && !ws; i++) {
@@ -81,7 +84,6 @@ if (width !== 1280) await send("Emulation.setDeviceMetricsOverride", { width, he
 await send("Page.navigate", { url });
 await sleep(2500);
 
-const body = readFileSync(scriptPath, "utf8");
 const wrapped = `(async () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const log = (...a) => console.log("[player]", ...a);
