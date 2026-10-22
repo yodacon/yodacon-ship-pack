@@ -22,6 +22,10 @@ To try code without copying anything, use the [playground](../playground/).
 | [**Flak**](flak/) | **Canvas game.** Missile Command: raiders dive on a fleet at anchor on the frame for their line of attack, Defender batteries turn to aim, Necromancers split into Tridents, kills chain. |
 | [**Formation**](formation/) | **Canvas game.** Snake: rescued ships fall in behind the Yodacon and follow its path, each on the frame for its own heading; every hull drawn at one length, measured from its sprite. |
 | [**Refit**](refit/) | **Canvas puzzle.** Match-3: ships turn on their frames to face the way they move; four in a row leaves a Yodacon bomb, five or an L leaves a Large Pin that clears a row and column. |
+| [**Rockfall**](rockfall/) | **Canvas game.** Asteroids: turn on the sprite's frames, break up the rocks, dodge Necromancers and aiming Darts; hyperspace that sometimes goes wrong. |
+| [**Ricochet**](ricochet/) | **Canvas game.** Breakout: pirate formations nose down on frame 18, tougher hulls take more hits, the Large Pin as a boss, your paddle a ship; escort-wing, multiball, laser and slow pickups, and a tractor. |
+| [**Broadside**](broadside/) | **Canvas game.** Turn-based artillery: two fleets of three across a field of planets whose gravity bends every shell; a heavy shell or a spread once a battle. |
+| [**Spec Sheet**](spec-sheet/) | **Pure DOM card game.** Top Trumps on the 1997 records: call a line from your card, the higher number takes both; a scanner, and an Admiral who reads your card. |
 | [**Fleet Tactics**](fleet-tactics/) | **DOM card game.** Draft ships within a budget, then fight card by card against a computer that drafts for value and focuses fire. Hull, firepower and initiative come from each ship's 1997 record. |
 | [**Orbital Defence**](orbital-defence/) | **Canvas game.** Hold a planet against waves of ConEx ships. Fire the planet's cannon, and between waves buy Advisor patrols that orbit and fire on their own, or repair. |
 | [**Slingshot**](slingshot/) | **Canvas game.** Gravity golf with the 1997 Dart: drag back and let go, and only the planets steer it through the gate. Six levels against par. |
@@ -59,6 +63,14 @@ To try code without copying anything, use the [playground](../playground/).
 [![Formation](formation/screenshot.png)](formation/)
 
 [![Refit](refit/screenshot.png)](refit/)
+
+[![Rockfall](rockfall/screenshot.png)](rockfall/)
+
+[![Ricochet](ricochet/screenshot.png)](ricochet/)
+
+[![Broadside](broadside/screenshot.png)](broadside/)
+
+[![Spec Sheet](spec-sheet/screenshot.png)](spec-sheet/)
 
 [![Fleet Tactics](fleet-tactics/screenshot.png)](fleet-tactics/)
 

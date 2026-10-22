@@ -1,0 +1,51 @@
+body { padding: 12px 16px 24px; }
+.muted { color: var(--yc-phos-dim); font-size: 0.8rem; }
+kbd { font: 700 11px var(--yc-mono); color: var(--yc-ice); border: 1px solid var(--yc-chrome-lo); border-radius: 3px; padding: 0 4px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; max-width: 1160px; margin: 0 auto 12px; }
+.crumbs { margin: 0; width: 100%; font-size: 0.85rem; }
+.top h1 { font-size: clamp(20px, 3.6vw, 32px); }
+.readouts { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 6px 14px; }
+.readouts .yc-value { font-size: 18px; }
+.game { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: 12px; max-width: 1160px; margin: 0 auto; align-items: start; }
+@media (max-width: 900px) { .game { grid-template-columns: minmax(0, 1fr); } }
+.table { position: relative; padding: 14px; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 560px) { .pair { gap: 8px; } }
+.pair h2 { margin: 0 0 6px; font-size: 0.85rem; color: var(--yc-ice); }
+.card { border: 1px solid var(--yc-chrome-lo); border-radius: 8px; background: linear-gradient(180deg, #0b1014, #05070a); padding: 10px; min-height: 420px; }
+.card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #000; border-radius: 4px; }
+.card h3 { margin: 8px 0 0; color: var(--yc-ice); font-size: 1rem; }
+.card .source { margin: 0 0 6px; color: var(--yc-phos-dim); font-size: 0.72rem; }
+.lines { display: grid; gap: 3px; }
+.line { display: grid; grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 3px 5px;
+  font: 12px var(--yc-mono); color: var(--yc-text); background: rgb(255 255 255 / 0.03); border: 1px solid transparent; border-radius: 3px; text-align: left; }
+.line:not(:disabled) { cursor: pointer; }
+.line:not(:disabled):hover, .line:focus-visible { border-color: var(--yc-phos); }
+.line:disabled { opacity: 1; }
+.line .bar { height: 5px; background: rgb(255 255 255 / 0.08); border-radius: 2px; overflow: hidden; }
+.line .bar i { display: block; height: 100%; background: var(--yc-phos-dim); }
+.line .value { color: var(--yc-ice); font-weight: 700; }
+.line.picked { border-color: var(--yc-amber); }
+.line.win { background: rgb(92 255 92 / 0.18); border-color: var(--yc-phos); }
+.line.lose { background: rgb(255 42 26 / 0.15); border-color: var(--yc-hal); }
+.line.tie { background: rgb(255 179 64 / 0.15); }
+.card.down { display: grid; }
+.back { display: grid; place-content: center; gap: 10px; text-align: center; border-radius: 6px;
+  background: repeating-linear-gradient(45deg, #0b1014 0 8px, #0e151a 8px 16px); border: 1px solid var(--yc-chrome-lo); }
+.back span { color: var(--yc-phos-dim); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.back b { font: 700 22px var(--yc-title); letter-spacing: 0.25em; color: var(--yc-ice); }
+.prompt { margin: 12px 0 0; min-height: 1.4em; text-align: center; color: var(--yc-amber); }
+.banner { position: absolute; left: 50%; top: 40%; transform: translateX(-50%); width: min(520px, 90%); display: grid; gap: 8px; text-align: center;
+  padding: 18px; background: rgb(2 4 6 / 0.92); border: 1px solid var(--yc-chrome-lo); border-radius: 6px; }
+.banner[hidden] { display: none; }
+.banner p { margin: 0; color: var(--yc-text); }
+.banner-title { font: 700 clamp(18px, 4vw, 28px)/1.1 var(--yc-title); letter-spacing: 0.25em; text-transform: uppercase; color: var(--yc-ice); }
+.side { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.side h2 { margin: 0 0 8px; font-size: 0.9rem; color: var(--yc-ice); }
+.side p { margin: 0 0 8px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.log { list-style: none; margin: 0; padding: 8px 10px; min-height: 8em; font-size: 0.78rem; }
+.log li { margin: 0 0 4px; color: var(--yc-text); }
+select.yc-plate { font: 12px var(--yc-mono); max-width: 100%; }
+.credit { max-width: 1160px; margin: 16px auto 0; color: var(--yc-phos-dim); font-size: 0.75rem; }
+@media (max-width: 520px) { body { padding: 8px; } .game.yc-console { padding: 6px; } .line { grid-template-columns: minmax(0, 1fr) auto; } .line .bar { display: none; } }

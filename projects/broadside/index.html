@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broadside · Yodacon Ship Pack</title>
+<meta name="description" content="Turn-based artillery with the pack's ships: two fleets of three, shells bent by the planets' gravity, a special shot each.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="broadside.css">
+<script type="module" src="broadside.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Broadside</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Turn</span><span class="yc-value" id="turn">–</span></span>
+    <span class="yc-readout"><span class="yc-label">Yours</span><span class="yc-value" id="you-left">3/3</span></span>
+    <span class="yc-readout"><span class="yc-label">Theirs</span><span class="yc-value" id="them-left">3/3</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The field">
+    <canvas id="screen" width="900" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2 id="who">&nbsp;</h2>
+      <p id="aim" class="aim yc-crt">&nbsp;</p>
+      <p class="buttons"><button type="button" id="fire" class="yc-plate yc-go">Fire</button>
+        <button type="button" id="special" class="yc-plate" aria-pressed="false">Special</button></p>
+      <p class="muted">Drag back from your ship and let go, like a slingshot: the further, the harder. Or <kbd>←</kbd><kbd>→</kbd>
+        angle, <kbd>↑</kbd><kbd>↓</kbd> power, <kbd>S</kbd> special, <kbd>Space</kbd> fire.</p>
+    </section>
+    <section class="yc-panel">
+      <h2>Log</h2>
+      <ul id="log" class="log yc-crt" aria-live="polite"></ul>
+    </section>
+    <section class="yc-panel">
+      <p><label class="yc-label" for="map">Map</label> <select id="map" class="yc-plate"></select></p>
+      <p><label class="yc-label" for="level">Level</label> <select id="level" class="yc-plate"><option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option><option value="hard">Hard</option></select></p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">New battle</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+      <p class="muted">The sides take turns, each ship in turn. A direct hit does full damage, a near miss half; bigger hulls hit
+        harder. Once a battle each ship has a special: a <b>heavy shell</b> (double damage) from a hull 60 px or more, a
+        <b>spread of three</b> from a smaller one. The planets pull every shell.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships and planets from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor
+  and Citrus, GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

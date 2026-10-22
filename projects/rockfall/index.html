@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockfall · Yodacon Ship Pack</title>
+<meta name="description" content="Asteroids with the pack's ships: turn on the sprite's frames, break up the rocks, and dodge the Necromancers and Darts.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="rockfall.css">
+<script type="module" src="rockfall.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Rockfall</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">3</span></span>
+    <span class="yc-readout"><span class="yc-label">Wave</span><span class="yc-value" id="wave">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Jumps</span><span class="yc-value" id="jumps">3</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The rock field">
+    <canvas id="screen" width="800" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h">
+      <h2 id="pick-h">Choose your ship</h2>
+      <div id="hulls" class="hulls"></div>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>Space</kbd> fire · <kbd>H</kbd> or <kbd>Shift</kbd>
+        hyperspace · <kbd>Enter</kbd> another game. Gamepad: stick, d-pad up or RT thrust, A fire, B hyperspace.</p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Big rocks break into two middling ones, middling into two small (20, 50 and 100 points). A Necromancer
+        crosses now and then, firing at random; from wave 4 a Dart does too, faster, and it aims. An extra life every 10,000.</p>
+      <p class="muted"><b>Hyperspace</b>: three jumps a wave, somewhere at random, clear of rocks if it can be. One jump in
+        eight goes wrong.</p>
+      <p class="muted">Every ship is drawn 30 px long, scaled from its own sprite, and turns, thrusts and fires by its record.</p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Turn left">◀</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Thrust">▲</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Turn right">▶</button>
+    <button type="button" class="yc-plate" data-pad="fire" aria-label="Fire">FIRE</button>
+    <button type="button" class="yc-plate" data-pad="jump" aria-label="Hyperspace">JUMP</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

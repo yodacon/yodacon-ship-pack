@@ -52,6 +52,10 @@ moved or renamed file a major one. A tag's files never change.
   all drawn at one measured length
 - **Refit**: match-3; ships turn to face the way they move, Yodacon and Large
   Pin specials
+- **Rockfall** (Asteroids, hyperspace), **Ricochet** (Breakout against pirate
+  formations, a tractor), **Broadside** (turn-based gravity artillery, a
+  special shot per ship) and **Spec Sheet** (Top Trumps on the 1997 records,
+  a scanner)
 - **A new level and a special ability in every game** (Konquest's rules
   unchanged):
 

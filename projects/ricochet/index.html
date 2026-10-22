@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ricochet · Yodacon Ship Pack</title>
+<meta name="description" content="Breakout with the pack's ships: break pirate formations ship by ship with a ball off your own hull, five formations and the Large Pin.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="ricochet.css">
+<script type="module" src="ricochet.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Ricochet</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">3</span></span>
+    <span class="yc-readout"><span class="yc-label">Formation</span><span class="yc-value" id="level">1</span></span>
+    <span class="yc-readout"><span class="yc-label">Tractor</span><span class="yc-value" id="tractor">3</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The formation">
+    <canvas id="screen" width="640" height="600"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h">
+      <h2 id="pick-h">Choose your paddle</h2>
+      <div id="hulls" class="hulls"></div>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted">Move the mouse (or drag a finger), or <kbd>←</kbd><kbd>→</kbd>. <kbd>Space</kbd> or a click launches.
+        <kbd>Shift</kbd> or <kbd>C</kbd> tractor · <kbd>Enter</kbd> another game. Gamepad: stick, A to launch, B tractor.</p>
+      <p class="buttons"><button type="button" id="tractor-btn" class="yc-plate yc-go">Tractor</button>
+        <button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Every pirate flies nose down on frame 18; the tougher the hull, the more hits it takes (the pips under it).
+        Five formations: the picket line, a chevron, a fortress, an escort, and the Large Pin, which takes fourteen. Then round
+        two, every ship a hit tougher.</p>
+      <p class="muted">Where the ball meets your hull sets the angle out. From the third formation the front rank drops bombs
+        that stun the paddle for a second. Pickups: <b>W</b> escort wings (two Gryphons alongside), <b>M</b> two more balls,
+        <b>L</b> lasers, <b>S</b> a slower ball.</p>
+      <p class="muted"><b>Tractor</b>: three a formation. The next time the ball meets the paddle it's caught; launch it again
+        when you're ready.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>
