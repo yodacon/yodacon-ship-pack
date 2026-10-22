@@ -2,7 +2,7 @@
 // file inside it, and report what the script returns, every console error and
 // exception, and a screenshot. For play-testing the games end to end.
 //
-//   node tools/drive_page.mjs <url> <player.js> [screenshot.png] [--timeout ms]
+//   node tools/drive_page.mjs <url> <player.js> [screenshot.png] [--timeout ms] [--width px]
 //
 // player.js is the body of an async function run in the page; whatever it
 // returns is printed. It can use `sleep(ms)` and `log(...)`, both provided.
@@ -16,9 +16,11 @@ import { join } from "node:path";
 const args = process.argv.slice(2);
 const tIdx = args.indexOf("--timeout");
 const timeout = tIdx >= 0 ? Number(args.splice(tIdx, 2)[1]) : 120000;
+const wIdx = args.indexOf("--width");
+const width = wIdx >= 0 ? Number(args.splice(wIdx, 2)[1]) : 1280;
 const [url, scriptPath, shot] = args;
 if (!url || !scriptPath) {
-  console.error("usage: drive_page.mjs <url> <player.js> [screenshot.png] [--timeout ms]");
+  console.error("usage: drive_page.mjs <url> <player.js> [screenshot.png] [--timeout ms] [--width px]");
   process.exit(2);
 }
 
@@ -72,6 +74,7 @@ await send("Runtime.enable");
 await send("Log.enable");
 await send("Page.enable");
 await send("Emulation.setFocusEmulationEnabled", { enabled: true });
+if (width !== 1280) await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width < 600 });
 await send("Page.navigate", { url });
 await sleep(2500);
 

@@ -64,12 +64,12 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 
 ## Next: games
 
-- [ ] Orbital Defence (Canvas 2D)
-- [ ] Slingshot (gravity, Canvas 2D)
-- [ ] ConEx Courier (trade and fly; DOM + Canvas)
-- [ ] Pin Miner (idle, DOM only)
-- [ ] Fleet Tactics (cards with comm portraits)
-- [ ] Cutaway (repair by target picture)
+- [x] Orbital Defence (Canvas 2D)
+- [x] Slingshot (gravity, Canvas 2D)
+- [x] ConEx Courier (trade and fly; DOM + Canvas)
+- [x] Pin Miner (idle, DOM only)
+- [x] Fleet Tactics (cards with comm portraits)
+- [x] Cutaway (ship recognition by target picture)
 
 ## Assets
 

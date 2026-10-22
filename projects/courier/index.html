@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ConEx Courier · Yodacon Ship Pack</title>
+<meta name="description" content="Escape Velocity in miniature: fly ConEx ships between four systems, trade, run courier missions, fight pirates and work up to a Large Pin.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="courier.css">
+<script type="module" src="courier.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">ConEx Courier</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Credits</span><span class="yc-value" id="credits">0</span></span>
+    <span class="yc-readout"><span class="yc-label">System</span><span class="yc-value" id="system">–</span></span>
+    <span class="yc-readout"><span class="yc-label">Fuel</span><span class="yc-value" id="fuel">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Hold</span><span class="yc-value" id="hold">0</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <div class="main-col">
+    <section class="yc-viewport view" aria-label="Space around your ship">
+      <canvas id="screen" width="760" height="520"></canvas>
+      <p id="status" class="status yc-crt" aria-live="polite"></p>
+      <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    </section>
+    <div id="pad" class="pad" aria-label="Touch controls">
+      <button type="button" data-key="left" aria-label="Turn left">◀</button>
+      <button type="button" data-key="thrust" aria-label="Thrust">▲</button>
+      <button type="button" data-key="right" aria-label="Turn right">▶</button>
+      <button type="button" data-key="retro" aria-label="Turn to reverse">▼</button>
+      <button type="button" data-key="fire" aria-label="Fire">Fire</button>
+      <button type="button" data-tap="land">Land</button>
+      <button type="button" data-tap="jump">Jump</button>
+    </div>
+    <section id="port" class="yc-panel port" hidden aria-labelledby="port-name">
+      <h2 id="port-name">Port</h2>
+      <p id="port-blurb" class="blurb"></p>
+      <p class="tabs" role="tablist">
+        <button type="button" class="yc-plate" data-tab="trade" role="tab">Trade</button>
+        <button type="button" class="yc-plate" data-tab="missions" role="tab">Missions</button>
+        <button type="button" class="yc-plate" data-tab="shipyard" role="tab">Shipyard</button>
+        <button type="button" class="yc-plate" data-tab="services" role="tab">Services</button>
+        <button type="button" id="takeoff" class="yc-plate yc-go">Take off</button>
+      </p>
+      <div id="port-body" class="port-body"></div>
+    </section>
+  </div>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Ship</h2>
+      <div class="ship-card">
+        <img id="ship-comm" alt="">
+        <div><p id="ship-name" class="ship-name"></p>
+          <p class="bar-label">Shield</p><p class="bar"><i id="shield-bar"></i></p>
+          <p class="bar-label">Armour</p><p class="bar armour"><i id="armour-bar"></i></p></div>
+      </div>
+      <p class="goal">Goal: own a Large Pin (<span id="goal-price"></span> credits).</p>
+    </section>
+    <section class="yc-panel">
+      <h2>Navigation</h2>
+      <label class="nav-label" for="jump-to">Jump to</label>
+      <select id="jump-to" class="yc-plate"></select>
+      <p class="muted">Fly clear of the planets (past the ring on the radar), then press <kbd>J</kbd>. One fuel a jump.</p>
+    </section>
+    <section class="yc-panel">
+      <h2>Missions</h2>
+      <ul id="missions" class="missions yc-crt"></ul>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> turn to reverse ·
+        <kbd>Space</kbd> fire · <kbd>L</kbd> land · <kbd>J</kbd> jump</p>
+      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships, portraits and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+  The planets are the pack's generated art.</p>
+</footer>
+</body>
+</html>

@@ -11,6 +11,15 @@ moved or renamed file a major one. A tag's files never change.
 - **Konquest**: KDE's Konquest with its exact rules; Easy, Medium and Hard
   opponents ordered by a tournament (Hard is BecAI); confirmation beeps;
   the pack's planets; the Yodacon console look
+- **Six more games** in `projects/`, each with a play-test that drives the page:
+  ConEx Courier (EV in miniature: trade, missions, pirates, shipyard),
+  Fleet Tactics (draft-and-fight cards), Orbital Defence, Slingshot,
+  Pin Miner (idle) and Cutaway (ship recognition)
+- **Pack page**: the Override section shows only its new hull, the Callisto,
+  and links the ten re-rendered 1997 designs
+- **Examples**: a tutorial note in IEEE form on starting a project with the
+  sprites, with listings from the library and a Phaser and a Godot port
+- **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`
 - **Style**: `docs/STYLE.md`, `lib/yodacon-style.css` and `styleguide/`;
   `docs/HOUSE-STYLE.md` for the family with treadcore and paulricheson.com
 - **Research**: `docs/research/`, eight dated reports; `BACKLOG.md`
