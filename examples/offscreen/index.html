@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>OffscreenCanvas in a Worker · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 860px; margin: 0 auto; }
+  canvas { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #05060b; image-rendering: pixelated; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 12px 0; }
+  button, select { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: inherit; }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  output { font-family: ui-monospace, monospace; color: var(--muted); }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
+  <h1>OffscreenCanvas in a worker</h1>
+  <p>The canvas is handed to a Web Worker, which loads the ships, runs the game and draws every frame. The page
+    only passes on your keys (← → ↑). Press <b>Block the main thread</b>: the page freezes for two seconds and the
+    ships fly on.</p>
+
+  <canvas id="c" width="760" height="460" aria-label="A fleet of pack ships drawn by a worker"></canvas>
+
+  <div class="controls">
+    <label>Fleet <select id="fleet">
+      <option selected>100</option><option>500</option><option>2000</option><option>5000</option>
+    </select></label>
+    <button type="button" id="block">Block the main thread for 2 s</button>
+    <output id="readout" aria-live="polite">Starting the worker…</output>
+  </div>
+  <p><output id="blocked" aria-live="polite"></output></p>
+
+  <p>Try <a href="?edition=override&amp;ship=callisto">?edition=override&amp;ship=callisto</a> as the flagship.</p>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+
+<script type="module">
+  const canvas = document.getElementById("c");
+  const readout = document.getElementById("readout");
+  const q = new URLSearchParams(location.search);
+
+  if (!canvas.transferControlToOffscreen) {
+    readout.textContent = "This browser cannot hand a canvas to a worker (OffscreenCanvas).";
+    throw new Error("no OffscreenCanvas");
+  }
+
+  // Hand the canvas over. From here on only the worker can draw on it.
+  const offscreen = canvas.transferControlToOffscreen();
+  const worker = new Worker(new URL("worker.js", import.meta.url), { type: "module" });
+  worker.postMessage({
+    type: "start", canvas: offscreen, fleet: Number(document.getElementById("fleet").value),
+    edition: q.get("edition") || "conex", ship: q.get("ship") || "yodacon",
+  }, [offscreen]);
+
+  // The worker reports twice a second.
+  let latest = { frames: 0 };
+  worker.onmessage = ({ data: m }) => {
+    if (m.type === "ready") canvas.setAttribute("aria-label", `${m.name} among a fleet of pack ships, drawn by a worker`);
+    if (m.type === "stats") {
+      latest = m;
+      readout.textContent = `worker: ${m.fps} fps · ${m.ships} ships`;
+    }
+  };
+  worker.onerror = (e) => { readout.textContent = `worker failed: ${e.message}`; };
+
+  // Keys go to the worker as messages.
+  for (const type of ["keydown", "keyup"]) {
+    addEventListener(type, (e) => {
+      if (!e.key.startsWith("Arrow")) return;
+      e.preventDefault();
+      if (!e.repeat) worker.postMessage({ type: "key", key: e.key, down: type === "keydown" });
+    });
+  }
+  document.getElementById("fleet").onchange = (e) => worker.postMessage({ type: "fleet", n: Number(e.target.value) });
+
+  // Busy-wait on the main thread. Nothing on the page can update meanwhile,
+  // but the worker keeps drawing; its frame count shows how much.
+  document.getElementById("block").onclick = () => {
+    const out = document.getElementById("blocked");
+    out.textContent = "Blocking…";
+    setTimeout(() => {                                  // let "Blocking…" paint first
+      const before = latest.frames, start = performance.now();
+      while (performance.now() - start < 2000) { /* the main thread does nothing else */ }
+      setTimeout(() => {                                // a report from after the block
+        out.textContent = `The main thread was stuck for 2 s; the worker drew ${latest.frames - before} frames meanwhile.`;
+      }, 600);
+    }, 50);
+  };
+</script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 10 · October 2026</p>
+  <h2 class="title" id="note-title">Drawing Off the Main Thread: How the OffscreenCanvas Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The OffscreenCanvas example transfers its canvas to a module worker that loads pack ships with <code>loadShipMeta()</code> and <code>createImageBitmap()</code>, simulates a fleet of up to five thousand and draws it with the library's <code>drawShip()</code>. This note follows both source files and measures the result by blocking the page's own thread.</p>
+<p class="terms"><i>Index Terms</i>—OffscreenCanvas, Web Workers, ImageBitmap, Canvas 2D, sprite sheets.</p>
+
+<h3>I. Introduction</h3>
+<p>Everything a game does each frame normally shares one thread with the page: layout, input, scripts,
+garbage collection. <code>OffscreenCanvas</code> lets a page give its canvas to a Web Worker, which can then
+draw on it from its own thread. This example moves the whole game there: the worker loads the pack's ships,
+simulates a fleet and draws it; the page forwards keys and shows what the worker reports. Its source is two
+files, <code>examples/offscreen/index.html</code> and <code>worker.js</code>.</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the worker takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code> ×6</td><td><code>worker.js:12</code></td><td>Frame grid, stats</td></tr>
+<tr><td><code>sheet-alpha.png</code> ×6</td><td><code>worker.js:13</code></td><td>Decoded to an <code>ImageBitmap</code></td></tr>
+<tr><td><code>loadShipMeta()</code>, <code>drawShip()</code>, <code>frameIndex()</code></td><td><code>worker.js:3</code></td><td>Loading, drawing, frame choice</td></tr>
+</tbody></table>
+</figure>
+<p>The page itself loads no assets at all. The library imports into a module worker unchanged: it resolves
+its pack root from <code>import.meta.url</code> and touches <code>document</code> only when there is one.</p>
+
+<h3>III. Handing Over the Canvas</h3>
+<p>The page calls <code>transferControlToOffscreen()</code> once and posts the result to a module worker in
+the message's transfer list (Listing 1). After that the page can no longer draw on the canvas; it still lays
+it out, scales it with CSS and shows it, while the pixels come from the worker. A browser without the API
+gets a sentence instead of a broken page (<code>index.html:54</code>).</p>
+<figure>
+<figcaption><b>Listing 1.</b> The hand-over, <code>index.html:60–65</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">60</span>const offscreen = canvas.transferControlToOffscreen();</span><span class="l"><span class="n">61</span>const worker = new Worker(new URL(&quot;worker.js&quot;, import.meta.url), { type: &quot;module&quot; });</span><span class="l"><span class="n">62</span>worker.postMessage({</span><span class="l"><span class="n">63</span>  type: &quot;start&quot;, canvas: offscreen, fleet: Number(document.getElementById(&quot;fleet&quot;).value),</span><span class="l"><span class="n">64</span>  edition: q.get(&quot;edition&quot;) || &quot;conex&quot;, ship: q.get(&quot;ship&quot;) || &quot;yodacon&quot;,</span><span class="l"><span class="n">65</span>}, [offscreen]);</span></pre>
+</figure>
+
+<h3>IV. Images Without the DOM</h3>
+<p>A worker has no <code>Image</code> element, so the library's <code>loadShip()</code> cannot be used.
+The worker instead fetches <code>ship.json</code> with <code>loadShipMeta()</code>, fetches the sheet as a
+blob and decodes it with <code>createImageBitmap()</code> (Listing 2). An <code>ImageBitmap</code> is a valid
+<code>drawImage</code> source, so the result has the same shape as a <code>loadShip()</code> ship and the
+library's <code>drawShip()</code> draws it unchanged (<code>worker.js:52</code>).</p>
+<figure>
+<figcaption><b>Listing 2.</b> Loading a ship in a worker, <code>worker.js:11–14</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">11</span>async function loadShipBitmap(edition, slug) {</span><span class="l"><span class="n">12</span>  const ship = await loadShipMeta(edition, slug);</span><span class="l"><span class="n">13</span>  ship.sheet = await createImageBitmap(await (await fetch(ship.urls.sheet)).blob());</span><span class="l"><span class="n">14</span>  return ship;</span></pre>
+</figure>
+
+<h3>V. The Loop and the Messages</h3>
+<p>The worker runs the fixed-step loop of the Canvas example [2], with
+<code>requestAnimationFrame</code>, which dedicated workers provide, and a timer where they do not
+(<code>worker.js:58</code>). Each fleet ship turns slowly and moves along the frame it shows, using
+the pack's convention that heading <i>θ</i> moves along (sin <i>a</i>, −cos <i>a</i>) with
+<i>a</i> = 10 · <code>frameIndex</code>(<i>θ</i>)°. Messages go both ways (Listing 3): the page sends
+<code>start</code>, <code>key</code> and <code>fleet</code>; the worker answers with <code>ready</code> and,
+twice a second, <code>stats</code> (<code>worker.js:68</code>).</p>
+<figure>
+<figcaption><b>Listing 3.</b> The worker's message handler, <code>worker.js:75–91</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">75</span>onmessage = async ({ data: m }) =&gt; {</span><span class="l"><span class="n">76</span>  if (m.type === &quot;start&quot;) {</span><span class="l"><span class="n">77</span>    ctx = m.canvas.getContext(&quot;2d&quot;);</span><span class="l"><span class="n">78</span>    ({ width: W, height: H } = m.canvas);</span><span class="l"><span class="n">79</span>    [flagship, ...kinds] = await Promise.all([</span><span class="l"><span class="n">80</span>      loadShipBitmap(m.edition, m.ship),</span><span class="l"><span class="n">81</span>      ...[[&quot;conex&quot;, &quot;gryphon&quot;], [&quot;conex&quot;, &quot;trident&quot;], [&quot;conex&quot;, &quot;defender&quot;], [&quot;conex&quot;, &quot;necromancer&quot;], [&quot;conex&quot;, &quot;tomaquad&quot;], [&quot;conex&quot;, &quot;dart&quot;], [&quot;override&quot;, &quot;callisto&quot;]].map(([ed, slug]) =&gt; loadShipBitmap(ed, slug)),</span><span class="l"><span class="n">82</span>    ]);</span><span class="l"><span class="n">83</span>    Object.assign(s, { x: W / 2, y: H / 2 });</span><span class="l"><span class="n">84</span>    setFleet(m.fleet);</span><span class="l"><span class="n">85</span>    postMessage({ type: &quot;ready&quot;, name: flagship.name });</span><span class="l"><span class="n">86</span>    last = lastReport = performance.now();</span><span class="l"><span class="n">87</span>    nextFrame(tick);</span><span class="l"><span class="n">88</span>  }</span><span class="l"><span class="n">89</span>  if (m.type === &quot;key&quot;) keys[m.key] = m.down;</span><span class="l"><span class="n">90</span>  if (m.type === &quot;fleet&quot; &amp;&amp; kinds.length) setFleet(m.n);</span><span class="l"><span class="n">91</span>};</span></pre>
+</figure>
+
+<h3>VI. Proving the Point</h3>
+<p>The page's button busy-waits the main thread for two seconds
+(<code>index.html:95</code>). During that time the page cannot repaint its text or
+answer a click, yet the ships keep moving: the worker's frame counter, read before and after, shows how many
+frames it drew meanwhile, about 120 at 60 Hz. The same holds for any long main-thread task, such as a heavy
+React render or a large JSON parse.</p>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Move your game loop and drawing into a module worker; keep DOM work on the page.</li>
+  <li>Load sheets with <code>fetch</code> and <code>createImageBitmap</code>; draw with <code>drawShip()</code>.</li>
+  <li>Send input as small messages; send back only what the page must show.</li>
+</ol>
+<p>Sound stays on the page: <code>AudioContext</code> is not available in workers, so the worker should post
+events (a shot, a hit) for the page to play.</p>
+
+<h3>VIII. Conclusion</h3>
+<p>With one transfer and an <code>ImageBitmap</code> loader, the pack's Canvas code runs unchanged on its own
+thread, and the game's frame rate no longer depends on what the page is doing.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “A game loop on Canvas 2D,” Tutorial Note 3, <a href="../canvas/#note">examples/canvas/</a>.</li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>WHATWG, <i>HTML Living Standard</i>, §4.12.5.3 “The OffscreenCanvas interface,” 2026.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
+</body>
+</html>

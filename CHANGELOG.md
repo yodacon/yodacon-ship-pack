@@ -25,7 +25,8 @@ moved or renamed file a major one. A tag's files never change.
 - **Two more examples**: `examples/svg/` (a nested `<svg>` per ship, its
   `viewBox` on one frame) and `examples/css/` (no JavaScript: two `steps(6)`
   animations, and `mod()` with `:has()` for a held heading), with Tutorial
-  Notes 8 and 9
+  Notes 8 and 9; `examples/offscreen/` (the game in a Web Worker, drawing on an
+  OffscreenCanvas), Tutorial Note 10
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

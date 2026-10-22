@@ -28,6 +28,7 @@ text pattern, so after editing an example run
 | [`pixi/`](pixi/) | PixiJS 8.6.6: 36 textures sharing one source, ticker-driven flight, nearest scaling |
 | [`svg/`](svg/) | SVG: a nested `<svg>` per ship whose `viewBox` picks the frame; a flyable ship and orbiting escorts |
 | [`css/`](css/) | No JavaScript: two `steps(6)` animations spin a hangar; `:has()` and CSS `mod()` hold a heading |
+| [`offscreen/`](offscreen/) | OffscreenCanvas: a module worker loads ships with `createImageBitmap`, simulates and draws up to 5,000; keeps flying while the page is blocked |
 
 The [demo game](../demo/) is the full version: targets, missiles, minimap,
 touch controls and the EV-style info panel. The [library reference](../lib/README.md)

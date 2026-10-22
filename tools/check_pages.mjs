@@ -32,7 +32,7 @@ const DEFAULT_PAGES = [
   "", "demo/", "demo/?edition=override&ship=dart",
   "examples/dom/", "examples/canvas/", "examples/web-component/",
   "examples/threejs/", "examples/threejs/?mode=billboard",
-  "examples/phaser/", "examples/pixi/", "examples/svg/", "examples/css/",
+  "examples/phaser/", "examples/pixi/", "examples/svg/", "examples/css/", "examples/offscreen/",
 ];
 
 const args = process.argv.slice(2);

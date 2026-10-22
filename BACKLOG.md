@@ -52,7 +52,7 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 
 - [x] SVG sprite (`viewBox` per frame)
 - [x] CSS-only spin (two `steps(6)`, one per axis; `mod()` for a held heading)
-- [ ] OffscreenCanvas in a worker
+- [x] OffscreenCanvas in a worker
 - [ ] Web Audio engine and shots
 - [ ] Gamepad API
 - [ ] WebGPU: one ship, then ten thousand (with fallback)

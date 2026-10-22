@@ -692,9 +692,84 @@ and CSS math picks any single frame, so a pack ship can spin or hold a heading w
                "W3C, <i>CSS Easing Functions Level 1</i>, §3 “Step easing functions,” Candidate Recommendation, 2023."])
 
 
+# --- TN-10: OffscreenCanvas in a worker ---------------------------------------------------------------
+
+def note_offscreen():
+    f, w = P.format("offscreen"), "examples/offscreen/worker.js"
+    body = f"""
+<h3>I. Introduction</h3>
+<p>Everything a game does each frame normally shares one thread with the page: layout, input, scripts,
+garbage collection. <code>OffscreenCanvas</code> lets a page give its canvas to a Web Worker, which can then
+draw on it from its own thread. This example moves the whole game there: the worker loads the pack's ships,
+simulates a fleet and draws it; the page forwards keys and shows what the worker reports. Its source is two
+files, <code>examples/offscreen/index.html</code> and <code>worker.js</code>.</p>
+
+<h3>II. Assets Used</h3>
+{table("I", "What the worker takes from the pack", ["Asset", "Read at", "Used for"], [
+  ["<code>ship.json</code> ×6", ref(w, "const ship = await loadShipMeta"), "Frame grid, stats"],
+  ["<code>sheet-alpha.png</code> ×6", ref(w, "ship.sheet = await createImageBitmap"), "Decoded to an <code>ImageBitmap</code>"],
+  ["<code>loadShipMeta()</code>, <code>drawShip()</code>, <code>frameIndex()</code>", ref(w, "import { loadShipMeta, drawShip, frameIndex }"), "Loading, drawing, frame choice"],
+])}
+<p>The page itself loads no assets at all. The library imports into a module worker unchanged: it resolves
+its pack root from <code>import.meta.url</code> and touches <code>document</code> only when there is one.</p>
+
+<h3>III. Handing Over the Canvas</h3>
+<p>The page calls <code>transferControlToOffscreen()</code> once and posts the result to a module worker in
+the message's transfer list (Listing 1). After that the page can no longer draw on the canvas; it still lays
+it out, scales it with CSS and shows it, while the pixels come from the worker. A browser without the API
+gets a sentence instead of a broken page ({ref(f, "if (!canvas.transferControlToOffscreen)")}).</p>
+{listing(1, "The hand-over", f, ("const offscreen = canvas.transferControlToOffscreen();", "}, [offscreen]);"))}
+
+<h3>IV. Images Without the DOM</h3>
+<p>A worker has no <code>Image</code> element, so the library's <code>loadShip()</code> cannot be used.
+The worker instead fetches <code>ship.json</code> with <code>loadShipMeta()</code>, fetches the sheet as a
+blob and decodes it with <code>createImageBitmap()</code> (Listing 2). An <code>ImageBitmap</code> is a valid
+<code>drawImage</code> source, so the result has the same shape as a <code>loadShip()</code> ship and the
+library's <code>drawShip()</code> draws it unchanged ({ref(w, "for (const f of fleet) drawShip")}).</p>
+{listing(2, "Loading a ship in a worker", w, ("async function loadShipBitmap", "  return ship;"))}
+
+<h3>V. The Loop and the Messages</h3>
+<p>The worker runs the fixed-step loop of the Canvas example [2], with
+<code>requestAnimationFrame</code>, which dedicated workers provide, and a timer where they do not
+({ref(w, "const nextFrame =")}). Each fleet ship turns slowly and moves along the frame it shows, using
+the pack's convention that heading <i>θ</i> moves along (sin <i>a</i>, −cos <i>a</i>) with
+<i>a</i> = 10 · <code>frameIndex</code>(<i>θ</i>)°. Messages go both ways (Listing 3): the page sends
+<code>start</code>, <code>key</code> and <code>fleet</code>; the worker answers with <code>ready</code> and,
+twice a second, <code>stats</code> ({ref(w, 'postMessage({ type: "stats"')}).</p>
+{listing(3, "The worker's message handler", w, ('onmessage = async', "};"))}
+
+<h3>VI. Proving the Point</h3>
+<p>The page's button busy-waits the main thread for two seconds
+({ref(f, "while (performance.now() - start < 2000)")}). During that time the page cannot repaint its text or
+answer a click, yet the ships keep moving: the worker's frame counter, read before and after, shows how many
+frames it drew meanwhile, about 120 at 60 Hz. The same holds for any long main-thread task, such as a heavy
+React render or a large JSON parse.</p>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Move your game loop and drawing into a module worker; keep DOM work on the page.</li>
+  <li>Load sheets with <code>fetch</code> and <code>createImageBitmap</code>; draw with <code>drawShip()</code>.</li>
+  <li>Send input as small messages; send back only what the page must show.</li>
+</ol>
+<p>Sound stays on the page: <code>AudioContext</code> is not available in workers, so the worker should post
+events (a shot, a hit) for the page to play.</p>
+
+<h3>VIII. Conclusion</h3>
+<p>With one transfer and an <code>ImageBitmap</code> loader, the pack's Canvas code runs unchanged on its own
+thread, and the game's frame rate no longer depends on what the page is doing.</p>"""
+    return paper(10, "Drawing Off the Main Thread: How the OffscreenCanvas Example Uses the Pack",
+        "The OffscreenCanvas example transfers its canvas to a module worker that loads pack ships with "
+        "<code>loadShipMeta()</code> and <code>createImageBitmap()</code>, simulates a fleet of up to five thousand "
+        "and draws it with the library's <code>drawShip()</code>. This note follows both source files and "
+        "measures the result by blocking the page's own thread.",
+        "OffscreenCanvas, Web Workers, ImageBitmap, Canvas 2D, sprite sheets.",
+        body, [TN1, 'Yodacon Ship Pack, “A game loop on Canvas 2D,” Tutorial Note 3, <a href="../canvas/#note">examples/canvas/</a>.',
+               R_LIB, "WHATWG, <i>HTML Living Standard</i>, §4.12.5.3 “The OffscreenCanvas interface,” 2026."])
+
+
 NOTES = {"dom": note_dom, "canvas": note_canvas, "web-component": note_wc,
          "threejs": note_three, "phaser": note_phaser, "pixi": note_pixi,
-         "svg": note_svg, "css": note_css}
+         "svg": note_svg, "css": note_css, "offscreen": note_offscreen}
 BACK = '<p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a>'
 
 

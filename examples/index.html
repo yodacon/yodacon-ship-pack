@@ -71,6 +71,10 @@ explains how to start your own project.</p>
     <div><span class="tag">No JavaScript</span><h2><a href="css/">CSS-only spin</a></h2>
     <p>Two <code>steps(6)</code> animations spin the hangar; <code>:has()</code> and <code>mod()</code> hold a heading.</p>
     <p><a href="css/#note">Tutorial note: how it uses the assets</a></p></div></li>
+  <li><img src="../conex/ships/tomaquad/frames/24.png" alt="">
+    <div><span class="tag">Web Worker</span><h2><a href="offscreen/">OffscreenCanvas</a></h2>
+    <p>The game runs and draws in a worker; up to 5,000 ships, and it keeps flying while the page is blocked.</p>
+    <p><a href="offscreen/#note">Tutorial note: how it uses the assets</a></p></div></li>
 </ul>
 
 <p>Want more? The <a href="../demo/">demo game</a> is the full version, the
@@ -216,9 +220,9 @@ requestAnimationFrame(function frame(now) {
 <code>projects/</code> (Orbital Defence, Slingshot, ConEx Courier) use it, so they are worked examples of the same loop.</p>
 
 <h3>V. Moving to Another Engine</h3>
-<p>Each example page ends with its own note, Tutorial Notes 2–9 [8]–[15], which walks through that page's
+<p>Each example page ends with its own note, Tutorial Notes 2–10 [8]–[16], which walks through that page's
 source line by line: the DOM and CSS sprite, Canvas 2D, the <code>&lt;yodacon-ship&gt;</code> element,
-three.js, Phaser 3, PixiJS, SVG and CSS with no script. This section gives the pattern they share.</p>
+three.js, Phaser 3, PixiJS, SVG, CSS with no script, and a worker with OffscreenCanvas. This section gives the pattern they share.</p>
 <p>Nothing above depends on the browser except <code>drawImage</code>. An engine needs three things: the sheet
 as a texture, the frame grid from Listing 1, and Equation (1). Do <em>not</em> also rotate the sprite; the
 frame already shows the rotation.</p>
@@ -289,6 +293,7 @@ Listing 5, swap in your engine's draw call, and the 1997 fleet is flying in your
   <li>Yodacon Ship Pack, “Thirty-six textures on one image,” Tutorial Note 7, <a href="pixi/#note"><i>examples/pixi/</i></a>, 2026.</li>
   <li>Yodacon Ship Pack, “A viewport per ship: the SVG example,” Tutorial Note 8, <a href="svg/#note"><i>examples/svg/</i></a>, 2026.</li>
   <li>Yodacon Ship Pack, “Spinning without script: the CSS-only example,” Tutorial Note 9, <a href="css/#note"><i>examples/css/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “Drawing off the main thread: the OffscreenCanvas example,” Tutorial Note 10, <a href="offscreen/#note"><i>examples/offscreen/</i></a>, 2026.</li>
 </ol>
 </div>
 </article>
