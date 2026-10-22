@@ -2,13 +2,14 @@
 // ?hull= (default gryphon), steering with key presses. It asks the game's own
 // computer-racer logic where to go, so the result says whether a race can be
 // finished through the page and how a computer line places against the field.
+// It lights the afterburner where the computer racers do.
 while (!globalThis.rally) await sleep(100);
 const g = globalThis.rally, st = g.state;
 const hull = new URLSearchParams(location.search).get("hull") || "gryphon";
 const press = (key, on) => dispatchEvent(new KeyboardEvent(on ? "keydown" : "keyup", { key }));
 const down = new Set();
 const set = (key, on) => { if (on !== down.has(key)) { press(key, on); on ? down.add(key) : down.delete(key); } };
-const KEY = { left: "ArrowLeft", right: "ArrowRight", thrust: "ArrowUp", brake: "ArrowDown" };
+const KEY = { left: "ArrowLeft", right: "ArrowRight", thrust: "ArrowUp", brake: "ArrowDown", boost: "Shift" };
 const out = [];
 let steps = 0;
 document.getElementById("hull").value = hull;

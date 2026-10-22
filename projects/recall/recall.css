@@ -37,6 +37,7 @@ body { padding: 12px 16px 24px; }
   .board.pairs-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .board.pairs-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .board.pairs-11 { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+  .board.pairs-8.sets { grid-template-columns: repeat(8, minmax(0, 1fr)); }   /* Expert: 24 cards in three rows of eight */
 }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 

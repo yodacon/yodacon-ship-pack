@@ -1,7 +1,9 @@
 // A pilot for tools/drive_page.mjs: flies one run on ?diff= (default normal)
 // with ?hull= (default callisto), using key presses only. It stays with the
 // freighter, Tabs to the raider nearest it, and attacks; the wing keeps its
-// default order (guard). Reports delivered or lost, hull left and kills.
+// default order (guard). When two raiders are within 240 px it fires the ion
+// pulse. ?from=x starts the run further along, with the earlier raids
+// skipped. Reports delivered or lost, hull left and kills.
 while (!globalThis.convoy || globalThis.convoy.state.phase === "loading") await sleep(100);
 const q = new URLSearchParams(location.search), c = globalThis.convoy, st = c.state;
 document.getElementById("hull").value = q.get("hull") || "callisto";
@@ -13,11 +15,17 @@ const set = (key, on) => { if (on !== down.has(key)) { press(key, on); on ? down
 const tap = (key) => { press(key, true); press(key, false); };
 const deg = (r) => (r * 180) / Math.PI;
 tap("Enter");
-let steps = 0;
+let steps = 0, pulses = 0;
+if (q.get("from")) {                                       // ?from=x: start the freighter (and escorts) further along, raids before it skipped
+  const dx = Number(q.get("from")) - c.freighter().x;
+  for (const s of st.ships) s.x += dx;
+  st.raid = 6;
+}
 while (st.phase === "run" && st.time < 900) {
   const me = c.player(), fr = c.freighter();
   if (!me?.alive || !fr) { for (const k of [...down]) set(k, false); c.tick(2); await sleep(0); continue; }
   const raiders = st.ships.filter((s) => s.alive && s.side === "them");
+  if (raiders.filter((s) => Math.hypot(s.x - me.x, s.y - me.y) < 240).length >= 2 && st.time >= st.pulseAt) { tap("e"); pulses++; }
   const nearFr = raiders.sort((a, b) => Math.hypot(a.x - fr.x, a.y - fr.y) - Math.hypot(b.x - fr.x, b.y - fr.y))[0];
   if (nearFr && st.target !== nearFr) { for (let i = 0; i < raiders.length && st.target !== nearFr; i++) tap("Tab"); }
   const t = st.target?.alive ? st.target : null;
@@ -38,4 +46,4 @@ while (st.phase === "run" && st.time < 900) {
 for (const k of [...down]) set(k, false);
 const fr = c.freighter();
 const pct = fr?.alive ? Math.round((100 * (fr.shield + fr.armour)) / (fr.hull.shieldMax + fr.hull.armourMax)) : 0;
-return `${q.get("diff") || "normal"}: ${st.phase} after ${Math.round(st.time)} s, freighter ${pct}%, ${st.kills} kills, ${st.relaunches} spares left`;
+return `${q.get("diff") || "normal"}: ${st.phase} after ${Math.round(st.time)} s, freighter ${pct}%, ${st.kills} kills, ${st.relaunches} spares left, raids ${st.raid}/7, ${pulses} pulses`;

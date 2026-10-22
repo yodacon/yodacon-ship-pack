@@ -11,6 +11,10 @@ only once its pair is matched, so you have to recognise it from the pictures.
 | Easy | 6 | the spinning sprite (`<yodacon-ship spin>`) to its shipyard picture |
 | Normal | 8 | the shipyard picture to the 1997 targeting picture |
 | Hard | 11 | the comm portrait to the targeting picture |
+| Expert | 8 sets of three | the sprite, the shipyard picture and the targeting picture, all three turned together; a wrong card in a set turns them back |
+
+**Sensor scan** (the button): once a deal, every face-down card shows for a
+second. A perfect game is one with no misses and no scan.
 
 | | |
 | --- | --- |
@@ -24,7 +28,8 @@ and the flip respects `prefers-reduced-motion`. The fewest moves (then the
 fastest time) per level are kept in `localStorage`.
 
 Play-test: `node tools/drive_page.mjs <url>/projects/recall/ projects/recall/playtest/memory.js`
-plays all three levels with perfect memory by clicking the cards.
+plays all four levels with perfect memory by clicking the cards, trying the
+scan once on Expert. It takes 9, 13, 17 and 15–17 moves.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
 1998), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

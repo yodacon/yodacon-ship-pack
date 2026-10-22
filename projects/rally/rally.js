@@ -1,6 +1,8 @@
 // Rally: three laps through a course of gates around the pack's planets,
 // against five computer racers. Every hull handles by its record, so the
 // Defender corners like a dart and the Tomaquad like a barge.
+// Afterburner: once a lap, 1.5 s at 1.6× top speed and twice the thrust.
+// The computer racers have one too, and light it on long straights.
 import { loadShip, loadImage, drawShip, frameIndex, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -8,7 +10,7 @@ const $ = (id) => document.getElementById(id);
 const canvas = $("screen"), ctx = canvas.getContext("2d");
 const VW = canvas.width, VH = canvas.height;
 const WORLD = { w: 2400, h: 1600 };
-const LAPS = 3, GATE_R = 70, DRAG = 0.35, SAVE = "rally-v1";
+const LAPS = 3, GATE_R = 70, DRAG = 0.35, SAVE = "rally-v1", BURN = 1.5;
 const rad = (d) => (d * Math.PI) / 180, deg = (r) => (r * 180) / Math.PI;
 
 // --- Hulls ---------------------------------------------------------------------------------------
@@ -43,6 +45,11 @@ const TRACKS = [
   { name: "Ember Figure-Eight",
     planets: [["lava", "large", 700, 800], ["rocky", "large", 1700, 800]],
     gates: [[1200, 800], [1550, 350], [2150, 450], [2200, 1150], [1700, 1300], [1200, 800], [850, 300], [300, 450], [250, 1150], [700, 1300]] },
+  { name: "Rocky Chicane",                              // small planets right on the racing line: weave
+    planets: [["rocky", "small", 500, 600], ["ice", "medium", 900, 600], ["lava", "small", 1300, 600], ["garden", "medium", 1700, 600],
+      ["gas", "large", 1200, 250], ["rocky", "medium", 2050, 1050], ["ice", "small", 1500, 1200], ["lava", "medium", 1100, 1200],
+      ["gas", "medium", 700, 1300], ["garden", "large", 1200, 1480]],
+    gates: [[300, 800], [700, 400], [1100, 800], [1500, 400], [1900, 800], [2150, 1250], [1700, 1350], [1300, 1050], [900, 1350], [500, 1250]] },
 ];
 
 // --- State ---------------------------------------------------------------------------------------
@@ -64,7 +71,7 @@ function newRace(quiet = false) {
     const row = Math.floor(i / 2) + 1, col = i % 2 ? 1 : -1;
     return { hull: h, you: i === 0, x: sx + Math.sin(back) * 90 * row + Math.sin(side) * 45 * col,
       y: sy - Math.cos(back) * 90 * row - Math.cos(side) * 45 * col, vx: 0, vy: 0, heading: head,
-      gate: 0, lap: 0, lapStart: 0, laps: [], done: null, skill: 0.85 + Math.random() * 0.15 };
+      gate: 0, lap: 0, lapStart: 0, laps: [], done: null, skill: 0.85 + Math.random() * 0.15, burn: true, boost: 0 };
   });
   state.planets = track.planets.map(([type, size, x, y]) => ({ art: planetArt[`${type}/${size}`], x, y, r: planetArt[`${type}/${size}`].r }));
   state.time = 0;
@@ -78,7 +85,7 @@ function newRace(quiet = false) {
 // --- Input ---------------------------------------------------------------------------------------
 
 const held = new Set(), touch = new Set();
-const KEYS = { left: ["ArrowLeft", "a"], right: ["ArrowRight", "d"], thrust: ["ArrowUp", "w"], brake: ["ArrowDown", "s"] };
+const KEYS = { left: ["ArrowLeft", "a"], right: ["ArrowRight", "d"], thrust: ["ArrowUp", "w"], brake: ["ArrowDown", "s"], boost: ["Shift", " ", "b"] };
 addEventListener("keydown", (e) => {
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (state.phase === "race" || state.phase === "countdown") { if (k.startsWith("Arrow") || k === " ") e.preventDefault(); }
@@ -100,6 +107,7 @@ function controls() {
     c.right ||= x > 0.4 || b(15);
     c.thrust ||= b(0) || b(12) || (pad.buttons[7]?.value ?? 0) > 0.3;
     c.brake ||= b(13) || (pad.buttons[6]?.value ?? 0) > 0.3;
+    c.boost ||= b(1) || b(5);
   }
   return c;
 }
@@ -122,7 +130,7 @@ function drive(r) {
   }
   const diff = ((want - r.heading + 540) % 360) - 180, v = Math.hypot(r.vx, r.vy);
   return { left: diff < -3, right: diff > 3, thrust: Math.abs(diff) < 30 || (Math.abs(diff) < 70 && v < r.hull.speed * 0.4),
-    brake: Math.abs(diff) > 100 && v > r.hull.speed * 0.6 };
+    brake: Math.abs(diff) > 100 && v > r.hull.speed * 0.6, boost: Math.abs(diff) < 8 && d > 500 };
 }
 
 function step(r, c, dt) {
@@ -130,15 +138,19 @@ function step(r, c, dt) {
   if (c.left) r.heading -= h.turn * dt;
   if (c.right) r.heading += h.turn * dt;
   r.heading = (r.heading + 360) % 360;
-  if (c.thrust) {
+  if (c.boost && r.burn && r.done === null) { r.burn = false; r.boost = BURN; if (r.you) play("send"); }
+  const burning = r.boost > 0;
+  if (burning) r.boost -= dt;
+  if (c.thrust || burning) {
     const a = rad(frameIndex(r.heading) * 10);          // thrust along the frame shown
-    r.vx += Math.sin(a) * h.accel * dt * (r.you ? 1 : r.skill);
-    r.vy -= Math.cos(a) * h.accel * dt * (r.you ? 1 : r.skill);
+    const push = h.accel * dt * (r.you ? 1 : r.skill) * (burning ? 2 : 1);
+    r.vx += Math.sin(a) * push;
+    r.vy -= Math.cos(a) * push;
   }
   const drag = 1 - (c.brake ? DRAG * 4 : DRAG) * dt;    // racing dampers: corners are possible
   r.vx *= drag; r.vy *= drag;
-  const v = Math.hypot(r.vx, r.vy);
-  if (v > h.speed) { r.vx *= h.speed / v; r.vy *= h.speed / v; }
+  const v = Math.hypot(r.vx, r.vy), top = h.speed * (burning ? 1.6 : 1);
+  if (v > top) { r.vx *= top / v; r.vy *= top / v; }
   r.x += r.vx * dt; r.y += r.vy * dt;
   r.x = Math.max(0, Math.min(WORLD.w, r.x)); r.y = Math.max(0, Math.min(WORLD.h, r.y));
   for (const p of state.planets) {                       // planets push you off, and slow you
@@ -157,6 +169,7 @@ function checkGate(r) {
   if (r.gate === 0) {
     if (r.lap > 0) r.laps.push(state.time - r.lapStart);
     r.lapStart = state.time;
+    r.burn = true;                                       // a fresh afterburner every lap
     if (r.lap === LAPS) { r.done = state.time; if (r.you) finish(); return; }
     r.lap++;
     if (r.you && r.lap > 1) play("coin");
@@ -237,6 +250,14 @@ function draw() {
     ctx.fillText(i === 0 ? "START" : String(i), x - (i === 0 ? 18 : 4), y - GATE_R - 6);
   });
   for (const r of state.racers) {
+    if (r.boost > 0) {                                   // the afterburner's flame, along the frame shown
+      const a = rad(frameIndex(r.heading) * 10), len = r.hull.radius + 18 + Math.random() * 14;
+      const fl = ctx.createLinearGradient(r.x, r.y, r.x - Math.sin(a) * len, r.y + Math.cos(a) * len);
+      fl.addColorStop(0, "rgb(255 230 160 / 0.9)"); fl.addColorStop(1, "rgb(255 120 40 / 0)");
+      ctx.strokeStyle = fl; ctx.lineWidth = 7; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - Math.sin(a) * len, r.y + Math.cos(a) * len); ctx.stroke();
+      ctx.lineWidth = 1; ctx.lineCap = "butt";
+    }
     drawShip(ctx, r.hull.ship, r.heading, r.x, r.y, 1);
     ctx.fillStyle = r.you ? "#7ef0a8" : "#c9d1ea";
     ctx.font = "11px ui-monospace, monospace";
@@ -275,6 +296,8 @@ function hud(me) {
   ctx.fillStyle = "#7ef0a8";
   const place = order().indexOf(me) + 1;
   ctx.fillText(`LAP ${Math.max(1, Math.min(LAPS, me.lap))}/${LAPS}   ${ordinal(place).toUpperCase()}   ${state.time.toFixed(1)} s`, 10, 20);
+  ctx.fillStyle = me.boost > 0 ? "#ffb340" : me.burn ? "#7ef0a8" : "rgb(126 240 168 / 0.35)";
+  ctx.fillText(me.boost > 0 ? "AFTERBURNER" : me.burn ? "BURN READY (SHIFT)" : "BURN USED THIS LAP", 10, 38);
   if (state.phase === "countdown") {
     ctx.font = "700 64px ui-monospace, monospace";
     ctx.fillStyle = "#e6ebff";

@@ -1,6 +1,7 @@
 // A pilot for tools/drive_page.mjs: picks a hull (HULL below), then flies
 // player one with key presses only, aiming ahead of the nearest enemy, until
-// it is champion, gives up after MAX_RETRIES, or runs out of time.
+// it is champion, gives up after MAX_RETRIES, or runs out of time. When its
+// shields are nearly gone it overcharges them (Shift), once a round.
 const HULL = new URLSearchParams(location.search).get("hull") || "yodacon";
 const MAX_RETRIES = 30, MAX_SECONDS = 1500;   // of fighting, in game time
 while (!globalThis.gauntlet) await sleep(100);
@@ -37,6 +38,7 @@ while (st.time < MAX_SECONDS) {
   set("ArrowRight", diff > 5);
   set("ArrowUp", Math.abs(diff) < 40 && (d > 220 || tooClose));
   set(" ", !tooClose && Math.abs(diff) < 12 && d < 450);
+  if (me.overcharge && me.shield < me.hull.shieldMax * 0.15) { press("Shift", true); press("Shift", false); }   // shields nearly gone: overcharge
   g.tick(2);                                       // two 1/60 s steps per decision
   if (++steps % 40 === 0) await sleep(0);
 }

@@ -3,14 +3,16 @@
 See a Large Pin freighter across a pirate-held corridor to the station at the
 far end. You fly one of three escorts; two wingmen fly the others and take your
 orders, as escorts did in *Escape Velocity*. Six raids come from ahead, behind,
-above and below.
+above and below. On Hard and on the new **Elite** level a seventh comes just
+short of the station: the Override flagship, the 1998 Yodacon, with two
+Gryphons.
 
 ![The second raid: a Trident in the target brackets, its 1997 targeting picture in the panel](screenshot.png)
 
 | | |
 | --- | --- |
 | Technique | Canvas 2D over a 6000 × 1200 corridor with a following camera, a route radar, and the DOM for the target, wing and comms panels |
-| Ships | Override's Callisto and konex's Advisor and Citrus as the escorts; the Large Pin as the freighter (the only Pin); the Gryphon, Trident, Defender, Dart, Necromancer, Tomaquad and Yodacon as raiders |
+| Ships | Override's Callisto and konex's Advisor and Citrus as the escorts; the Large Pin as the freighter (the only Pin); the Gryphon, Trident, Defender, Dart, Necromancer, Tomaquad and Yodacon as raiders, and the 1998 Yodacon as the flagship |
 | Pictures | each ship's 1997 **targeting picture** (`target.png`) in the target panel, as in EV; **comm portraits** (`comm.png`) on every hail and in the wing panel |
 | Stats | toughness 4·√(Shield + Armor), speed, thrust and turn from each `ship.json`; the freighter carries three times its hull |
 | Sound | `lib/yodacon-sound.js` |
@@ -22,14 +24,26 @@ down, the freighter launches a spare (three per run). Pay at the station is
 2,000 credits, plus 100 for each percent of the freighter's hull and 250 a kill;
 your best pay per escort and difficulty is kept in `localStorage`.
 
+**Ion pulse** (<kbd>E</kbd>, gamepad B, or the Pulse button): every raider
+within 260 px drifts dead for three seconds, unable to steer or fire, with a
+crackling blue ring. It takes forty seconds to recharge, and the HUD counts it
+down.
+
+Four levels: Easy, Normal, Hard and **Elite** (five extra raiders a raid,
+firing and aiming at their best).
+
 Keys: <kbd>←</kbd> <kbd>→</kbd> turn, <kbd>↑</kbd> thrust, <kbd>↓</kbd> brake,
 <kbd>Space</kbd> fire, <kbd>Tab</kbd> target, <kbd>1</kbd>–<kbd>3</kbd> orders,
-<kbd>Enter</kbd> start. Gamepad: stick, A thrust, X or RB fire, Y target,
-Start. On a touch screen, buttons appear under the view.
+<kbd>E</kbd> ion pulse, <kbd>Enter</kbd> start. Gamepad: stick, A thrust, X or
+RB fire, Y target, B pulse, Start. On a touch screen, buttons appear under the view.
 
 Play-test: `node tools/drive_page.mjs "<url>/projects/convoy/?diff=normal" projects/convoy/playtest/escort.js --timeout 3000000`
-flies a run with key presses (Tab to the raider nearest the freighter, attack)
-and reports whether the cargo arrived.
+flies a run with key presses (Tab to the raider nearest the freighter, attack,
+pulse when two raiders are close) and reports whether the cargo arrived. It is
+not a strong pilot: on Normal it delivers about one run in two and is usually
+undone by the fifth raid. Hard and Elite beat it early. Add `&from=5150` to
+start just short of the flagship raid with the earlier raids skipped: on Hard
+it gets the freighter through with about 57% of its hull.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
 1998), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

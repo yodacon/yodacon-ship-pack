@@ -1,7 +1,9 @@
 // Gauntlet: pick any of the pack's thirteen designs and fight the others, one
 // round each, weakest first, with the 1998 Yodacon waiting at the end. Every
 // hull flies and fights by its 1997 record. One or two players, on keyboard,
-// gamepads or touch.
+// gamepads or touch. Beat the 1998 Yodacon and one round is left: the
+// Override Wing, three 1998 re-renders flying together. Once a round each
+// pilot can overcharge the shields to half again their strength.
 import { loadShip, drawShip, frameIndex } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -20,7 +22,9 @@ const ROSTER = [
   ["conex", "defender"], ["conex", "gryphon"], ["conex", "trident"], ["conex", "small-pin"],
   ["conex", "medium-pin"], ["conex", "large-pin"], ["override", "callisto"], ["konex", "advisor"], ["konex", "citrus"],
 ];
-const CHAMPION = ["override", "yodacon"];              // the 1998 re-render, fought last
+const CHAMPION = ["override", "yodacon"];              // the 1998 re-render
+const WING = [["override", "dart"], ["override", "defender"], ["override", "tomaquad"]];   // and after it, the Override Wing
+const OVERCHARGE = 1.5;
 // Advisor and Citrus come from konex, which has no 1997 record for them; these
 // numbers sit in the same ranges.
 const KONEX_STATS = {
@@ -52,7 +56,7 @@ const state = {
   phase: "loading", players: 1, picks: [], ladder: [], round: 0, retries: 0, time: 0,
   ships: [], bolts: [], sparks: [],
 };
-let hulls = [], champion = null;
+let hulls = [], champion = null, wing = null;
 const stars = Array.from({ length: 140 }, () => [Math.random() * W, Math.random() * H, Math.random()]);
 
 function load() {
@@ -75,7 +79,7 @@ const escortOf = (h) => weaker(h, 0.4);
 function buildLadder() {
   const taken = new Set(state.picks.map((h) => h.slug));
   state.ladder = hulls.filter((h) => !taken.has(h.slug) && !NOT_FOUGHT.has(h.slug)).sort((a, b) => threat(a) - threat(b));
-  state.ladder.push(champion);
+  state.ladder.push(champion, wing);
   state.round = 0; state.retries = 0; state.tries = 0; state.time = 0;
 }
 
@@ -85,11 +89,14 @@ function startRound() {
   state.picks.forEach((h, i) => {
     const y = state.picks.length === 1 ? H / 2 : H * (0.35 + 0.3 * i);
     // Each retry of a round adds 15% to your hull for that round.
-    state.ships.push(spawn(weaker(h, 1 + 0.15 * state.tries), W * 0.15, y, 90, "you", { player: i }));
+    state.ships.push(spawn(weaker(h, 1 + 0.15 * state.tries), W * 0.15, y, 90, "you", { player: i, overcharge: true }));
   });
   const fireEvery = Math.max(0.5, 0.8 - 0.03 * r);
-  state.ships.push(spawn(weaker(foe, 0.8), W * 0.85, H / 2, 270, "them", { fireEvery, skill: Math.min(0.85, 0.6 + 0.03 * r), boss: true }));
-  const escorts = Math.floor(r / 4) + (state.players - 1);
+  state.ships.push(spawn(weaker(foe, foe.wing ? 1 : 0.8), W * 0.85, H / 2, 270, "them", { fireEvery, skill: Math.min(0.85, 0.6 + 0.03 * r), boss: true }));
+  if (foe.wing) {                                       // the Override Wing: the Dart leads a Defender and a Tomaquad
+    foe.wing.forEach((h, i) => state.ships.push(spawn(weaker(h, 0.9), W * 0.9, H * (0.25 + 0.5 * i), 270, "them", { fireEvery: fireEvery * 1.1, skill: 0.75 })));
+  }
+  const escorts = foe.wing ? state.players - 1 : Math.floor(r / 4) + (state.players - 1);
   for (let i = 0; i < escorts; i++) {
     const h = escortOf(state.ladder[Math.max(0, r - 1 - (i % Math.max(1, r)))]);
     const y = H * (0.2 + (0.6 * (i + 1)) / (escorts + 1));
@@ -103,8 +110,8 @@ function startRound() {
 // --- Input: keyboard, gamepads, touch ---------------------------------------------------------------
 
 const KEYS = [
-  { left: "ArrowLeft", right: "ArrowRight", thrust: "ArrowUp", brake: "ArrowDown", fire: " " },
-  { left: "a", right: "d", thrust: "w", brake: "s", fire: "f" },
+  { left: "ArrowLeft", right: "ArrowRight", thrust: "ArrowUp", brake: "ArrowDown", fire: " ", over: "Shift" },
+  { left: "a", right: "d", thrust: "w", brake: "s", fire: "f", over: "e" },
 ];
 const held = new Set(), touch = new Set();
 addEventListener("keydown", (e) => {
@@ -136,6 +143,7 @@ function controls(i) {
     c.thrust ||= b(0) || b(12) || (pad.buttons[7]?.value ?? 0) > 0.3;
     c.brake ||= b(13) || (pad.buttons[6]?.value ?? 0) > 0.3;
     c.fire ||= b(1) || b(2) || b(5);
+    c.over ||= b(3);
   }
   return c;
 }
@@ -164,6 +172,12 @@ function steer(s, c, dt) {
   const v = Math.hypot(s.vx, s.vy);
   if (v > h.speed) { s.vx *= h.speed / v; s.vy *= h.speed / v; }
   if (c.fire && s.cool <= 0) fire(s);
+  if (c.over && s.overcharge) {                          // overcharge: shields to 150%, once a round
+    s.overcharge = false;
+    s.shield = s.hull.shieldMax * OVERCHARGE;
+    state.sparks.push({ ring: true, x: s.x, y: s.y, r: s.hull.radius, life: 0.5, max: 0.5, over: true });
+    play("held");
+  }
 }
 
 function fire(s) {
@@ -208,7 +222,8 @@ function move(s, dt) {
   if (s.y > H - r) { s.y = H - r; s.vy = -Math.abs(s.vy) * 0.5; }
   s.cool -= dt;
   s.regenWait -= dt;
-  if (s.regenWait <= 0) s.shield = Math.min(s.hull.shieldMax, s.shield + s.hull.shieldMax * 0.05 * dt);
+  if (s.regenWait <= 0 && s.shield < s.hull.shieldMax) s.shield = Math.min(s.hull.shieldMax, s.shield + s.hull.shieldMax * 0.05 * dt);
+  else if (s.shield > s.hull.shieldMax) s.shield = Math.max(s.hull.shieldMax, s.shield - s.hull.shieldMax * 0.04 * dt);   // an overcharge bleeds away slowly
 }
 
 function damage(s, d) {
@@ -288,8 +303,9 @@ function endRound(won) {
 
 function roundTitle(r) {
   const n = Math.floor(r / 4) + (state.players - 1);
+  if (state.ladder[r] === wing) return `the last round, the Override Wing: a Dart, a Defender and a Tomaquad, all 1998`;
   return `round ${r + 1} of ${state.ladder.length}, the ${state.ladder[r].name}` +
-    (n ? ` with ${n} escort${n > 1 ? "s" : ""}` : "") + (r === state.ladder.length - 1 ? " (1998)" : "");
+    (n ? ` with ${n} escort${n > 1 ? "s" : ""}` : "") + (state.ladder[r] === champion ? " (1998)" : "");
 }
 
 function banner(title, text, button) {
@@ -408,7 +424,8 @@ function bars(x, y, w, s) {
   const h = s.hull;
   ctx.fillStyle = "rgb(255 255 255 / 0.12)";
   ctx.fillRect(x, y, w, 3); ctx.fillRect(x, y + 4, w, 3);
-  ctx.fillStyle = "#8fd8ff"; ctx.fillRect(x, y, (w * s.shield) / h.shieldMax, 3);
+  ctx.fillStyle = "#8fd8ff"; ctx.fillRect(x, y, (w * Math.min(s.shield, h.shieldMax)) / h.shieldMax, 3);
+  if (s.shield > h.shieldMax) { ctx.fillStyle = "#e8f4ff"; ctx.fillRect(x, y, (w * (s.shield - h.shieldMax)) / h.shieldMax, 3); }
   ctx.fillStyle = "#ffb347"; ctx.fillRect(x, y + 4, (w * Math.max(0, s.armour)) / h.armourMax, 3);
 }
 
@@ -443,7 +460,7 @@ function draw() {
   for (const p of state.sparks) {
     const t = p.life / p.max;
     if (p.ring) {
-      ctx.strokeStyle = `rgb(255 220 150 / ${t})`;
+      ctx.strokeStyle = p.over ? `rgb(143 216 255 / ${t})` : `rgb(255 220 150 / ${t})`;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r * (3 - 2 * t), 0, Math.PI * 2);
@@ -462,6 +479,7 @@ function draw() {
     ctx.font = "700 11px ui-monospace, monospace";
     ctx.fillText(`P${s.player + 1} ${s.hull.name}${s.alive ? "" : " (down)"}`, x, 16);
     bars(x, 22, 120, s);
+    if (s.alive) { ctx.fillStyle = s.overcharge ? "#8fd8ff" : "rgb(143 216 255 / 0.35)"; ctx.fillText(s.overcharge ? `overcharge: ${s.player ? "E" : "Shift"}` : "overcharge used", x, 42); }
   });
   if (state.phase === "fight") {
     ctx.fillStyle = "#7ef0a8";
@@ -483,9 +501,11 @@ requestAnimationFrame(function frame(now) {
   requestAnimationFrame(frame);
 });
 
-const ships = await Promise.all([...ROSTER, CHAMPION].map(([ed, slug]) => loadShip(ed, slug)));
+const ships = await Promise.all([...ROSTER, CHAMPION, ...WING].map(([ed, slug]) => loadShip(ed, slug)));
 hulls = ships.slice(0, ROSTER.length).map(hullOf);
-champion = hullOf(ships.at(-1));
+champion = hullOf(ships[ROSTER.length]);
+const [lead, ...wingmen] = ships.slice(ROSTER.length + 1).map(hullOf);
+wing = { ...lead, name: "Override Wing", wing: wingmen };
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
 globalThis.gauntlet = { state, W, H, BOLT_SPEED, choose: (slug) => choose(hulls.find((h) => h.slug === slug)), advance,
   tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

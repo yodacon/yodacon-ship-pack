@@ -4,6 +4,9 @@
 // shipyard picture with the 1997 targeting picture, Hard the comm portrait
 // with the targeting picture. Names appear only once a pair is matched, so the
 // pictures have to be recognised (screen readers hear the name at once). No canvas: buttons, images and <yodacon-ship>.
+// Expert deals each ship three times, sprite, shipyard and targeting
+// picture, and you turn all three to match. A sensor scan, once a deal,
+// shows every card for a second.
 import { loadShipMeta } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -19,10 +22,11 @@ const LEVELS = {
   easy: { label: "Easy", pairs: 6, faces: ["sprite", "yard"], hint: "the ship to its shipyard picture" },
   normal: { label: "Normal", pairs: 8, faces: ["yard", "target"], hint: "the shipyard picture to the 1997 targeting picture" },
   hard: { label: "Hard", pairs: 11, faces: ["comm", "target"], hint: "the comm portrait to the targeting picture" },
+  expert: { label: "Expert", pairs: 8, faces: ["sprite", "yard", "target"], hint: "each ship three times: sprite, shipyard and targeting picture" },
 };
 const FACE_NAME = { sprite: "sprite", yard: "shipyard picture", target: "targeting picture", comm: "comm portrait" };
 
-const state = { level: "easy", cards: [], open: [], matched: 0, moves: 0, start: 0, timer: 0, busy: false, done: false };
+const state = { scan: true, level: "easy", cards: [], open: [], matched: 0, moves: 0, start: 0, timer: 0, busy: false, done: false };
 let ships = [];
 
 function load() { try { return JSON.parse(localStorage.getItem(SAVE)) ?? {}; } catch { return {}; } }
@@ -51,9 +55,9 @@ function deal() {
   const lv = LEVELS[state.level];
   const picked = shuffle([...ships]).slice(0, lv.pairs);
   state.cards = shuffle(picked.flatMap((ship) => lv.faces.map((kind) => ({ ship, kind }))));
-  Object.assign(state, { open: [], matched: 0, moves: 0, start: 0, busy: false, done: false });
+  Object.assign(state, { open: [], matched: 0, moves: 0, start: 0, busy: false, done: false, scan: true });
   clearInterval(state.timer);
-  $("board").className = `board pairs-${lv.pairs}`;
+  $("board").className = `board pairs-${lv.pairs}${lv.faces.length === 3 ? " sets" : ""}`;
   $("board").replaceChildren(...state.cards.map((card, i) => {
     const b = document.createElement("button");
     b.type = "button";
@@ -68,7 +72,8 @@ function deal() {
     card.el = b;
     return b;
   }));
-  $("hint").textContent = `Match ${lv.hint}. ${lv.pairs} pairs.`;
+  $("hint").textContent = `Match ${lv.hint}. ${lv.pairs} ${lv.faces.length === 3 ? "sets" : "pairs"}.`;
+  $("scan").disabled = false;
   $("banner").hidden = true;
   readouts();
 }
@@ -82,22 +87,36 @@ function turn(i) {
   reveal(card, true);
   state.open.push(card);
   play("select");
-  if (state.open.length < 2) return;
-  state.moves++;
-  const [a, b] = state.open;
-  if (a.ship === b.ship) {
-    a.matched = b.matched = true;
-    for (const c of [a, b]) { c.el.classList.add("matched"); c.el.setAttribute("aria-label", `${c.ship.name}, ${FACE_NAME[c.kind]}, matched`); }
+  const size = LEVELS[state.level].faces.length, ship = state.open[0].ship;
+  if (state.open.every((c) => c.ship === ship)) {
+    if (state.open.length < size) return;                      // a pair so far on Expert: turn the third
+    state.moves++;
+    for (const c of state.open) { c.matched = true; c.el.classList.add("matched"); c.el.setAttribute("aria-label", `${c.ship.name}, ${FACE_NAME[c.kind]}, matched`); }
     state.open = [];
     state.matched++;
     play("pickup");
     if (state.matched === LEVELS[state.level].pairs) finish();
   } else {
+    state.moves++;
     state.busy = true;
     play("cancel");
-    setTimeout(() => { reveal(a, false); reveal(b, false); state.open = []; state.busy = false; }, SHOW_MS);
+    const wrong = [...state.open];
+    setTimeout(() => { for (const c of wrong) reveal(c, false); state.open = []; state.busy = false; }, SHOW_MS);
   }
   readouts();
+}
+
+// The sensor scan: once a deal, every face-down card shows for a second.
+function scan() {
+  if (!state.scan || state.busy || state.done) return false;
+  state.scan = false; state.busy = true;
+  $("scan").disabled = true;
+  if (!state.start) { state.start = performance.now(); state.timer = setInterval(readouts, 250); }
+  const down = state.cards.filter((c) => !c.matched && !state.open.includes(c));
+  for (const c of down) c.el.classList.add("up");
+  play("target");
+  setTimeout(() => { for (const c of down) c.el.classList.remove("up"); state.busy = false; }, 1000);
+  return true;
 }
 
 function reveal(card, up) {
@@ -118,14 +137,14 @@ function readouts() {
 function finish() {
   state.done = true;
   clearInterval(state.timer);
-  const time = Math.round(seconds()), lv = LEVELS[state.level], perfect = state.moves === lv.pairs;
+  const time = Math.round(seconds()), lv = LEVELS[state.level], perfect = state.moves === lv.pairs && state.scan;
   const best = load(), old = best[state.level];
   const record = !old || state.moves < old.moves || (state.moves === old.moves && time < old.time);
   if (record) save({ ...best, [state.level]: { moves: state.moves, time } });
   setTimeout(() => {
     play("won");
     $("banner-title").textContent = perfect ? "Perfect recall" : "All matched";
-    $("banner-text").textContent = `${lv.pairs} pairs in ${state.moves} moves and ${time} s${record ? " — your best on this level" : ""}.`;
+    $("banner-text").textContent = `${lv.pairs} ${lv.faces.length === 3 ? "sets" : "pairs"} in ${state.moves} moves and ${time} s${record ? " — your best on this level" : ""}.`;
     $("banner").hidden = false;
     readouts();
   }, 400);
@@ -141,10 +160,11 @@ for (const b of document.querySelectorAll("[data-level]")) {
   });
 }
 $("again").addEventListener("click", () => deal());
+$("scan").addEventListener("click", () => scan());
 $("deal").addEventListener("click", () => deal());
 $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 
 ships = await Promise.all(SHIPS.map(([ed, slug]) => loadShipMeta(ed, slug)));
 deal();
-globalThis.recall = { state, deal, turn, SHOW_MS };
+globalThis.recall = { state, deal, turn, scan, LEVELS, SHOW_MS };

@@ -33,7 +33,7 @@ button.hull:hover, button.hull:focus-visible { border-color: var(--yc-ice); outl
 .hull .specs { color: var(--yc-phos-dim); }
 .hull .best { color: var(--yc-amber); }
 
-.pad { display: none; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pad { display: none; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
 @media (pointer: coarse) { .pad { display: grid; } }
 .pad button { font: 700 14px var(--yc-mono); padding: 14px 0; border-radius: 6px; border: 1px solid var(--yc-chrome-lo);
   background: linear-gradient(var(--yc-chrome-hi), var(--yc-chrome-lo)); color: #111; touch-action: none; user-select: none; }

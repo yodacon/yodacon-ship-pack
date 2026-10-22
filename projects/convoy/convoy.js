@@ -2,7 +2,9 @@
 // station at the far end. You fly one of three escorts, and two wingmen fly
 // the others and take your orders, as escorts did in Escape Velocity. The
 // target panel shows each ship's 1997 targeting picture; hails come with
-// comm portraits.
+// comm portraits. On Hard and Elite a last raid brings the Override
+// flagship itself, the 1998 Yodacon. Your ion pulse (E) knocks out every raider within 260 px for
+// three seconds, once every forty.
 import { loadShip, loadImage, drawShip, frameIndex, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -11,6 +13,7 @@ const canvas = $("screen"), ctx = canvas.getContext("2d");
 const VW = canvas.width, VH = canvas.height;
 const WORLD = { w: 6000, h: 1200 }, STATION_X = 5750;
 const BOLT_SPEED = 520, BOLT_LIFE = 0.9, SAVE = "convoy-v1";
+const PULSE_RANGE = 260, PULSE_STUN = 3, PULSE_EVERY = 40;
 const rad = (d) => (d * Math.PI) / 180, deg = (r) => (r * 180) / Math.PI;
 const angleTo = (a, b) => deg(Math.atan2(b.x - a.x, -(b.y - a.y)));
 const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
@@ -20,7 +23,7 @@ const wrap = (d) => ((d + 540) % 360) - 180;
 
 const ESCORTS = [["override", "callisto"], ["konex", "advisor"], ["konex", "citrus"]];
 const RAIDERS = [["conex", "gryphon"], ["conex", "trident"], ["conex", "defender"], ["conex", "dart"],
-  ["conex", "necromancer"], ["conex", "tomaquad"], ["conex", "yodacon"]];
+  ["conex", "necromancer"], ["conex", "tomaquad"], ["conex", "yodacon"], ["override", "yodacon"]];
 const FREIGHTER = ["conex", "large-pin"];
 // konex's ships have no 1997 record; these sit in the same ranges.
 const KONEX_STATS = {
@@ -42,7 +45,8 @@ function hullOf(ship) {
 const DIFFICULTY = {
   easy: { label: "Easy", extra: 0, fire: 0.85, aim: 0.6 },
   normal: { label: "Normal", extra: 2, fire: 0.85, aim: 0.85 },
-  hard: { label: "Hard", extra: 4, fire: 0.95, aim: 0.95 },
+  hard: { label: "Hard", extra: 4, fire: 0.95, aim: 0.95, flagship: true },
+  elite: { label: "Elite", extra: 5, fire: 1.0, aim: 1.0, flagship: true },
 };
 // Raids, by how far along the freighter is: who comes, and from where.
 const RAIDS = [
@@ -52,6 +56,7 @@ const RAIDS = [
   { at: 3500, from: "behind", kinds: ["necromancer", "defender", "defender", "gryphon"] },
   { at: 4400, from: "above", kinds: ["tomaquad", "trident", "gryphon", "defender"] },
   { at: 5100, from: "ahead", kinds: ["yodacon", "dart", "necromancer"] },
+  { at: 5300, from: "ahead", kinds: ["yodacon98", "gryphon", "gryphon"], flagship: true },
 ];
 const TAUNTS = ["Cut your engines and dump the cargo.", "That Pin is ours. Walk away.", "Nice freighter. We'll take it from here.",
   "You picked the wrong corridor, escort.", "Nobody has to get hurt. Except you."];
@@ -75,7 +80,7 @@ const player = () => state.ships.find((s) => s.role === "player");
 function newRun() {
   const pick = $("hull").value, diff = DIFFICULTY[state.diff];
   state.ships = []; state.bolts = []; state.sparks = []; state.log = [];
-  state.raid = 0; state.time = 0; state.kills = 0; state.relaunches = 3; state.target = null; state.order = "escort";
+  state.raid = 0; state.time = 0; state.kills = 0; state.relaunches = 3; state.target = null; state.order = "escort"; state.pulseAt = 0;
   const fr = spawn(hulls[FREIGHTER[1]], 200, WORLD.h / 2, 90, "us", "freighter");
   fr.shield *= 3; fr.armour *= 3;                     // a freighter's hull, not a fighter's
   fr.hull = { ...fr.hull, shieldMax: fr.shield, armourMax: fr.armour };
@@ -118,6 +123,7 @@ addEventListener("keydown", (e) => {
     if (k === "1") orderWing("attack");
     if (k === "2") orderWing("escort");
     if (k === "3") orderWing("form");
+    if (k === "e" || k === "q") ionPulse();
     if (k === "Enter" && state.phase !== "run") { e.preventDefault(); newRun(); }
   }
   held.add(k);
@@ -129,6 +135,20 @@ for (const b of document.querySelectorAll("#pad [data-key]")) {
   for (const ev of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(ev, () => { touch.delete(b.dataset.key); b.classList.remove("down"); });
 }
 $("pad-target").addEventListener("click", () => nextTarget(1));
+$("pad-pulse").addEventListener("click", () => ionPulse());
+
+// The ion pulse: every raider within 260 px drifts dead, unable to steer or
+// fire, for three seconds. Then forty seconds to recharge.
+function ionPulse() {
+  const me = player();
+  if (state.phase !== "run" || !me?.alive || state.time < state.pulseAt) { play("error"); return false; }
+  state.pulseAt = state.time + PULSE_EVERY;
+  let n = 0;
+  for (const s of state.ships) if (s.alive && s.side === "them" && dist(s, me) < PULSE_RANGE) { s.stunned = state.time + PULSE_STUN; n++; }
+  state.sparks.push({ ring: true, x: me.x, y: me.y, r: PULSE_RANGE / 3, life: 0.5, max: 0.5, ion: true });
+  play("held");
+  return n;
+}
 let padPrev = {};
 function controls() {
   const c = Object.fromEntries(Object.entries(KEYS).map(([w, keys]) => [w, keys.some((k) => held.has(k)) || touch.has(w)]));
@@ -139,8 +159,9 @@ function controls() {
     c.thrust ||= b(0) || (pad.buttons[7]?.value ?? 0) > 0.3; c.brake ||= (pad.buttons[6]?.value ?? 0) > 0.3;
     c.fire ||= b(2) || b(5);
     if (b(3) && !padPrev.y) nextTarget(1);             // Y: next target
+    if (b(1) && !padPrev.b) ionPulse();                 // B: ion pulse
     if (b(9) && !padPrev.start && state.phase !== "run") newRun();
-    padPrev = { y: b(3), start: b(9) };
+    padPrev = { y: b(3), b: b(1), start: b(9) };
   }
   return c;
 }
@@ -227,6 +248,7 @@ function think(s) {
     return { left: diff < -2, right: diff > 2, thrust: true, cruise: 38 };
   }
   if (s.role === "raider") {
+    if (s.stunned > state.time) return {};               // ion-pulsed: drifting, no guns
     // Raiders go for the freighter, unless someone has been shooting them.
     const t = s.lastHitBy?.alive && dist(s, s.lastHitBy) < 500 && s.grudge > state.time ? s.lastHitBy : fr?.alive ? fr : nearestFoe(s, "us");
     return t ? attack(s, t, state.diffCfg.aim) : {};
@@ -289,6 +311,7 @@ function burst(x, y, n, color, speed) {
 
 function raid() {
   const fr = freighter(), r = RAIDS[state.raid];
+  if (r.flagship && !state.diffCfg.flagship) { state.raid++; return; }   // the flagship only comes on Hard and Elite
   if (!fr || fr.x < r.at) return;
   state.raid++;
   const kinds = [...r.kinds, ...RAIDS.slice(0, state.diffCfg.extra).map((x) => x.kinds[0])];
@@ -301,7 +324,7 @@ function raid() {
     state.ships.push(s);
   });
   const lead = state.ships.filter((s) => s.role === "raider").at(-kinds.length);
-  say(lead, TAUNTS[(state.raid - 1) % TAUNTS.length]);
+  say(lead, r.flagship ? "This is the Override flagship. Heave to, Consolidated Express." : TAUNTS[(state.raid - 1) % TAUNTS.length]);
   play("error");
   if (!state.target?.alive) nextTarget(1);
 }
@@ -412,6 +435,10 @@ function draw() {
   for (const s of state.ships) {
     if (!s.alive) continue;
     drawShip(ctx, s.hull.ship, s.heading, s.x, s.y, 1);
+    if (s.stunned > state.time) {                        // ion-pulsed: crackling blue
+      ctx.strokeStyle = `rgb(160 140 255 / ${0.4 + 0.4 * Math.random()})`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.hull.radius + 6 + Math.random() * 4, 0, Math.PI * 2); ctx.stroke();
+    }
     if (s === state.target) {                          // EV-style corner brackets
       const r = s.hull.radius + 10, k = 8;
       ctx.strokeStyle = "#ff7a59"; ctx.lineWidth = 2;
@@ -422,7 +449,7 @@ function draw() {
   }
   for (const p of state.sparks) {
     const t = p.life / p.max;
-    if (p.ring) { ctx.strokeStyle = `rgb(255 220 150 / ${t})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (3 - 2 * t), 0, Math.PI * 2); ctx.stroke(); }
+    if (p.ring) { ctx.strokeStyle = p.ion ? `rgb(170 150 255 / ${t})` : `rgb(255 220 150 / ${t})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (3 - 2 * t), 0, Math.PI * 2); ctx.stroke(); }
     else { ctx.globalAlpha = Math.min(1, t * 1.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1, p.y - 1, 2, 2); ctx.globalAlpha = 1; }
   }
   ctx.restore();
@@ -455,6 +482,7 @@ function hud(me, fr) {
   if (me) {
     line(`${me.hull.name.toUpperCase()}  shield ${Math.round((100 * me.shield) / me.hull.shieldMax)}%  armour ${Math.max(0, Math.round((100 * me.armour) / me.hull.armourMax))}%  ·  spares ${state.relaunches}`, 10, 34, me.alive ? "#7ef0a8" : "#ff7a59");
   }
+  line(state.time >= state.pulseAt ? "ION PULSE READY (E)" : `ion pulse in ${Math.ceil(state.pulseAt - state.time)} s`, 10, 66, state.time >= state.pulseAt ? "#c9b8ff" : "rgb(201 184 255 / 0.5)");
   line(`Wing: ${{ attack: "attacking your target", escort: "guarding the freighter", form: "on you" }[state.order]}  ·  kills ${state.kills}`, 10, 50, "#8fd8ff");
 }
 
@@ -475,7 +503,8 @@ const [ships, stationImg] = await Promise.all([
   Promise.all(all.map(([ed, slug]) => loadShip(ed, slug))),
   loadImage(new URL("planets/garden/large/planet.png", PACK_BASE).href),
 ]);
-ships.forEach((s) => { hulls[s.slug] = hullOf(s); });
+ships.forEach((s) => { hulls[s.edition === "override" && s.slug === "yodacon" ? "yodacon98" : s.slug] = hullOf(s); });
+hulls.yodacon98.name = "1998 Yodacon";
 station = stationImg;
 
 $("hull").replaceChildren(...ESCORTS.map(([, s]) => new Option(hulls[s].name, s)));
@@ -491,4 +520,4 @@ $("banner-title").textContent = "Convoy";
 $("banner-text").textContent = "Pick your escort and press Start (or Enter). Get the Large Pin to the station.";
 $("banner").hidden = false;
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.convoy = { state, newRun, nextTarget, orderWing, freighter, player, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
+globalThis.convoy = { state, newRun, ionPulse, nextTarget, orderWing, freighter, player, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
