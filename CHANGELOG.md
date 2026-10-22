@@ -38,6 +38,12 @@ moved or renamed file a major one. A tag's files never change.
   pictures, three levels
 - **Blockade**: a vertical scroller; banking through the frames, two stages
   with the Large Pin and the 1998 Yodacon as bosses
+- **Dock**: inertia docking with a turning Large Pin carrier; ten hulls by
+  their records, matched by sprite frame
+- **Crossing**: Frogger; traffic and freighters on frames 9 and 27, hull
+  lengths read from the sprite's alpha
+- **Salvo**: Battleship by the salvo rule with a probability-map opponent and
+  the targeting pictures
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

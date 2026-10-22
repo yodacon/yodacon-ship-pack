@@ -1,0 +1,37 @@
+body { padding: 12px 16px 24px; }
+.muted { color: var(--yc-phos-dim); font-size: 0.8rem; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; max-width: 1240px; margin: 0 auto 12px; }
+.crumbs { margin: 0; width: 100%; font-size: 0.85rem; }
+.top h1 { font-size: clamp(20px, 3.6vw, 32px); }
+.readouts { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 6px 14px; }
+.readouts .yc-value { font-size: 18px; }
+.game { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 404px)) minmax(0, 1fr); gap: 12px; max-width: 1240px; margin: 0 auto; align-items: start; }
+@media (max-width: 1100px) { .game { grid-template-columns: repeat(2, minmax(0, 1fr)); } .side { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } }
+@media (max-width: 700px) { .game { grid-template-columns: minmax(0, 1fr); } }
+.board h2, .side h2 { margin: 0 0 8px; font-size: 0.9rem; color: var(--yc-ice); }
+.board canvas { display: block; width: 100%; height: auto; border-radius: 3px; cursor: crosshair; }
+#yours { cursor: pointer; }
+.board p { margin: 8px 0 0; }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.fleet { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.8rem; color: var(--yc-text); }
+.fleet .sunk { color: var(--yc-hal); text-decoration: line-through; }
+.side { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.side p { margin: 0 0 8px; }
+.hailing { display: grid; grid-template-columns: 72px 1fr; gap: 10px; align-items: center; }
+.hailing img { width: 72px; height: auto; image-rendering: pixelated; border: 1px solid var(--yc-chrome-lo); }
+.hail { font-size: 0.8rem; margin: 0 !important; }
+.sunk[hidden] { display: none; }
+.sunk img { display: block; width: 100%; max-width: 260px; height: auto; background: #000; image-rendering: pixelated; }
+.sunk .name { margin: 6px 0 0; font-weight: 700; color: var(--yc-hal); }
+.log { list-style: none; margin: 0; padding: 8px 10px; min-height: 7em; font-size: 0.8rem; }
+.log li { margin: 0 0 3px; color: var(--yc-text); }
+.log .good { color: var(--yc-phos); }
+.log .bad { color: var(--yc-amber); }
+select.yc-plate { display: block; width: 100%; margin-top: 4px; font: 13px var(--yc-mono); }
+.banner { position: absolute; left: 50%; top: 140px; transform: translateX(-50%); width: min(560px, 92%); display: grid; gap: 10px; text-align: center;
+  padding: 18px; background: rgb(2 4 6 / 0.92); border: 1px solid var(--yc-chrome-lo); border-radius: 6px; pointer-events: none; }
+.banner[hidden] { display: none; }
+.banner p { margin: 0; color: var(--yc-text); }
+.banner-title { font: 700 clamp(18px, 4vw, 30px)/1.1 var(--yc-title); letter-spacing: 0.25em; text-transform: uppercase; color: var(--yc-ice); }
+.credit { max-width: 1240px; margin: 16px auto 0; color: var(--yc-phos-dim); font-size: 0.75rem; }
+@media (max-width: 520px) { body { padding: 8px; } .game.yc-console { padding: 6px; } }

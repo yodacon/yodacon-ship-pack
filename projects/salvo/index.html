@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salvo · Yodacon Ship Pack</title>
+<meta name="description" content="Battleship by the salvo rule with the pack's ships: your ConEx fleet against Override and konex pirates, one shot per ship afloat.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="salvo.css">
+<script type="module" src="salvo.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Salvo</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Turn</span><span class="yc-value" id="turn">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Yours</span><span class="yc-value" id="afloat-you">6/6</span></span>
+    <span class="yc-readout"><span class="yc-label">Pirates</span><span class="yc-value" id="afloat-them">6/6</span></span>
+    <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">–</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="board yc-panel">
+    <h2>Pirate space</h2>
+    <canvas id="theirs" tabindex="0" aria-label="Pirate space: click cells, or use the arrow keys and Space, to aim; Enter fires"></canvas>
+    <p class="buttons"><button type="button" id="fire" class="yc-plate yc-go" disabled>Fire salvo</button></p>
+    <ul id="fleet-them" class="fleet"></ul>
+  </section>
+  <section class="board yc-panel">
+    <h2>Your fleet</h2>
+    <canvas id="yours" aria-label="Your fleet"></canvas>
+    <p id="place-hint" class="muted">Before the first shot: click a ship, then empty space to move it; click it again to turn it.</p>
+    <p class="buttons"><button type="button" id="shuffle" class="yc-plate">Shuffle</button></p>
+    <ul id="fleet-you" class="fleet"></ul>
+  </section>
+  <aside class="side">
+    <section class="yc-panel hailing">
+      <img id="captain" alt="The pirate captain: the 1998 Yodacon's comm portrait" width="72" height="72">
+      <p id="hail" class="hail"></p>
+    </section>
+    <section id="sunk" class="yc-panel sunk" hidden>
+      <h2>Destroyed</h2>
+      <img id="sunk-img" alt="">
+      <p id="sunk-name" class="name"></p>
+    </section>
+    <section class="yc-panel">
+      <h2>Log</h2>
+      <ul id="log" class="log yc-crt" aria-live="polite"></ul>
+    </section>
+    <section class="yc-panel">
+      <p><label class="yc-label" for="level">Level</label>
+        <select id="level" class="yc-plate"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">New game</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+      <p class="muted">Each turn you fire one shot for every ship you have afloat, and so do they. Ships never touch, not even at
+        the corners. The computer keeps a map of every way its targets could still lie.</p>
+    </section>
+  </aside>
+  <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+</main>
+
+<footer class="credit">
+  <p>Ships, targeting pictures and the comm portrait from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
+  1998), with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

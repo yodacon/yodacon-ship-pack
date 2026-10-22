@@ -16,6 +16,9 @@ To try code without copying anything, use the [playground](../playground/).
 | [**Picket**](picket/) | **Canvas game.** Tower defence: build six hulls beside the lane and hold the station against fifteen waves; raiders fly on the frame for their direction, your ships turn to face their targets. Prices, range and guns from the 1997 records. |
 | [**Recall**](recall/) | **Pure DOM memory game.** Match each ship across two of its pictures: the spinning sprite and the shipyard picture, the shipyard picture and the 1997 targeting picture, or the comm portrait and the targeting picture. Names show only once matched. |
 | [**Blockade**](blockade/) | **Canvas game.** A vertical scroller: your ship banks through frames 35/34 and 1/2 as it strafes, raiders fly on the frame for their heading, and each of two stages ends with a capital ship (the Large Pin, then the 1998 Yodacon). |
+| [**Dock**](dock/) | **Canvas game.** Bring ten hulls home to a turning Large Pin carrier with a main engine, a retro and inertia. The tractor beam takes you when you are behind its stern, slow and on the carrier's own sprite frame. |
+| [**Crossing**](crossing/) | **Canvas game.** Frogger: hop through five lanes of traffic, ride Tomaquads, Darts, the Large Pin, Yodacons and Callistos across the ion stream, and fill five bays. Everything flies on frames 9 and 27. |
+| [**Salvo**](salvo/) | **Canvas game.** Battleship by the salvo rule, ConEx against Override and konex pirates, one shot per ship afloat, against a probability-map opponent. Sunk pirates show their 1997 targeting pictures. |
 | [**Fleet Tactics**](fleet-tactics/) | **DOM card game.** Draft ships within a budget, then fight card by card against a computer that drafts for value and focuses fire. Hull, firepower and initiative come from each ship's 1997 record. |
 | [**Orbital Defence**](orbital-defence/) | **Canvas game.** Hold a planet against waves of ConEx ships. Fire the planet's cannon, and between waves buy Advisor patrols that orbit and fire on their own, or repair. |
 | [**Slingshot**](slingshot/) | **Canvas game.** Gravity golf with the 1997 Dart: drag back and let go, and only the planets steer it through the gate. Six levels against par. |
@@ -41,6 +44,12 @@ To try code without copying anything, use the [playground](../playground/).
 [![Recall](recall/screenshot.png)](recall/)
 
 [![Blockade](blockade/screenshot.png)](blockade/)
+
+[![Dock](dock/screenshot.png)](dock/)
+
+[![Crossing](crossing/screenshot.png)](crossing/)
+
+[![Salvo](salvo/screenshot.png)](salvo/)
 
 [![Fleet Tactics](fleet-tactics/screenshot.png)](fleet-tactics/)
 

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dock · Yodacon Ship Pack</title>
+<meta name="description" content="Bring ten ConEx, Override and konex hulls home to a turning Large Pin carrier: main engine, retro and inertia only.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="dock.css">
+<script type="module" src="dock.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Dock</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1/10</span></span>
+    <span class="yc-readout"><span class="yc-label">Hull</span><span class="yc-value" id="hullpts">3/3</span></span>
+    <span class="yc-readout"><span class="yc-label">Time</span><span class="yc-value" id="time">0 s</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The approach">
+    <canvas id="screen" width="800" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel computer">
+      <h2>Docking computer</h2>
+      <dl class="yc-crt">
+        <div><dt class="yc-label">Range to bay</dt><dd class="yc-value" id="range">–</dd></div>
+        <div><dt class="yc-label">Speed (beam &lt; 30)</dt><dd class="yc-value" id="speed">–</dd></div>
+        <div><dt class="yc-label">Frame / carrier</dt><dd class="yc-value" id="frames">–</dd></div>
+        <div><dt class="yc-label">Fuel</dt><dd><meter id="fuel" min="0" max="1" low="0.25" optimum="1" value="1"></meter></dd></div>
+      </dl>
+    </section>
+    <section class="yc-panel hailing">
+      <img id="comm" alt="The Large Pin's comm portrait" width="100" height="100">
+      <p id="hail" class="hail"></p>
+    </section>
+    <section class="yc-panel pilot">
+      <img id="pilot-img" alt="" width="120" height="90">
+      <div><p id="pilot-name" class="name"></p><p id="pilot-specs" class="muted"></p></div>
+    </section>
+    <section class="yc-panel">
+      <p><label class="yc-label" for="levels">Ship</label>
+        <select id="levels" class="yc-plate"></select></p>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> retro (half thrust) ·
+        <kbd>R</kbd> start again · <kbd>Enter</kbd> next ship. Gamepad: stick, A thrust, B retro.</p>
+      <p class="buttons"><button type="button" id="restart" class="yc-plate">Start again</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Turn left">◀</button>
+    <button type="button" class="yc-plate" data-pad="down" aria-label="Retro">▼</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Thrust">▲</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Turn right">▶</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships, stats and the Large Pin's comm portrait from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
+  1998), with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>. The planet is the pack's generated art.</p>
+</footer>
+</body>
+</html>
