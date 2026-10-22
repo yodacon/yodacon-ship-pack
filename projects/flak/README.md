@@ -20,6 +20,17 @@ afloat score at the end of a wave, multiplied as the waves go on, and every
 10,000 points a lost ship comes back. A battery that is hit is out until the
 next wave. The best score is kept in `localStorage`.
 
+**Pulse** (<kbd>E</kbd>, right-click, or the button): once a wave the Large
+Pin's main gun fires a 110 px burst at the crosshair at once, with no flight
+time. It is the carrier's gun, so lose the Large Pin and the pulse goes with
+it.
+
+**Night raid** (the Level menu): the raiders are dark, a faint shape with no
+trail, until something lights them: a shell passing within 70 px, a burst
+within 90 px of its edge, or the fleet's floodlights in the last 170 px above
+the platform. Kills score half as much again, and the best is kept
+separately.
+
 Controls: click or tap where the flak should burst (the nearest battery with
 rounds fires); <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> or <kbd>A</kbd>
 <kbd>S</kbd> <kbd>D</kbd> fire a chosen battery at the crosshair,

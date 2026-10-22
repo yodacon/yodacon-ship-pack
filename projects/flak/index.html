@@ -18,6 +18,7 @@
     <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
     <span class="yc-readout"><span class="yc-label">Wave</span><span class="yc-value" id="wave">0</span></span>
     <span class="yc-readout"><span class="yc-label">Fleet</span><span class="yc-value" id="afloat">6/6</span></span>
+    <span class="yc-readout"><span class="yc-label">Pulse</span><span class="yc-value" id="pulse">ready</span></span>
     <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">0</span></span>
   </div>
 </header>
@@ -33,7 +34,12 @@
       <p class="muted">Click (or tap) where the flak should burst; the nearest battery with rounds fires. <kbd>1</kbd> <kbd>2</kbd>
         <kbd>3</kbd> (or <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>) fire a chosen battery at the crosshair, <kbd>Space</kbd> the nearest.
         The arrow keys move the crosshair (<kbd>Shift</kbd> for big steps).</p>
-      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+      <p class="muted"><b>Pulse</b> (<kbd>E</kbd>, right-click or the button): once a wave the Large Pin's main gun fires a huge
+        burst at the crosshair, with no flight time. Lose the Large Pin and you lose the pulse.</p>
+      <p><label class="yc-label" for="mode">Level</label>
+        <select id="mode" class="yc-plate"><option value="day">Day watch</option><option value="night">Night raid</option></select></p>
+      <p class="buttons"><button type="button" id="pulse-btn" class="yc-plate yc-go">Pulse</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
     </section>
     <section class="yc-panel">
       <h2>How it works</h2>
@@ -42,6 +48,8 @@
         that take two bursts, and every fifth wave the 1998 Yodacon. Ten rounds a battery a wave; the centre battery's shells are
         faster. A kill bursts too, so kills can chain.</p>
       <p class="muted">Rounds left and ships afloat score at the end of each wave. Every 10,000 points a lost ship comes back.</p>
+      <p class="muted"><b>Night raid</b>: the raiders are dark until something lights them: flak in the air, a burst, or the
+        fleet's floodlights in the last stretch above the platform. Kills score half as much again.</p>
     </section>
   </aside>
 </main>

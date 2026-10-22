@@ -18,6 +18,7 @@
     <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
     <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">4</span></span>
     <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1</span></span>
+    <span class="yc-readout"><span class="yc-label">Jump</span><span class="yc-value" id="jump">ready</span></span>
   </div>
 </header>
 
@@ -35,7 +36,10 @@
     <section class="yc-panel">
       <h2>Controls</h2>
       <p class="muted"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> hop one cell.
-        On a touch screen, tap above, below or beside your ship. Gamepad: d-pad or stick.</p>
+        On a touch screen, tap above, below or beside your ship. Gamepad: d-pad or stick, B to jump.</p>
+      <p class="muted"><b>Hyperjump</b> (<kbd>Space</kbd> or <kbd>J</kbd>): once a crossing, two rows forward at once, over
+        whatever is in between. It comes back with each new ship.</p>
+      <p class="buttons"><button type="button" id="jump-btn" class="yc-plate yc-go">Hyperjump</button></p>
       <p id="note" class="note yc-crt" aria-live="polite"></p>
       <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
         <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
@@ -45,7 +49,8 @@
       <p class="muted">The bottom half is traffic: the 1998 Yodacon, Citrus, Defenders, Necromancers and Advisors. Touch one and
         you are gone. The top half is the ion stream: you can only cross it on the freighters, Tomaquads, Darts, the Large Pin,
         Yodacons and Callistos, and they carry you with them. Fill all five bays to clear the level; every level the traffic
-        runs faster. Forty seconds a crossing.</p>
+        runs faster. Forty seconds a crossing. From level 3 some Yodacons and Tomaquads jump to hyperspace now and
+        then: they flicker, then vanish for two seconds, taking anyone riding them.</p>
       <p class="muted">Everything sideways flies on frame 9 or 27; your fighter turns to frame 0, 9, 18 or 27 to face its hop.</p>
     </section>
   </aside>

@@ -3,7 +3,9 @@
 // against an Override and konex pirate fleet; ships may not touch, not even at
 // the corners. Sunk ships show their 1997 targeting picture. The computer
 // keeps a probability map: every way each surviving ship could still lie,
-// weighted towards the hits it hasn't finished.
+// weighted towards the hits it hasn't finished. Once a game you can run a
+// sensor sweep: a 3 × 3 patch of pirate space read for contacts, free. On
+// Admiral the computer plays its map straight and fires one extra shot.
 import { loadShip, drawShip, frameRect } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -17,9 +19,10 @@ const FLEETS = {
   you: [["conex", "dart", 5], ["conex", "tomaquad", 4], ["conex", "large-pin", 3], ["conex", "yodacon", 3], ["conex", "gryphon", 2], ["conex", "defender", 2]],
   them: [["conex", "necromancer", 5], ["conex", "trident", 4], ["override", "yodacon", 3], ["konex", "citrus", 3], ["override", "callisto", 2], ["konex", "advisor", 2]],
 };
-const LEVELS = { easy: { noise: 2.5, label: "Easy" }, normal: { noise: 0.25, label: "Normal" }, hard: { noise: 0, label: "Hard" } };
+const LEVELS = { easy: { noise: 2.5, label: "Easy" }, normal: { noise: 0.25, label: "Normal" }, hard: { noise: 0, label: "Hard" },
+  admiral: { noise: 0, extra: 1, label: "Admiral" } };
 
-const state = { phase: "loading", turn: 0, level: "normal", you: null, them: null, aim: [], cursor: { x: 0, y: 0 }, selected: null,
+const state = { phase: "loading", sweep: "ready", scanned: new Map(), turn: 0, level: "normal", you: null, them: null, aim: [], cursor: { x: 0, y: 0 }, selected: null,
   log: [], busy: false, winner: null };
 let kinds = {};
 const salvo = { fast: false };                                   // play-tests turn the reveal delays off
@@ -124,7 +127,7 @@ function chooseSalvo(board, shots, noise) {
 // --- Turns ---------------------------------------------------------------------------------------
 
 function newGame() {
-  Object.assign(state, { phase: "place", turn: 0, aim: [], selected: null, log: [], busy: false, winner: null });
+  Object.assign(state, { phase: "place", sweep: "ready", scanned: new Map(), turn: 0, aim: [], selected: null, log: [], busy: false, winner: null });
   state.you = randomBoard("you");
   state.them = randomBoard("them");
   say(`Override pirates to ConEx fleet: you are in our space. Six ships a side, ${FLEETS.you.length} shots a turn while you have them.`);
@@ -135,7 +138,28 @@ function newGame() {
 
 const shotsFor = (board) => Math.min(afloat(board), unshot(board === state.you ? state.them : state.you));
 
+// The sensor sweep: once a game, read a 3 × 3 patch for contacts. It costs
+// no turn and fires nothing; contacts show amber until you shoot them.
+function sweep(x, y) {
+  if (state.sweep !== "armed" || state.busy || state.phase === "over") return false;
+  let found = 0;
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const cx = x + dx, cy = y + dy;
+    if (!inside(cx, cy)) continue;
+    const hit = state.them.ships.some((o) => cellsOf(o).some((c) => c.x === cx && c.y === cy));
+    state.scanned.set(key(cx, cy), hit ? "contact" : "clear");
+    if (hit) found++;
+  }
+  state.sweep = "used";
+  if (state.phase === "place") { state.phase = "aim"; state.selected = null; }
+  play(found ? "target" : "cancel");
+  log(`Sensor sweep at ${LETTERS[x]}${y + 1}: ${found ? `${found} contact${found > 1 ? "s" : ""}` : "nothing"}.`, found ? "good" : "");
+  refresh();
+  return true;
+}
+
 function toggleAim(x, y) {
+  if (state.sweep === "armed") { sweep(x, y); return; }
   if (state.busy || state.phase === "over" || state.them.shots.has(key(x, y))) return;
   if (state.phase === "place") { state.phase = "aim"; state.selected = null; }
   const i = state.aim.findIndex((p) => p.x === x && p.y === y);
@@ -153,7 +177,7 @@ async function fire() {
   for (const p of mine) { report("you", shoot(state.them, p.x, p.y)); refresh(); await pause(140); }
   if (!afloat(state.them)) return finish("you");
   await pause(350);
-  const theirs = chooseSalvo(state.you, shotsFor(state.them), LEVELS[state.level].noise);
+  const theirs = chooseSalvo(state.you, Math.min(unshot(state.you), shotsFor(state.them) + (LEVELS[state.level].extra ?? 0)), LEVELS[state.level].noise);
   for (const p of theirs) { report("them", shoot(state.you, p.x, p.y)); refresh(); await pause(140); }
   if (!afloat(state.you)) return finish("them");
   state.busy = false;
@@ -230,6 +254,14 @@ function drawBoard(canvas, board, own) {
     }
   }
   if (!own) {
+    for (const [k, v] of state.scanned) {                        // what the sweep read, until it's shot at
+      if (board.shots.has(k)) continue;
+      const [x, y] = k.split(",").map(Number), cx = PAD + x * CELL + CELL / 2, cy = PAD + y * CELL + CELL / 2;
+      if (v === "contact") {
+        ctx.fillStyle = "rgb(255 179 64 / 0.85)";
+        ctx.beginPath(); ctx.moveTo(cx, cy - 7); ctx.lineTo(cx + 7, cy); ctx.lineTo(cx, cy + 7); ctx.lineTo(cx - 7, cy); ctx.closePath(); ctx.fill();
+      } else { ctx.fillStyle = "rgb(127 233 255 / 0.18)"; ctx.fillRect(cx - CELL / 2 + 3, cy - CELL / 2 + 3, CELL - 6, CELL - 6); }
+    }
     for (const p of state.aim) {                                 // your salvo, waiting
       const cx = PAD + p.x * CELL + CELL / 2, cy = PAD + p.y * CELL + CELL / 2;
       ctx.strokeStyle = "#ffb340"; ctx.lineWidth = 2;
@@ -268,6 +300,9 @@ function refresh() {
   $("fire").disabled = state.busy || state.phase === "over" || state.aim.length !== need;
   $("fire").textContent = state.phase === "over" ? "Fire salvo" : `Fire salvo (${state.aim.length}/${need})`;
   $("shuffle").disabled = state.phase !== "place";
+  $("sweep").disabled = state.sweep === "used" || state.busy || state.phase === "over";
+  $("sweep").textContent = state.sweep === "armed" ? "Sweep: pick the centre" : state.sweep === "used" ? "Sweep used" : "Sensor sweep";
+  $("sweep").setAttribute("aria-pressed", String(state.sweep === "armed"));
   $("place-hint").hidden = state.phase !== "place";
   $("log").replaceChildren(...state.log.map((l) => Object.assign(document.createElement("li"), { textContent: l.text, className: l.tone })));
   const best = load()[state.level];
@@ -296,10 +331,12 @@ $("theirs").addEventListener("keydown", (e) => {
   if (m) { e.preventDefault(); state.cursor = { x: Math.max(0, Math.min(N - 1, state.cursor.x + m[0])), y: Math.max(0, Math.min(N - 1, state.cursor.y + m[1])) }; refresh(); }
   else if (e.key === " ") { e.preventDefault(); toggleAim(state.cursor.x, state.cursor.y); }
   else if (e.key === "Enter") { e.preventDefault(); fire(); }
+  else if (e.key === "s" || e.key === "S") { e.preventDefault(); $("sweep").click(); }
 });
 for (const ev of ["focus", "blur"]) $("theirs").addEventListener(ev, refresh);
 document.addEventListener("visibilitychange", refresh);
 $("fire").onclick = fire;
+$("sweep").onclick = () => { if (state.sweep !== "used") { state.sweep = state.sweep === "armed" ? "ready" : "armed"; play("select"); refresh(); } };
 $("shuffle").onclick = () => { if (state.phase === "place") { state.you = randomBoard("you"); state.selected = null; refresh(); } };
 $("new").onclick = newGame;
 $("level").onchange = () => { state.level = $("level").value; newGame(); };
@@ -323,4 +360,4 @@ const loaded = await Promise.all(all.map(([ed, slug]) => loadShip(ed, slug)));
 all.forEach(([ed, slug], i) => { const ship = loaded[i]; kinds[`${ed}/${slug}`] = { ship, name: ship.name, ...measure(ship) }; });
 $("captain").src = loaded[all.findIndex(([ed, slug]) => ed === "override" && slug === "yodacon")].urls.comm;
 newGame();
-globalThis.salvo = Object.assign(salvo, { state, newGame, refresh, toggleAim, fire, chooseSalvo, shotsFor, afloat, LEVELS });
+globalThis.salvo = Object.assign(salvo, { state, newGame, refresh, toggleAim, fire, sweep, chooseSalvo, shotsFor, afloat, LEVELS });

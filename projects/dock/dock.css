@@ -30,7 +30,7 @@ canvas { display: block; width: 100%; height: auto; border-radius: 4px; touch-ac
 .pilot .name { margin: 0; font-weight: 700; color: var(--yc-ice); }
 select.yc-plate { display: block; width: 100%; margin-top: 4px; font: 13px var(--yc-mono); }
 .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-.pad { display: none; grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pad { display: none; grid-column: 1 / -1; grid-template-columns: repeat(6, 1fr); gap: 8px; }
 .pad button { min-height: 56px; font-size: 22px; touch-action: none; user-select: none; }
 @media (pointer: coarse) { .pad { display: grid; } }
 .credit { max-width: 1160px; margin: 16px auto 0; color: var(--yc-phos-dim); font-size: 0.75rem; }

@@ -4,6 +4,9 @@
 // once you are in the wedge behind its stern, slow, and on the carrier's own
 // sprite frame (one frame either side will do). From level three the carrier
 // turns, a frame at a time; from level five there are mines in orbit.
+// Side jets (Q and E) push the ship sideways without turning it, at the
+// retro's thrust and half again the fuel: the one way to fix a sideways
+// drift once you are lined up.
 import { loadShip, loadImage, drawShip, frameIndex, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -33,6 +36,7 @@ const LEVELS = [
   { hull: ["conex", "necromancer"], spin: 3.5, mines: 5, from: 330, drift: 20 },
   { hull: ["conex", "tomaquad"], spin: 3.5, mines: 5, from: 100, drift: 12 },
   { hull: ["conex", "dart"], spin: 4, mines: 6, from: 280, drift: 25 },
+  { hull: ["override", "yodacon"], spin: 4.5, mines: 7, from: 60, drift: 18 },   // the 1998 Yodacon: 96 px, Maneuver 2
 ];
 const CARRIER = { x: W / 2, y: H / 2, scale: 2, halfLength: 54, halfWidth: 37 };   // Large Pin frame 0 is 37 × 53 px
 const BAY = 58, WEDGE = 190, LOCK_SPEED = 30, LOCK_HOLD = 0.4, CRASH = 70, HULL = 3;
@@ -41,7 +45,7 @@ const BAY = 58, WEDGE = 190, LOCK_SPEED = 30, LOCK_HOLD = 0.4, CRASH = 70, HULL 
 // seconds of burn from Fuel.
 function pilotOf(ship) {
   const st = { ...(ship.meta.stats ?? {}), ...(KONEX_STATS[ship.slug] ?? {}) };
-  return { ship, name: ship.name, record: st, accel: st.Accel * 0.22, retro: st.Accel * 0.11, top: st.Speed * 0.35,
+  return { ship, name: ship.edition === "override" && ship.slug === "yodacon" ? "1998 Yodacon" : ship.name, record: st, accel: st.Accel * 0.22, retro: st.Accel * 0.11, top: st.Speed * 0.35,
     turn: st.Maneuver * 35, fuel: st.Fuel / 30, radius: ship.sprite.frame_width * 0.3 };
 }
 
@@ -107,7 +111,7 @@ for (const b of document.querySelectorAll("[data-pad]")) {
 }
 
 function controls() {
-  const c = { turn: 0, thrust: held.has("ArrowUp") || held.has("w") || pads.has("up"), retro: held.has("ArrowDown") || held.has("s") || pads.has("down") };
+  const c = { side: (held.has("e") || pads.has("jet-right") ? 1 : 0) - (held.has("q") || pads.has("jet-left") ? 1 : 0), turn: 0, thrust: held.has("ArrowUp") || held.has("w") || pads.has("up"), retro: held.has("ArrowDown") || held.has("s") || pads.has("down") };
   if (held.has("ArrowLeft") || held.has("a") || pads.has("left")) c.turn -= 1;
   if (held.has("ArrowRight") || held.has("d") || pads.has("right")) c.turn += 1;
   const pad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
@@ -117,6 +121,7 @@ function controls() {
     if (b(14)) c.turn = -1; if (b(15)) c.turn = 1;
     c.thrust ||= b(0) || b(7) || b(12);
     c.retro ||= b(1) || b(6) || b(13);
+    if (b(4)) c.side = -1; if (b(5)) c.side = 1;
   }
   return c;
 }
@@ -150,6 +155,13 @@ function update(dt) {
     me.vx += Math.sin(h) * a * dt; me.vy -= Math.cos(h) * a * dt;
     me.fuel = Math.max(0, me.fuel - dt);
     me.thrust = c.thrust ? 1 : -1;
+  }
+  me.jet = 0;
+  if (me.fuel > 0 && c.side) {                                   // side jets: sideways, heading unchanged
+    const h = rad(me.heading);
+    me.vx += Math.cos(h) * c.side * k.retro * dt; me.vy += Math.sin(h) * c.side * k.retro * dt;
+    me.fuel = Math.max(0, me.fuel - dt * 1.5);
+    me.jet = c.side;
   }
   const v = Math.hypot(me.vx, me.vy);
   if (v > k.top) { me.vx *= k.top / v; me.vy *= k.top / v; }
@@ -284,6 +296,11 @@ function draw() {
         ctx.fillStyle = me.thrust > 0 ? "#ffb340" : "#7fe9ff";
         ctx.beginPath(); ctx.arc(me.x + Math.sin(hh) * d * back, me.y - Math.cos(hh) * d * back, 2 + Math.random() * 2.5, 0, Math.PI * 2); ctx.fill();
       }
+      if (me.jet) {                                             // a side-jet puff, on the side away from the push
+        const hh = rad(me.heading), d = me.k.radius + 3;
+        ctx.fillStyle = "#e8f4ff";
+        ctx.beginPath(); ctx.arc(me.x - Math.cos(hh) * d * me.jet, me.y - Math.sin(hh) * d * me.jet, 1.5 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+      }
       drawShip(ctx, me.k.ship, me.heading, me.x, me.y, s);
       if (state.phase === "play") {                             // velocity, one second ahead
         ctx.strokeStyle = "rgb(255 255 255 / 0.35)";
@@ -354,5 +371,5 @@ $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 renderLevels();
 start(0);
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.dock = { state, start, next, LEVELS, CARRIER, BAY, LOCK_SPEED, carrierFrame, local, inWedge, bayPoint, minePos,
+globalThis.dock = { state, start, next, LEVELS, controls, CARRIER, BAY, LOCK_SPEED, carrierFrame, local, inWedge, bayPoint, minePos,
   tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

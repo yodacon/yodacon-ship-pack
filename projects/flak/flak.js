@@ -3,7 +3,10 @@
 // batteries turn on their own frames to aim where you point and throw flak
 // that bursts where you clicked. Necromancers split into Tridents on the way
 // down, Darts take two bursts. Save what you can; every 10,000 points brings a
-// lost ship back.
+// lost ship back. Once a wave the Large Pin's main gun can fire a pulse:
+// a huge burst wherever the crosshair is, at once; lose the Large Pin and the
+// pulse goes with it. A Night raid hides the raiders until something lights
+// them: flak, a burst, or the fleet's floodlights near the ground.
 import { loadShip, drawShip, loadImage, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -25,13 +28,16 @@ const RAIDERS = {
 };
 const AMMO = 10, SHELL = 380, SHELL_FAST = 560, BURST = 42, BONUS_EVERY = 10000;
 
-const state = { phase: "loading", wave: 0, score: 0, nextBonus: BONUS_EVERY, fleet: [], batteries: [], raiders: [], shells: [],
+const state = { phase: "loading", mode: "day", pulse: true, beam: null, wave: 0, score: 0, nextBonus: BONUS_EVERY, fleet: [], batteries: [], raiders: [], shells: [],
   bursts: [], sparks: [], queue: [], spawnIn: 0, cursor: { x: W / 2, y: H / 2 }, t: 0, between: 0, lost: {} };
 let kinds = {}, defender = null, planet = null;
 const stars = Array.from({ length: 110 }, () => ({ x: Math.random() * W, y: Math.random() * GROUND, z: 0.2 + Math.random() * 0.8 }));
 
-function load() { try { return JSON.parse(localStorage.getItem(SAVE)) ?? {}; } catch { return {}; } }
-function save(d) { try { localStorage.setItem(SAVE, JSON.stringify(d)); } catch { /* not kept */ } }
+// Best scores are kept per level: day under the old key, night beside it.
+const saveKey = () => (state.mode === "night" ? "flak-night-v1" : SAVE);
+function load() { try { return JSON.parse(localStorage.getItem(saveKey())) ?? {}; } catch { return {}; } }
+function save(d) { try { localStorage.setItem(saveKey(), JSON.stringify(d)); } catch { /* not kept */ } }
+const PULSE = 110;
 
 // --- Waves ---------------------------------------------------------------------------------------
 
@@ -53,6 +59,7 @@ function nextWave() {
   state.queue = list;
   state.spawnIn = 1.2;
   state.batteries = BATTERIES.map((x) => ({ x, y: GROUND - 14, ammo: AMMO, alive: true, aim: 0 }));
+  state.pulse = true;
   banner(`Wave ${w}`, w === 1 ? "Click where the flak should burst. 1, 2, 3 fire a chosen battery." : `${list.length} raiders inbound.`, 1.6);
 }
 
@@ -82,10 +89,25 @@ function fire(x, y, which = null) {
   return true;
 }
 
+// The Large Pin's main gun: once a wave, a burst of 110 px at the crosshair
+// at once, no flight time. Not while the Large Pin is lost.
+const carrier = () => state.fleet.find((f) => f.k.ship.slug === "large-pin");
+function pulse(x, y) {
+  const pin = carrier();
+  if (state.phase !== "play" || !state.pulse || !pin?.alive) { play("error"); return false; }
+  y = Math.min(y, GROUND - 40);
+  state.pulse = false;
+  state.bursts.push({ x, y, r: 0, age: 0.1, max: PULSE, hit: new Set(), pulse: true });
+  state.beam = { x0: pin.x, y0: pin.y - 26, x1: x, y1: y, life: 0.3 };
+  play("boom");
+  return true;
+}
+
 // --- Update --------------------------------------------------------------------------------------
 
 function update(dt) {
   state.t += dt;
+  if (state.beam && (state.beam.life -= dt) <= 0) state.beam = null;
   for (const s of state.sparks) { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 40 * dt; s.life -= dt; }
   state.sparks = state.sparks.filter((s) => s.life > 0);
   if (bannerUntil && state.t > bannerUntil) { $("banner").hidden = true; bannerUntil = 0; }
@@ -133,7 +155,7 @@ function update(dt) {
 }
 
 function kill(r) {
-  state.score += r.kd.points;
+  state.score += Math.round(r.kd.points * (state.mode === "night" ? 1.5 : 1));
   burst(r.x, r.y, r.kind === "yodacon98" ? 50 : 18, "#ffe3a0", 90);
   state.bursts.push({ x: r.x, y: r.y, r: 0, age: 0.1, max: 18, hit: new Set() });   // a small chain burst
   bonusCheck();
@@ -193,15 +215,21 @@ function banner(title, text, secs) {
 // --- Drawing -------------------------------------------------------------------------------------
 
 function draw() {
-  ctx.fillStyle = "#03050a"; ctx.fillRect(0, 0, W, H);
-  for (const s of stars) { ctx.fillStyle = `rgb(170 180 220 / ${s.z})`; ctx.fillRect(s.x, s.y, 1, 1); }
-  if (planet) { ctx.globalAlpha = 0.55; ctx.drawImage(planet, W - 230, 40, 180, 180); ctx.globalAlpha = 1; }
+  const night = state.mode === "night";
+  ctx.fillStyle = night ? "#010204" : "#03050a"; ctx.fillRect(0, 0, W, H);
+  for (const s of stars) { ctx.fillStyle = `rgb(170 180 220 / ${night ? s.z * 0.4 : s.z})`; ctx.fillRect(s.x, s.y, 1, 1); }
+  if (planet) { ctx.globalAlpha = night ? 0.12 : 0.55; ctx.drawImage(planet, W - 230, 40, 180, 180); ctx.globalAlpha = 1; }
   // The ground: an orbital platform the fleet is moored to.
   const g = ctx.createLinearGradient(0, GROUND, 0, H);
   g.addColorStop(0, "#4c5457"); g.addColorStop(0.1, "#2b3134"); g.addColorStop(1, "#14181a");
   ctx.fillStyle = g; ctx.fillRect(0, GROUND, W, H - GROUND);
   ctx.fillStyle = "rgb(255 255 255 / 0.05)"; for (let x = 0; x < W; x += 32) ctx.fillRect(x, GROUND + 4, 1, H - GROUND - 8);
 
+  if (night) for (const f of state.fleet) if (f.alive) {          // floodlights
+    const cone = ctx.createLinearGradient(0, GROUND - 30, 0, LIT);
+    cone.addColorStop(0, "rgb(200 220 255 / 0.12)"); cone.addColorStop(1, "rgb(200 220 255 / 0)");
+    ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(f.x - 8, GROUND - 30); ctx.lineTo(f.x - 60, LIT); ctx.lineTo(f.x + 60, LIT); ctx.lineTo(f.x + 8, GROUND - 30); ctx.fill();
+  }
   for (const f of state.fleet) {
     if (f.alive) drawShip(ctx, f.k.ship, 0, f.x, f.y, Math.min(1, 58 / f.k.ship.sprite.frame_width));
     else { ctx.fillStyle = "rgb(255 122 89 / 0.35)"; ctx.fillRect(f.x - 14, GROUND - 6, 28, 6); }
@@ -214,7 +242,13 @@ function draw() {
   // Raiders, with the trail of their dive behind them.
   ctx.lineWidth = 1;
   for (const r of state.raiders) {
-    ctx.strokeStyle = "rgb(255 90 70 / 0.35)"; ctx.beginPath(); ctx.moveTo(r.sx, r.sy); ctx.lineTo(r.x, r.y); ctx.stroke();
+    if (night && !lit(r)) {                                      // in the dark: a faint shape, no trail
+      ctx.globalAlpha = 0.1;
+      drawShip(ctx, r.k.ship, r.heading, r.x, r.y, r.kind === "yodacon98" ? 0.9 : r.kind === "dart" ? 0.75 : 1);
+      ctx.globalAlpha = 1;
+      continue;
+    }
+    ctx.strokeStyle = "rgb(255 90 70 / 0.35)"; ctx.beginPath(); ctx.moveTo(night ? r.x - r.vx * 1.5 : r.sx, night ? r.y - r.vy * 1.5 : r.sy); ctx.lineTo(r.x, r.y); ctx.stroke();
     drawShip(ctx, r.k.ship, r.heading, r.x, r.y, r.kind === "yodacon98" ? 0.9 : r.kind === "dart" ? 0.75 : 1);
   }
   for (const s of state.shells) {
@@ -222,9 +256,13 @@ function draw() {
     ctx.strokeStyle = "#7fe9ff"; ctx.beginPath();
     ctx.moveTo(s.tx - 4, s.ty - 4); ctx.lineTo(s.tx + 4, s.ty + 4); ctx.moveTo(s.tx + 4, s.ty - 4); ctx.lineTo(s.tx - 4, s.ty + 4); ctx.stroke();
   }
+  if (state.beam) {                                              // the Large Pin's main gun
+    ctx.strokeStyle = `rgb(194 107 216 / ${state.beam.life / 0.3})`; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(state.beam.x0, state.beam.y0); ctx.lineTo(state.beam.x1, state.beam.y1); ctx.stroke(); ctx.lineWidth = 1;
+  }
   for (const b of state.bursts) {
     const hue = Math.floor(state.t * 20) % 2;
-    ctx.fillStyle = hue ? "rgb(255 227 160 / 0.75)" : "rgb(255 179 64 / 0.7)";
+    ctx.fillStyle = b.pulse ? (hue ? "rgb(230 180 255 / 0.6)" : "rgb(194 107 216 / 0.55)") : hue ? "rgb(255 227 160 / 0.75)" : "rgb(255 179 64 / 0.7)";
     ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
   }
   for (const p of state.sparks) { ctx.globalAlpha = Math.min(1, (p.life / p.max) * 1.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1, p.y - 1, 2, 2); }
@@ -237,7 +275,19 @@ function draw() {
   }
 }
 
+// At night a raider shows only near a burst or shell, or low over the fleet.
+const LIT = GROUND - 170;
+function lit(r) {
+  if (r.y > LIT) return true;
+  for (const b of state.bursts) if (Math.hypot(b.x - r.x, b.y - r.y) < b.r + 90) return true;
+  for (const s of state.shells) if (Math.hypot(s.x - r.x, s.y - r.y) < 70) return true;
+  return false;
+}
+
 function hud() {
+  const pin = carrier();
+  $("pulse").textContent = !pin?.alive ? "no carrier" : state.pulse ? "ready" : "used";
+  $("pulse-btn").disabled = !pin?.alive || !state.pulse || state.phase !== "play";
   $("score").textContent = state.score.toLocaleString();
   $("wave").textContent = state.wave;
   $("afloat").textContent = `${state.fleet.filter((f) => f.alive).length}/${FLEET.length}`;
@@ -252,14 +302,17 @@ canvas.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   state.cursor = toGame(e);
   if (state.phase === "title" || state.phase === "over") { newGame(); return; }
-  fire(state.cursor.x, state.cursor.y);
+  if (e.button === 2) pulse(state.cursor.x, state.cursor.y);
+  else fire(state.cursor.x, state.cursor.y);
 });
+canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   if ((state.phase === "title" || state.phase === "over") && k === "enter") return newGame();
   const which = { 1: 0, 2: 1, 3: 2, a: 0, s: 1, d: 2 }[k];
   if (which !== undefined) fire(state.cursor.x, state.cursor.y, which);
   else if (k === " ") { e.preventDefault(); fire(state.cursor.x, state.cursor.y); }
+  else if (k === "e" || k === "p") pulse(state.cursor.x, state.cursor.y);
   else if (k.startsWith("arrow")) {                              // the crosshair on the keys too
     e.preventDefault();
     const step = e.shiftKey ? 40 : 14;
@@ -291,8 +344,10 @@ state.fleet = FLEET.map(([ed, slug, x]) => ({ k: kinds[`${ed}/${slug}`], x, y: G
 state.batteries = BATTERIES.map((x) => ({ x, y: GROUND - 14, ammo: AMMO, alive: true, aim: 0 }));
 state.phase = "title";
 banner("Flak", "Raiders are diving on the fleet. Click to start.", 0);
+$("pulse-btn").onclick = () => pulse(state.cursor.x, state.cursor.y);
+$("mode").onchange = () => { state.mode = $("mode").value; $("mode").blur(); if (state.phase !== "title") newGame(); };
 $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.flak = { state, newGame, fire, nextWave, SHELL, SHELL_FAST, BURST, GROUND,
+globalThis.flak = { state, newGame, fire, pulse, lit, nextWave, SHELL, SHELL_FAST, BURST, GROUND,
   tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

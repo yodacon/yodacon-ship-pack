@@ -16,6 +16,7 @@ function trafficClear(row, x, until) {
 function rideFor(row, x, hop, ahead = 1.2) {                    // a freighter under x when we land, that keeps us in bounds a while
   const s = g.under(row, x, hop, -8);
   if (!s) return false;
+  for (let t = hop; t < hop + 1.6; t += 0.2) if (!g.under(row, x + s.lane.dir * s.lane.speed * (t - hop), t, -4)) return false;   // not one about to jump away
   const nx = x + s.lane.dir * s.lane.speed * ahead;
   return nx > 30 && nx < 594;
 }

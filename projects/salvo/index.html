@@ -26,7 +26,8 @@
   <section class="board yc-panel">
     <h2>Pirate space</h2>
     <canvas id="theirs" tabindex="0" aria-label="Pirate space: click cells, or use the arrow keys and Space, to aim; Enter fires"></canvas>
-    <p class="buttons"><button type="button" id="fire" class="yc-plate yc-go" disabled>Fire salvo</button></p>
+    <p class="buttons"><button type="button" id="fire" class="yc-plate yc-go" disabled>Fire salvo</button>
+      <button type="button" id="sweep" class="yc-plate" aria-pressed="false">Sensor sweep</button></p>
     <ul id="fleet-them" class="fleet"></ul>
   </section>
   <section class="board yc-panel">
@@ -52,11 +53,13 @@
     </section>
     <section class="yc-panel">
       <p><label class="yc-label" for="level">Level</label>
-        <select id="level" class="yc-plate"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></p>
+        <select id="level" class="yc-plate"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="admiral">Admiral</option></select></p>
       <p class="buttons"><button type="button" id="new" class="yc-plate">New game</button>
         <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
       <p class="muted">Each turn you fire one shot for every ship you have afloat, and so do they. Ships never touch, not even at
         the corners. The computer keeps a map of every way its targets could still lie.</p>
+      <p class="muted"><b>Sensor sweep</b> (<kbd>S</kbd> on the board): once a game, read a 3 × 3 patch of pirate space for
+        contacts. It costs no turn; contacts show as amber diamonds. On <b>Admiral</b> the computer fires one extra shot a turn.</p>
     </section>
   </aside>
   <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>

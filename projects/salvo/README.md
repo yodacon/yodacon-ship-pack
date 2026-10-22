@@ -22,15 +22,22 @@ The computer counts every way each surviving ship could still lie, given the
 misses, the sunk ships and the space round them. Placements through hits it
 hasn't finished count far more, so it finishes what it starts, and a salvo
 spreads out unless it is chasing a hit. Easy adds noise to the map; Hard
-takes it straight. Fewest turns to win is kept per level in `localStorage`.
+takes it straight; **Admiral** takes it straight and fires one extra shot a
+turn. Fewest turns to win is kept per level in `localStorage`.
+
+**Sensor sweep** (the button, or <kbd>S</kbd> on the board): once a game, pick
+a cell and read the 3 × 3 patch round it for contacts. It costs no turn and
+fires nothing; contacts show as amber diamonds, empty water as a pale square,
+until you shoot them.
 
 Keys: on the pirate board, arrows move, <kbd>Space</kbd> aims or un-aims,
-<kbd>Enter</kbd> fires.
+<kbd>Enter</kbd> fires, <kbd>S</kbd> arms the sweep.
 
 Play-test: `node tools/drive_page.mjs "<url>/projects/salvo/?level=normal&games=20" projects/salvo/playtest/battle.js`
 plays twenty games with the reveal delays off, choosing its salvo from the
 computer's own map, then plays one turn with mouse clicks. Playing the
-computer's own strategy, it wins about half the time on Normal.
+computer's own strategy, without the sweep, it wins about half the time on
+Normal and 3 games in 20 on Admiral.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
 1998), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

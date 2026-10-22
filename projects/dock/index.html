@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dock · Yodacon Ship Pack</title>
-<meta name="description" content="Bring ten ConEx, Override and konex hulls home to a turning Large Pin carrier: main engine, retro and inertia only.">
+<meta name="description" content="Bring eleven ConEx, Override and konex hulls home to a turning Large Pin carrier: main engine, retro and inertia only.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../lib/yodacon-style.css">
 <link rel="stylesheet" href="dock.css">
@@ -15,7 +15,7 @@
   <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
   <h1 class="yc-title">Dock</h1>
   <div class="readouts yc-crt">
-    <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1/10</span></span>
+    <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1/11</span></span>
     <span class="yc-readout"><span class="yc-label">Hull</span><span class="yc-value" id="hullpts">3/3</span></span>
     <span class="yc-readout"><span class="yc-label">Time</span><span class="yc-value" id="time">0 s</span></span>
   </div>
@@ -48,16 +48,21 @@
       <p><label class="yc-label" for="levels">Ship</label>
         <select id="levels" class="yc-plate"></select></p>
       <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> retro (half thrust) ·
-        <kbd>R</kbd> start again · <kbd>Enter</kbd> next ship. Gamepad: stick, A thrust, B retro.</p>
+        <kbd>Q</kbd><kbd>E</kbd> side jets · <kbd>R</kbd> start again · <kbd>Enter</kbd> next ship. Gamepad: stick, A thrust,
+        B retro, LB/RB side jets.</p>
+      <p class="muted"><b>Side jets</b> push you sideways without turning, at the retro's thrust and half again the fuel: fix a
+        sideways drift once you're lined up.</p>
       <p class="buttons"><button type="button" id="restart" class="yc-plate">Start again</button>
         <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
     </section>
   </aside>
   <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="jet-left" aria-label="Side jet left">⇠</button>
     <button type="button" class="yc-plate" data-pad="left" aria-label="Turn left">◀</button>
     <button type="button" class="yc-plate" data-pad="down" aria-label="Retro">▼</button>
     <button type="button" class="yc-plate" data-pad="up" aria-label="Thrust">▲</button>
     <button type="button" class="yc-plate" data-pad="right" aria-label="Turn right">▶</button>
+    <button type="button" class="yc-plate" data-pad="jet-right" aria-label="Side jet right">⇢</button>
   </div>
 </main>
 
