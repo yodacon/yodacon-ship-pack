@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rally · Yodacon Ship Pack</title>
+<meta name="description" content="Race the pack's ships through gates around planets: three laps against five computer racers, each hull handling by its 1997 record.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="rally.css">
+<script type="module" src="rally.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Rally</h1>
+  <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+</header>
+
+<main class="game yc-console">
+  <div class="main-col">
+    <section class="yc-viewport view" aria-label="The race">
+      <canvas id="screen" width="800" height="500"></canvas>
+      <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    </section>
+    <div id="pad" class="pad" aria-label="Touch controls">
+      <button type="button" data-key="left" aria-label="Turn left">◀</button>
+      <button type="button" data-key="thrust" aria-label="Thrust">▲</button>
+      <button type="button" data-key="right" aria-label="Turn right">▶</button>
+      <button type="button" data-key="brake" aria-label="Brake">▼</button>
+    </div>
+  </div>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Race</h2>
+      <p class="field"><label for="hull">Hull</label><select id="hull" class="yc-plate"></select></p>
+      <p class="field"><label for="track">Track</label><select id="track" class="yc-plate"></select></p>
+      <img id="hull-yard" class="yard" alt="">
+      <p id="hull-stats" class="muted"></p>
+      <p id="hull-best" class="muted"></p>
+      <p><button type="button" id="start" class="yc-plate yc-go">Start</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>Standings</h2>
+      <ol id="standings" class="standings yc-crt"></ol>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd> turn · <kbd>↑</kbd>/<kbd>W</kbd> thrust ·
+        <kbd>↓</kbd>/<kbd>S</kbd> brake · <kbd>Enter</kbd> race again. A gamepad works too: stick, A or RT, LT.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships, portraits and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998),
+  with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>. The planets are the pack's generated art.</p>
+</footer>
+</body>
+</html>

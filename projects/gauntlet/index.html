@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gauntlet · Yodacon Ship Pack</title>
+<meta name="description" content="Pick any of the pack's thirteen ship designs and fight the others one by one, each flying by its 1997 record. One or two players, keyboard or gamepad.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="gauntlet.css">
+<script type="module" src="gauntlet.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Gauntlet</h1>
+  <p class="buttons">
+    <button type="button" id="new" class="yc-plate">New gauntlet</button>
+    <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
+  </p>
+</header>
+
+<main class="game yc-console">
+  <div class="main-col">
+    <section class="yc-viewport view" aria-label="The arena">
+      <canvas id="screen" width="800" height="500"></canvas>
+      <div id="banner" class="banner" hidden>
+        <p id="banner-title" class="banner-title"></p>
+        <p id="banner-text"></p>
+        <p><button type="button" id="banner-go" class="yc-plate yc-go">Fight</button></p>
+      </div>
+      <section id="pick" class="pick" aria-labelledby="pick-who">
+        <div class="pick-head">
+          <h2 id="pick-who">Loading thirteen hulls…</h2>
+          <p class="players" role="group" aria-label="Players">
+            <button type="button" class="yc-plate" data-players="1" aria-pressed="true">1 player</button>
+            <button type="button" class="yc-plate" data-players="2" aria-pressed="false">2 players</button>
+          </p>
+        </div>
+        <div id="hulls" class="hulls"></div>
+      </section>
+    </section>
+    <div id="pad" class="pad" aria-label="Touch controls">
+      <button type="button" data-key="left" aria-label="Turn left">◀</button>
+      <button type="button" data-key="thrust" aria-label="Thrust">▲</button>
+      <button type="button" data-key="right" aria-label="Turn right">▶</button>
+      <button type="button" data-key="brake" aria-label="Brake">▼</button>
+      <button type="button" data-key="fire" aria-label="Fire">Fire</button>
+    </div>
+  </div>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Opponent</h2>
+      <div class="foe">
+        <img id="foe-comm" alt="">
+        <div><p id="foe-name" class="foe-name">–</p><p id="foe-stats" class="muted"></p></div>
+      </div>
+    </section>
+    <section class="yc-panel">
+      <h2>The ladder</h2>
+      <ol id="ladder" class="ladder yc-crt"></ol>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted">Player 1: <kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> brake · <kbd>Space</kbd> fire</p>
+      <p class="muted">Player 2: <kbd>A</kbd><kbd>D</kbd> turn · <kbd>W</kbd> thrust · <kbd>S</kbd> brake · <kbd>F</kbd> fire</p>
+      <p class="muted">Gamepads: stick or d-pad to turn, A or RT thrust, X, B or RB fire, Start to continue.
+        Pad 1 flies player 1, pad 2 player 2. <span id="pads">Press a button on a pad to connect it.</span></p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships, portraits and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998),
+  with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

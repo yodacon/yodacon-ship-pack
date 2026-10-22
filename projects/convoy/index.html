@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convoy · Yodacon Ship Pack</title>
+<meta name="description" content="Escort a Large Pin freighter through pirate raids with two wingmen who take your orders. Targeting pictures and comm portraits from the pack.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="convoy.css">
+<script type="module" src="convoy.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Convoy</h1>
+  <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+</header>
+
+<main class="game yc-console">
+  <div class="main-col">
+    <section class="yc-viewport view" aria-label="The corridor">
+      <canvas id="screen" width="800" height="500"></canvas>
+      <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    </section>
+    <div id="pad" class="pad" aria-label="Touch controls">
+      <button type="button" data-key="left" aria-label="Turn left">◀</button>
+      <button type="button" data-key="thrust" aria-label="Thrust">▲</button>
+      <button type="button" data-key="right" aria-label="Turn right">▶</button>
+      <button type="button" data-key="fire" aria-label="Fire">Fire</button>
+      <button type="button" id="pad-target">Target</button>
+    </div>
+    <section class="yc-panel">
+      <h2>Comms</h2>
+      <ul id="comms" class="comms yc-crt" aria-live="polite"></ul>
+    </section>
+  </div>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Run</h2>
+      <p class="field"><label for="hull">Fly</label><select id="hull" class="yc-plate"></select></p>
+      <p class="field"><label for="diff">Raiders</label><select id="diff" class="yc-plate"></select></p>
+      <p><button type="button" id="start" class="yc-plate yc-go">Start</button></p>
+    </section>
+    <section class="yc-panel target">
+      <h2>Target</h2>
+      <p id="no-target" class="muted">No target. <kbd>Tab</kbd> picks the nearest raider.</p>
+      <div id="target-box" hidden>
+        <img id="target-pic" class="target-pic" alt="">
+        <p id="target-name" class="target-name"></p>
+        <p class="bar-label">Shield</p><p class="bar"><i id="target-shield"></i></p>
+        <p class="bar-label">Armour</p><p class="bar armour"><i id="target-armour"></i></p>
+        <p id="target-range" class="muted"></p>
+      </div>
+    </section>
+    <section class="yc-panel">
+      <h2>Wing</h2>
+      <ul id="wing" class="wing"></ul>
+      <p class="orders" role="group" aria-label="Orders">
+        <button type="button" class="yc-plate" data-order="attack" aria-pressed="false">1 Attack</button>
+        <button type="button" class="yc-plate" data-order="escort" aria-pressed="true">2 Guard</button>
+        <button type="button" class="yc-plate" data-order="form" aria-pressed="false">3 Form</button>
+      </p>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> brake · <kbd>Space</kbd> fire ·
+        <kbd>Tab</kbd> next target · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> wing orders · <kbd>Enter</kbd> start.
+        Gamepad: stick, A thrust, X or RB fire, Y target, Start.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships, targeting pictures, portraits and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997;
+  ConEx Override, 1998), with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>. The station's planet is the pack's generated art.</p>
+</footer>
+</body>
+</html>

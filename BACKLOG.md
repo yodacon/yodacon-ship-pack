@@ -54,7 +54,7 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 - [x] CSS-only spin (two `steps(6)`, one per axis; `mod()` for a held heading)
 - [x] OffscreenCanvas in a worker
 - [ ] Web Audio engine and shots
-- [ ] Gamepad API
+- [x] Gamepad API (in Gauntlet, Rally and Convoy; standard mapping)
 - [ ] WebGPU: one ship, then ten thousand (with fallback)
 - [ ] Zig → WebAssembly: frame maths, then the Konquest battle loop, checked
       against `rules.js`
@@ -70,6 +70,9 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 - [x] Pin Miner (idle, DOM only)
 - [x] Fleet Tactics (cards with comm portraits)
 - [x] Cutaway (ship recognition by target picture)
+- [x] Gauntlet (all thirteen designs, one round each; two players, Gamepad API)
+- [x] Rally (gate racing round planets; every hull handles by its record)
+- [x] Convoy (escort a freighter; wing orders, targeting pictures, comm hails)
 
 ## Assets
 

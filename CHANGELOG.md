@@ -27,6 +27,11 @@ moved or renamed file a major one. A tag's files never change.
   animations, and `mod()` with `:has()` for a held heading), with Tutorial
   Notes 8 and 9; `examples/offscreen/` (the game in a Web Worker, drawing on an
   OffscreenCanvas), Tutorial Note 10
+- **Three more games**: Gauntlet (pick any of the thirteen designs and fight
+  the rest, ending with the 1998 Yodacon; two players, gamepads), Rally (three
+  tracks of gates round the planets, five computer racers) and Convoy (escort
+  a Large Pin with two wingmen on EV-style orders; targeting pictures and comm
+  hails). The three Pins count as one hull in all of them
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`
