@@ -33,7 +33,9 @@ moved or renamed file a major one. A tag's files never change.
   a Large Pin with two wingmen on EV-style orders; targeting pictures and comm
   hails). The three Pins count as one hull in all of them
 - **Picket**: tower defence; six hulls with roles from their records, two maps,
-  upgrades, a `tick()` play-test
+  upgrades, a `tick()` play-test. Then five more maps with asteroids, gas
+  pockets that chain when set off, and nebulae that block the line of fire;
+  the lane drawn as a hyperspace stream between warp relays
 - **Recall**: a pure-DOM memory game matching each ship across two of its
   pictures, three levels
 - **Blockade**: a vertical scroller; banking through the frames, two stages

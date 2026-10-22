@@ -57,18 +57,91 @@ function raiderOf(ship) {
 
 // --- Maps ----------------------------------------------------------------------------------------
 
-// The lane as cell corners, from the left edge to the station. A short lane
-// gets slower raiders (pace), so both give the picket about as long to shoot.
+// The lane as cell corners, from the edge to the station. A short lane gets
+// slower raiders (pace), so every map gives the picket about as long to
+// shoot: maps without a pace fly at their lane length over the Long Way
+// Round's, times their speed (terrain and fewer good squares make a map
+// harder, so most fly slower). Terrain is twelve strings of twenty cells: # asteroids and g gas
+// pockets (no building), n nebula (no building, and no line of fire through
+// it). Terrain under the lane or the station is ignored.
 const MAPS = [
   { name: "The Long Way Round", pace: 1, station: [10, 6], lane: [[-1, 1], [17, 1], [17, 10], [2, 10], [2, 4], [13, 4], [13, 7], [10, 7], [10, 6]] },
   { name: "The Switchback (harder)", pace: 0.62, station: [18, 6], lane: [[-1, 2], [4, 2], [4, 9], [9, 9], [9, 3], [14, 3], [14, 9], [18, 9], [18, 6]] },
+  { name: "Round the Nebula", speed: 0.75, station: [3, 6], lane: [[-1, 1], [16, 1], [16, 10], [3, 10], [3, 6]], terrain: [
+    "....#.......g.......",
+    "..................#.",
+    "..g.................",
+    "......nnnnnnnn......",
+    "....nnnnnnnnnnnn....",
+    ".....nnnnnnnnnnn....",
+    ".....nnnnnnnnnnn..#.",
+    "......nnnnnnnnnn....",
+    ".......nnnnnnnn....#",
+    ".#.................g",
+    "#.................#.",
+    "...g....#......#...."] },
+  { name: "Through the Belt", speed: 0.75, station: [17, 3], lane: [[-1, 9], [5, 9], [5, 2], [11, 2], [11, 9], [17, 9], [17, 3]], terrain: [
+    "...##.....###....#..",
+    "..##..#....#....##..",
+    ".##...........g.....",
+    "#...#....#..##......",
+    "..g#...##...##.....g",
+    "...#..##...#..##....",
+    ".#...##.....#.##..#.",
+    "....##..g....##.....",
+    "...##....#....##..#.",
+    "..................##",
+    ".#..g..##...#....#..",
+    "##..#.....##.....g.#"] },
+  { name: "The Gas Pockets", speed: 1.15, station: [5, 9], lane: [[3, -1], [3, 5], [9, 5], [9, 1], [15, 1], [15, 9], [5, 9]], terrain: [
+    "g.....gg....g......g",
+    "..g.g.....g.....g...",
+    ".g....g..g...gg...g.",
+    "....g...g...g....gg.",
+    "gg....g.....g..g....",
+    "..g.......g.g.....g.",
+    ".g..ggg...g...g..g..",
+    "....g..g.g..g..g...g",
+    "g......g...gg.....g.",
+    ".g...............g..",
+    "...g...g.g..g...g..g",
+    "gg...g....gg..g..g.."] },
+  { name: "Between Two Nebulae", speed: 0.7, station: [18, 3], lane: [[-1, 6], [3, 6], [3, 1], [9, 1], [9, 10], [14, 10], [14, 3], [18, 3]], terrain: [
+    "..#.......nnnn....#.",
+    "#.........nnnn......",
+    "...g......nnnnn.....",
+    "....nnn...nnnn..g...",
+    "....nnnn..nnnn......",
+    "....nnnn..nnnn.#....",
+    "....nnnn..nnn......#",
+    ".#..nnnn..nnn...g...",
+    "....nnnn...n........",
+    "..g..nnn.........#..",
+    ".....nn..........g..",
+    "#.......#....#....#."] },
+  { name: "The Relay Chain", speed: 0.95, station: [18, 8], lane: [[-1, 5], [6, 5], [6, 2], [12, 2], [12, 8], [18, 8]], terrain: [
+    "##....###....##..g..",
+    "#..g.......nnn......",
+    "..........nnnnn..#..",
+    "...nnn....nnnnnn....",
+    "..nnnnn..g..nnnn.g..",
+    "........#....nnn....",
+    ".##..g.....g..n....#",
+    ".#.......#..........",
+    "...g...nn...........",
+    "..#...nnnn....g.....",
+    "....#..nn...#....#..",
+    "#.g.....#.....##...#"] },
 ];
+const LONG_WAY = 66;                                      // the Long Way Round's lane, in cells
+const GAS_RANGE = 52, GAS_DAMAGE = 40;                    // a pocket's blast, and its damage before wave toughness
 
 // --- State ---------------------------------------------------------------------------------------
 
-const state = { phase: "loading", map: 0, credits: 0, hull: 20, wave: 0, towers: [], raiders: [], spawnQueue: [], beams: [],
+const state = { phase: "loading", map: 0, gas: [], chain: [], credits: 0, hull: 20, wave: 0, towers: [], raiders: [], spawnQueue: [], beams: [],
   sparks: [], building: null, selected: null, fast: false, kills: 0, time: 0 };
 let pickets = {}, raiders = {}, stationArt = null, lanePts = [], laneCells = new Set();
+let blocked = new Set(), nebula = new Set(), terrainArt = null, laneLen = [], relays = [], flow = [];
 const stars = Array.from({ length: 160 }, () => [Math.random() * W, Math.random() * H, Math.random()]);
 
 function load() { try { return JSON.parse(localStorage.getItem(SAVE)) ?? {}; } catch { return {}; } }
@@ -85,11 +158,97 @@ function buildLane() {
   }
   const [sc, sr] = m.station;
   for (let c = sc - 1; c <= sc + 1; c++) for (let r = sr - 1; r <= sr + 1; r++) laneCells.add(`${c},${r}`);
+  // Distance along the lane at each corner, for the stream and the relays.
+  laneLen = [0];
+  for (let i = 1; i < lanePts.length; i++) laneLen.push(laneLen[i - 1] + dist(lanePts[i - 1], lanePts[i]));
+  m.pace ??= Math.round((laneLen[laneLen.length - 1] / CELL / LONG_WAY) * (m.speed ?? 1) * 100) / 100;
+  // Terrain.
+  blocked = new Set(); nebula = new Set(); state.gas = [];
+  (m.terrain ?? []).forEach((row, r) => [...row].forEach((ch, c) => {
+    const k = `${c},${r}`;
+    if (ch === "." || laneCells.has(k)) return;
+    blocked.add(k);
+    if (ch === "n") nebula.add(k);
+    if (ch === "g") state.gas.push({ c, r, ...centre([c, r]), burnt: false, flare: 0, seed: (c * 7 + r * 13) % 10 });
+  }));
+  terrainArt = paintTerrain(m);
+  // Warp relays: at every corner the raiders turn, and every few cells between.
+  relays = [];
+  for (let i = 1; i < lanePts.length - 1; i++) relays.push(laneLen[i]);
+  for (let i = 1; i < lanePts.length; i++) {
+    const n = Math.floor((laneLen[i] - laneLen[i - 1]) / (CELL * 3.5));
+    for (let k = 1; k < n; k++) relays.push(laneLen[i - 1] + ((laneLen[i] - laneLen[i - 1]) * k) / n);
+  }
+  relays = relays.filter((d) => { const p = laneAt(d); return p.x > 0 && p.y > 0 && p.x < W && p.y < H; }).sort((a, b) => a - b);
+  // The stream: motes riding the current at their own speed and depth.
+  flow = Array.from({ length: 170 }, () => ({ s: Math.random() * laneLen[laneLen.length - 1], off: (Math.random() - 0.5) * (CELL - 12),
+    v: 50 + Math.random() * 90, len: 6 + Math.random() * 16, phase: Math.random() * 6.3, hue: Math.random() }));
+}
+
+// A point on the lane d px from its start, with the lane's direction there.
+function laneAt(d) {
+  let i = 1;
+  while (i < laneLen.length - 1 && laneLen[i] < d) i++;
+  const a = lanePts[i - 1], b = lanePts[i], f = Math.max(0, Math.min(1, (d - laneLen[i - 1]) / (laneLen[i] - laneLen[i - 1] || 1)));
+  const dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1;
+  return { x: a.x + dx * f, y: a.y + dy * f, ux: dx / l, uy: dy / l };
+}
+
+// A line of fire is blocked if it crosses a nebula cell.
+function clearShot(a, b) {
+  if (!nebula.size) return true;
+  const n = Math.ceil(dist(a, b) / 10);
+  for (let i = 1; i < n; i++) {
+    const x = a.x + ((b.x - a.x) * i) / n, y = a.y + ((b.y - a.y) * i) / n;
+    if (nebula.has(`${Math.floor(x / CELL)},${Math.floor(y / CELL)}`)) return false;
+  }
+  return true;
+}
+
+// Seeded, so a map's rocks and clouds look the same every time.
+function seeded(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+// Nebulae and asteroids don't move: paint them once per map.
+function paintTerrain(m) {
+  const c = new OffscreenCanvas(W, H), g = c.getContext("2d"), rnd = seeded(MAPS.indexOf(m) * 9973 + 17);
+  g.globalCompositeOperation = "lighter";
+  for (const k of nebula) {                                // overlapping glows, violet and teal
+    const [cc, rr] = k.split(",").map(Number);
+    for (let i = 0; i < 3; i++) {
+      const x = cc * CELL + rnd() * CELL, y = rr * CELL + rnd() * CELL, r = CELL * (0.7 + rnd() * 0.8);
+      const tint = rnd() < 0.6 ? "150 70 210" : rnd() < 0.5 ? "60 150 200" : "210 80 150";
+      const grd = g.createRadialGradient(x, y, 0, x, y, r);
+      grd.addColorStop(0, `rgb(${tint} / 0.22)`); grd.addColorStop(1, `rgb(${tint} / 0)`);
+      g.fillStyle = grd; g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+  }
+  for (const k of nebula) {                                // fine dust in the cloud
+    const [cc, rr] = k.split(",").map(Number);
+    for (let i = 0; i < 6; i++) { g.fillStyle = `rgb(230 200 255 / ${0.1 + rnd() * 0.25})`; g.fillRect(cc * CELL + rnd() * CELL, rr * CELL + rnd() * CELL, 1, 1); }
+  }
+  g.globalCompositeOperation = "source-over";
+  (m.terrain ?? []).forEach((row, rr) => [...row].forEach((ch, cc) => {
+    if (ch !== "#" || laneCells.has(`${cc},${rr}`)) return;
+    const rocks = 1 + Math.floor(rnd() * 3);
+    for (let i = 0; i < rocks; i++) {                      // a lumpy polygon, lit from the upper left
+      const size = rocks === 1 ? 11 + rnd() * 6 : 5 + rnd() * 6;
+      const x = cc * CELL + CELL / 2 + (rnd() - 0.5) * (CELL - size * 2), y = rr * CELL + CELL / 2 + (rnd() - 0.5) * (CELL - size * 2);
+      const pts = Array.from({ length: 9 }, (_, j) => { const a = (j / 9) * Math.PI * 2, r = size * (0.7 + rnd() * 0.35); return [x + Math.cos(a) * r, y + Math.sin(a) * r]; });
+      const grd = g.createLinearGradient(x - size, y - size, x + size, y + size);
+      grd.addColorStop(0, "#8a8278"); grd.addColorStop(0.55, "#4d4741"); grd.addColorStop(1, "#1d1a17");
+      g.fillStyle = grd; g.strokeStyle = "#141210";
+      g.beginPath(); pts.forEach(([px, py], j) => (j ? g.lineTo(px, py) : g.moveTo(px, py))); g.closePath(); g.fill(); g.stroke();
+      for (let j = 0; j < 2; j++) {                        // craters
+        g.fillStyle = "rgb(0 0 0 / 0.35)"; g.beginPath(); g.arc(x + (rnd() - 0.5) * size, y + (rnd() - 0.5) * size, 1 + rnd() * size * 0.18, 0, Math.PI * 2); g.fill();
+      }
+    }
+  }));
+  return c;
 }
 
 function newGame() {
   Object.assign(state, { phase: "build", credits: 200, hull: 20, wave: 0, towers: [], raiders: [], spawnQueue: [], beams: [],
-    sparks: [], building: null, selected: null, kills: 0, time: 0 });
+    sparks: [], building: null, selected: null, kills: 0, time: 0, chain: [] });
   buildLane();
   $("banner").hidden = true;
   renderShop(); renderInfo(); readouts();
@@ -114,20 +273,23 @@ function launchWave() {
   const w = waveOf(state.wave);
   state.spawnQueue = w.list.map((slug, i) => ({ slug, at: state.time + i * 0.9, toughness: w.toughness }));
   state.phase = "wave";
+  for (const g of state.gas) g.burnt = false;              // the pockets fill again between waves
   play("send");
   readouts();
 }
 
 function spawn(q) {
   const k = raiders[q.slug], hp = k.hp * q.toughness;
-  state.raiders.push({ k, hp, max: hp, seg: 1, x: lanePts[0].x, y: lanePts[0].y, heading: 90, slowUntil: 0, alive: true });
+  state.raiders.push({ k, hp, max: hp, seg: 1, x: lanePts[0].x, y: lanePts[0].y, heading: 90, slowUntil: 0, alive: true, toughness: q.toughness });
+  const p = laneAt(CELL * 0.6);                            // dropping out of the tunnel
+  state.sparks.push({ ring: true, x: p.x, y: p.y, r: k.radius, life: 0.35, max: 0.35, warp: true });
 }
 
 // --- Building ------------------------------------------------------------------------------------
 
 const cellAt = (x, y) => [Math.floor(x / CELL), Math.floor(y / CELL)];
 const towerAt = (c, r) => state.towers.find((t) => t.c === c && t.r === r);
-function canBuild(c, r) { return c >= 0 && r >= 0 && c < COLS && r < ROWS && !laneCells.has(`${c},${r}`) && !towerAt(c, r); }
+function canBuild(c, r) { return c >= 0 && r >= 0 && c < COLS && r < ROWS && !laneCells.has(`${c},${r}`) && !blocked.has(`${c},${r}`) && !towerAt(c, r); }
 
 function build(slug, c, r) {
   const k = pickets[slug];
@@ -213,7 +375,7 @@ function fireTower(t, dt) {
   t.cool -= dt;
   const s = stat(t);
   let target = null;
-  for (const m of state.raiders) if (m.alive && dist(t, m) <= s.range && (!target || along(m) > along(target))) target = m;
+  for (const m of state.raiders) if (m.alive && dist(t, m) <= s.range && (!target || along(m) > along(target)) && clearShot(t, m)) target = m;
   if (!target) return;
   t.heading = deg(Math.atan2(target.x - t.x, -(target.y - t.y)));
   if (t.cool > 0) return;
@@ -224,8 +386,9 @@ function fireTower(t, dt) {
 }
 
 function damage(m, d, t) {
+  if (!m.alive) return;
   m.hp -= d;
-  if (t.k.slow) m.slowUntil = state.time + 1.5;
+  if (t?.k.slow) m.slowUntil = state.time + 1.5;
   if (m.hp > 0) return;
   m.alive = false;
   state.kills++;
@@ -234,6 +397,17 @@ function damage(m, d, t) {
   state.sparks.push({ ring: true, x: m.x, y: m.y, r: m.k.radius, life: 0.4, max: 0.4 });
   play("boom");
   readouts(); renderShop();
+  for (const g of state.gas) if (!g.burnt && dist(g, m) < GAS_RANGE) ignite(g, m.toughness);
+}
+
+// A gas pocket by a kill goes up: it hurts every raider close by, and sets
+// off the pockets next to it a moment later.
+function ignite(g, toughness) {
+  g.burnt = true; g.flare = 0.7;
+  burst(g.x, g.y, 30, "#ffd27a", 110);
+  state.sparks.push({ ring: true, x: g.x, y: g.y, r: GAS_RANGE / 3, life: 0.5, max: 0.5, gas: true });
+  for (const m of state.raiders) if (m.alive && dist(g, m) < GAS_RANGE) damage(m, GAS_DAMAGE * toughness, null);
+  for (const o of state.gas) if (!o.burnt && dist(o, g) < CELL * 1.5) state.chain.push({ g: o, at: state.time + 0.15, toughness });
 }
 
 function burst(x, y, n, color, speed) {
@@ -245,6 +419,9 @@ function burst(x, y, n, color, speed) {
 
 function update(dt) {
   for (const p of state.sparks) { p.life -= dt; if (!p.ring) { p.x += p.vx * dt; p.y += p.vy * dt; } }
+  for (const g of state.gas) g.flare = Math.max(0, g.flare - dt);
+  const total = laneLen[laneLen.length - 1] || 1;
+  for (const f of flow) f.s = (f.s + f.v * dt) % total;  // the stream runs even between waves
   state.sparks = state.sparks.filter((p) => p.life > 0);
   for (const b of state.beams) b.life -= dt;
   state.beams = state.beams.filter((b) => b.life > 0);
@@ -252,6 +429,7 @@ function update(dt) {
   state.time += dt;
   while (state.spawnQueue.length && state.spawnQueue[0].at <= state.time) spawn(state.spawnQueue.shift());
   for (const m of state.raiders) if (m.alive) moveRaider(m, dt);
+  state.chain = state.chain.filter((q) => { if (q.at > state.time) return true; if (!q.g.burnt) ignite(q.g, q.toughness); return false; });
   if (state.phase !== "wave") return;
   for (const t of state.towers) fireTower(t, dt);
   state.raiders = state.raiders.filter((m) => m.alive);
@@ -330,15 +508,73 @@ function toggleFast() {
 
 // --- Drawing -------------------------------------------------------------------------------------
 
-function draw() {
+// Gas pockets: swirling amber, flaring when they go up, dim once burnt.
+function drawGas(now) {
+  for (const g of state.gas) {
+    const pulse = 0.5 + 0.5 * Math.sin(now / 700 + g.seed), a = g.burnt ? 0.12 : 0.35 + 0.15 * pulse;
+    const r = CELL * (0.45 + 0.05 * pulse) + g.flare * 50;
+    const grd = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, r);
+    grd.addColorStop(0, g.flare ? `rgb(255 240 190 / ${0.6 + g.flare})` : `rgb(220 200 90 / ${a})`);
+    grd.addColorStop(0.6, `rgb(150 170 60 / ${a * 0.6})`); grd.addColorStop(1, "rgb(150 170 60 / 0)");
+    ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(g.x, g.y, r, 0, Math.PI * 2); ctx.fill();
+    if (!g.burnt) {                                        // a slow swirl
+      ctx.strokeStyle = `rgb(240 230 140 / ${0.25 + 0.15 * pulse})`; ctx.lineWidth = 1;
+      for (let i = 0; i < 2; i++) { const s0 = now / 900 + g.seed + i * Math.PI; ctx.beginPath(); ctx.arc(g.x, g.y, 7 + i * 5, s0, s0 + 2.2); ctx.stroke(); }
+    }
+  }
+}
+
+// The lane is a hyperspace stream between warp relays: a glowing channel,
+// a current of motes running down it like a river, beacons pulsing in turn
+// toward the station, and the tunnel's mouth swirling where raiders come in.
+function drawStream(now) {
+  const t = now / 1000, path = () => { ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); };
+  ctx.lineJoin = "round"; ctx.lineCap = "round";
+  for (const [w, c] of [[CELL - 2, "rgb(40 70 200 / 0.13)"], [CELL - 14, "rgb(70 110 255 / 0.14)"], [10, "rgb(140 180 255 / 0.16)"], [3, "rgb(200 225 255 / 0.3)"]]) {
+    ctx.strokeStyle = c; ctx.lineWidth = w; path(); ctx.stroke();
+  }
+  ctx.lineWidth = 2;                                       // the current: dotted lines sliding toward the station
+  for (const [dash, gap, speed, c] of [[2, 18, 90, "rgb(200 230 255 / 0.5)"], [8, 30, 55, "rgb(120 160 255 / 0.35)"]]) {
+    ctx.setLineDash([dash, gap]); ctx.lineDashOffset = -t * speed; ctx.strokeStyle = c; path(); ctx.stroke();
+  }
+  ctx.setLineDash([]); ctx.lineDashOffset = 0; ctx.lineCap = "butt";
+  for (const f of flow) {                                  // motes, weaving a little as they go
+    const wob = Math.sin(f.s * 0.04 + f.phase) * 3, a = laneAt(f.s), b = laneAt(Math.max(0, f.s - f.len));
+    const ox = -a.uy * (f.off + wob), oy = a.ux * (f.off + wob);
+    ctx.strokeStyle = f.hue < 0.7 ? `rgb(150 190 255 / ${0.25 + f.hue * 0.4})` : `rgb(220 170 255 / ${0.3 + (f.hue - 0.7)})`;
+    ctx.lineWidth = f.hue > 0.9 ? 2 : 1;
+    ctx.beginPath(); ctx.moveTo(b.x - b.uy * (f.off + wob), b.y + b.ux * (f.off + wob)); ctx.lineTo(a.x + ox, a.y + oy); ctx.stroke();
+  }
+  relays.forEach((d, i) => {                               // the relays
+    const p = laneAt(d), lit = Math.max(0, Math.cos(t * 2.4 - i * 0.7)) ** 3, spin = t * 1.2 + i;
+    ctx.fillStyle = `rgb(127 233 255 / ${0.08 + lit * 0.25})`; ctx.beginPath(); ctx.arc(p.x, p.y, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgb(200 210 220 / 0.8)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI * 2); ctx.stroke();
+    for (let k = 0; k < 4; k++) {
+      const a = spin + (k * Math.PI) / 2;
+      ctx.beginPath(); ctx.moveTo(p.x + Math.cos(a) * 7, p.y + Math.sin(a) * 7); ctx.lineTo(p.x + Math.cos(a) * 11, p.y + Math.sin(a) * 11); ctx.stroke();
+    }
+    ctx.fillStyle = `rgb(${180 + lit * 75} ${230 + lit * 25} 255 / ${0.5 + lit * 0.5})`; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5 + lit * 1.5, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.lineWidth = 1;
+  const m = laneAt(CELL * 0.5);                            // the tunnel's mouth
+  for (let i = 0; i < 4; i++) {
+    const a = -t * 2.5 + i * (Math.PI / 2);
+    ctx.strokeStyle = `rgb(160 140 255 / ${0.55 - i * 0.1})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(m.x, m.y, 8 + i * 5, a, a + 2.4); ctx.stroke();
+  }
+  const core = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 26);
+  core.addColorStop(0, "rgb(220 210 255 / 0.55)"); core.addColorStop(1, "rgb(120 90 255 / 0)");
+  ctx.fillStyle = core; ctx.beginPath(); ctx.arc(m.x, m.y, 26, 0, Math.PI * 2); ctx.fill();
+  ctx.lineWidth = 1;
+}
+
+function draw(now = performance.now()) {
   ctx.fillStyle = "#04050a";
   ctx.fillRect(0, 0, W, H);
   for (const [x, y, b] of stars) { ctx.fillStyle = `rgb(160 170 210 / ${0.25 + b * 0.5})`; ctx.fillRect(x, y, 1, 1); }
-  // The lane: a dashed ribbon with chevrons pointing the way.
-  ctx.strokeStyle = "rgb(255 122 89 / 0.16)"; ctx.lineWidth = CELL - 6; ctx.lineJoin = "round";
-  ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.stroke();
-  ctx.strokeStyle = "rgb(255 122 89 / 0.45)"; ctx.lineWidth = 1; ctx.setLineDash([4, 10]);
-  ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.stroke(); ctx.setLineDash([]);
+  ctx.drawImage(terrainArt, 0, 0);
+  drawGas(now);
+  drawStream(now);
   const st = centre(MAPS[state.map].station);
   ctx.drawImage(stationArt, st.x - stationArt.width / 2, st.y - stationArt.height / 2);
 
@@ -363,6 +599,11 @@ function draw() {
     for (let i = 1; i < t.level; i++) { ctx.fillStyle = "#ffcf6b"; ctx.fillRect(t.c * CELL + 4 + i * 6, t.r * CELL + CELL - 6, 4, 3); }
   }
   for (const m of state.raiders) {
+    const back = (m.heading * Math.PI) / 180, tl = m.k.radius + 14;   // a warp trail
+    const trail = ctx.createLinearGradient(m.x, m.y, m.x - Math.sin(back) * tl, m.y + Math.cos(back) * tl);
+    trail.addColorStop(0, "rgb(140 170 255 / 0.5)"); trail.addColorStop(1, "rgb(140 170 255 / 0)");
+    ctx.strokeStyle = trail; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - Math.sin(back) * tl, m.y + Math.cos(back) * tl); ctx.stroke(); ctx.lineWidth = 1;
     drawShip(ctx, m.k.ship, m.heading, m.x, m.y, 1);
     ctx.fillStyle = "rgb(255 255 255 / 0.15)"; ctx.fillRect(m.x - 14, m.y - m.k.radius - 8, 28, 3);
     ctx.fillStyle = m.slowUntil > state.time ? "#ffcf6b" : "#ff7a59";
@@ -377,7 +618,7 @@ function draw() {
   }
   for (const p of state.sparks) {
     const t = p.life / p.max;
-    if (p.ring) { ctx.strokeStyle = `rgb(255 220 150 / ${t})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (3 - 2 * t), 0, Math.PI * 2); ctx.stroke(); }
+    if (p.ring) { ctx.strokeStyle = p.warp ? `rgb(170 150 255 / ${t})` : p.gas ? `rgb(255 230 140 / ${t})` : `rgb(255 220 150 / ${t})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (3 - 2 * t), 0, Math.PI * 2); ctx.stroke(); }
     else { ctx.globalAlpha = Math.min(1, t * 1.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1, p.y - 1, 2, 2); ctx.globalAlpha = 1; }
   }
   if (state.phase === "build" && state.wave < WAVES) {
@@ -396,7 +637,7 @@ requestAnimationFrame(function frame(now) {
   acc += Math.min(0.25, (now - last) / 1000) * (state.fast ? 2 : 1);
   last = now;
   while (acc >= STEP) { update(STEP); acc -= STEP; }
-  if (state.phase !== "loading") draw();
+  if (state.phase !== "loading") draw(now);
   requestAnimationFrame(frame);
 });
 
@@ -417,4 +658,4 @@ $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 newGame();
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.picket = { state, MAPS, pickets, build, upgrade, launchWave, newGame, canBuild, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
+globalThis.picket = { state, MAPS, pickets, clearShot, build, upgrade, launchWave, newGame, canBuild, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

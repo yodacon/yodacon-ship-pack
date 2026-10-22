@@ -1,17 +1,19 @@
-// A commander for tools/drive_page.mjs: plays a whole game on ?map= (0 or 1).
-// Before each wave it builds on the free square that covers the most lane,
+// A commander for tools/drive_page.mjs: plays a whole game on ?map= (0 to 6).
+// Before each wave it builds on the free square that sees the most lane (in
+// range and not behind a nebula),
 // Gryphons first and then a rotation of the others, and spends what is left on
 // upgrades; then it launches the wave and steps the game with tick().
+// ?stopWave=n freezes mid-wave n (for screenshots).
 while (!globalThis.picket || globalThis.picket.state.phase === "loading") await sleep(100);
 const p = globalThis.picket, st = p.state;
-const map = Number(new URLSearchParams(location.search).get("map") || 0);
+const q = new URLSearchParams(location.search), map = Number(q.get("map") || 0), stopWave = Number(q.get("stopWave") || Infinity);
 if (map) { const sel = document.getElementById("map"); sel.value = String(map); sel.dispatchEvent(new Event("change")); }
 const lane = p.MAPS[map].lane.flatMap(([c0, r0], i, a) => {           // points every half cell along the lane
   if (!i) return [];
   const [c1, r1] = a[i - 1], n = 2 * Math.max(Math.abs(c1 - c0), Math.abs(r1 - r0));
   return Array.from({ length: n }, (_, k) => ({ x: (c1 + ((c0 - c1) * k) / n) * 40 + 20, y: (r1 + ((r0 - r1) * k) / n) * 40 + 20 }));
 });
-const cover = (c, r, range) => lane.filter((q) => Math.hypot(q.x - (c * 40 + 20), q.y - (r * 40 + 20)) <= range).length;
+const cover = (c, r, range) => { const t = { x: c * 40 + 20, y: r * 40 + 20 }; return lane.filter((q) => Math.hypot(q.x - t.x, q.y - t.y) <= range && p.clearShot(t, q)).length; };
 const order = ["gryphon", "gryphon", "advisor", "citrus", "gryphon", "callisto", "advisor", "yodacon", "defender"];
 let n = 0, deepest = 0;
 function spend() {
@@ -34,7 +36,9 @@ function spend() {
 }
 while (st.phase !== "over") {
   if (st.phase === "build") { spend(); p.launchWave(); }
+  if (st.wave >= stopWave && st.raiders.length >= 7) { st.phase = "frozen"; return `frozen in wave ${st.wave} for a screenshot`; }
   for (let i = 0; i < 30; i++) { p.tick(1); for (const m of st.raiders) deepest = Math.max(deepest, m.seg / p.MAPS[st.map].lane.length); }
   await sleep(0);
 }
-return `map ${st.map} (${p.MAPS[st.map].name}): ${st.hull > 0 ? "HELD" : "LOST"} at wave ${st.wave}/15, station ${st.hull}/20, ${st.kills} kills, ${st.towers.length} ships (levels ${st.towers.map((t) => t.level).join("")}), ${st.credits} cr left; deepest raider ${Math.round(deepest * 100)}% down the lane`;
+const gone = st.gas.filter((g) => g.burnt).length;
+return `map ${st.map} (${p.MAPS[st.map].name}): ${st.hull > 0 ? "HELD" : "LOST"} at wave ${st.wave}/15, station ${st.hull}/20, ${st.kills} kills, ${st.towers.length} ships (levels ${st.towers.map((t) => t.level).join("")}), ${st.credits} cr left; deepest raider ${Math.round(deepest * 100)}% down the lane; pace ${p.MAPS[st.map].pace}; gas pockets burnt in the last wave ${gone}/${st.gas.length}`;
