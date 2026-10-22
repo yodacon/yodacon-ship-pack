@@ -1,0 +1,49 @@
+body { padding: 12px 16px 24px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; max-width: 1160px; margin: 0 auto 12px; }
+.crumbs { margin: 0; width: 100%; font-size: 0.85rem; }
+.top h1 { font-size: clamp(20px, 3.6vw, 32px); }
+.readouts { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 6px 14px; }
+.readouts .yc-value { font-size: 18px; }
+.game { max-width: 1160px; margin: 0 auto; display: grid; gap: 12px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.levels, .buttons { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.levels [aria-pressed="true"] { outline: 2px solid var(--yc-ice); outline-offset: 1px; }
+.buttons { margin-left: auto; }
+.hint { margin: 0; color: var(--yc-text); font-size: 0.85rem; }
+.table { position: relative; padding: 12px; }
+
+/* The cards: a grid that keeps them square-ish at any width. */
+.board { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(140px, 28vw), 1fr)); perspective: 900px; }
+.card { position: relative; aspect-ratio: 4 / 5; padding: 0; border: 0; background: none; cursor: pointer; transform-style: preserve-3d;
+  transition: transform 0.35s; border-radius: 6px; }
+.card.up, .card.matched { transform: rotateY(180deg); cursor: default; }
+.card:focus-visible { outline: 2px solid var(--yc-ice); outline-offset: 3px; }
+.back, .front { position: absolute; inset: 0; border-radius: 6px; backface-visibility: hidden; display: grid; place-items: center; overflow: hidden; }
+.back { border: 1px solid var(--yc-chrome-lo);
+  background: radial-gradient(circle at 50% 50%, transparent 0 22%, rgb(126 240 168 / 0.5) 23% 24%, transparent 25%),
+              linear-gradient(rgb(126 240 168 / 0.35), rgb(126 240 168 / 0.35)) center / 2px 60% no-repeat,
+              linear-gradient(rgb(126 240 168 / 0.35), rgb(126 240 168 / 0.35)) center / 60% 2px no-repeat,
+              repeating-linear-gradient(45deg, #0b1014 0 6px, #0e151a 6px 12px); }
+.card:not(.up):not(.matched):hover .back { border-color: var(--yc-ice); }
+.front { transform: rotateY(180deg); background: #000; border: 1px solid rgb(255 255 255 / 0.15); grid-template-rows: minmax(0, 1fr) auto; }
+.front img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.front.comm img { width: 70%; height: auto; }
+.front yodacon-ship { align-self: center; justify-self: center; }
+.front .label { width: 100%; padding: 3px 4px; font: 700 11px var(--yc-mono); color: var(--yc-phos-dim); text-align: center; background: rgb(255 255 255 / 0.05); }
+.card.matched .front { border-color: var(--yc-phos); box-shadow: 0 0 10px rgb(126 240 168 / 0.35); }
+.front .label { visibility: hidden; }                  /* the name shows once matched: recognise the ship */
+.card.matched .label { visibility: visible; color: var(--yc-phos); }
+@media (min-width: 900px) {                            /* even rows: one column per pair (two rows) */
+  .board.pairs-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .board.pairs-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .board.pairs-11 { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+
+.banner { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; padding: 16px;
+  background: rgb(2 4 6 / 0.85); border-radius: 4px; }
+.banner[hidden] { display: none; }
+.banner p { margin: 0; color: var(--yc-text); max-width: 52ch; justify-self: center; }
+.banner-title { font: 700 clamp(20px, 4vw, 34px)/1.1 var(--yc-title); letter-spacing: 0.3em; text-transform: uppercase; color: var(--yc-ice); }
+.credit { max-width: 1160px; margin: 16px auto 0; color: var(--yc-phos-dim); font-size: 0.75rem; }
+@media (max-width: 520px) { body { padding: 8px; } .readouts { gap: 4px 12px; } .buttons { margin-left: 0; } }

@@ -34,6 +34,8 @@ moved or renamed file a major one. A tag's files never change.
   hails). The three Pins count as one hull in all of them
 - **Picket**: tower defence; six hulls with roles from their records, two maps,
   upgrades, a `tick()` play-test
+- **Recall**: a pure-DOM memory game matching each ship across two of its
+  pictures, three levels
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

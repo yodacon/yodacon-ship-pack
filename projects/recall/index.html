@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall · Yodacon Ship Pack</title>
+<meta name="description" content="A memory game with the pack's pictures: match each ship's sprite, shipyard picture, comm portrait and 1997 targeting picture.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="recall.css">
+<script type="module" src="recall.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Recall</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Pairs</span><span class="yc-value" id="pairs">0/6</span></span>
+    <span class="yc-readout"><span class="yc-label">Moves</span><span class="yc-value" id="moves">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Time</span><span class="yc-value" id="time">0 s</span></span>
+    <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">–</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <div class="controls">
+    <p class="levels" role="group" aria-label="Level">
+      <button type="button" class="yc-plate" data-level="easy" aria-pressed="true">Easy</button>
+      <button type="button" class="yc-plate" data-level="normal" aria-pressed="false">Normal</button>
+      <button type="button" class="yc-plate" data-level="hard" aria-pressed="false">Hard</button>
+    </p>
+    <p id="hint" class="hint"></p>
+    <p class="buttons">
+      <button type="button" id="deal" class="yc-plate">Deal again</button>
+      <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
+    </p>
+  </div>
+  <section class="yc-viewport table" aria-label="The cards">
+    <div id="board" class="board"></div>
+    <div id="banner" class="banner" hidden>
+      <p id="banner-title" class="banner-title"></p>
+      <p id="banner-text"></p>
+      <p><button type="button" id="again" class="yc-plate yc-go">Deal again</button></p>
+    </div>
+  </section>
+</main>
+
+<footer class="credit">
+  <p>Sprites, shipyard pictures, comm portraits and targeting pictures from the Yodacon Ship Pack by Paul Richeson
+  (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>
