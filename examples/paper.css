@@ -1,0 +1,42 @@
+/* Tutorial notes, set like an IEEE paper. Shared by examples/index.html and
+   the note at the foot of each example page (written by tools/example_notes.py). */
+.paper {
+  --pp-bg: #f2f3f8; --pp-card: #fff; --pp-ink: #161a24; --pp-muted: #5a6276; --pp-line: #c8ccd9;
+  max-width: 1100px; margin: 40px auto 24px; padding: 28px clamp(16px, 4vw, 44px); box-sizing: border-box;
+  background: var(--pp-card); color: var(--pp-ink); border: 1px solid var(--pp-line); border-radius: 10px;
+  font: 15px/1.5 "Times New Roman", Times, Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  .paper { --pp-bg: #090b12; --pp-card: #121624; --pp-ink: #dfe4f2; --pp-muted: #8f98b3; --pp-line: #2a3150; }
+}
+.paper header { text-align: center; margin-bottom: 18px; }
+.paper .kicker { font: 12px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--pp-muted); margin: 0 0 8px; }
+.paper h2.title { font-size: clamp(22px, 3vw, 28px); line-height: 1.2; margin: 0 0 8px; font-weight: 400; }
+.paper .byline { margin: 0; font-style: italic; color: var(--pp-muted); }
+.paper .abstract, .paper .terms { font-weight: 700; font-size: 14px; }
+.paper .cols { column-gap: 32px; }
+@media (min-width: 900px) { .paper .cols { column-count: 2; } }
+.paper h3 { font-size: 15px; font-variant: small-caps; text-align: center; margin: 18px 0 6px; font-weight: 400; letter-spacing: .03em; break-after: avoid; }
+.paper h4 { font-size: 15px; font-style: italic; font-weight: 400; margin: 12px 0 4px; break-after: avoid; }
+.paper p { margin: 0 0 8px; text-align: justify; hyphens: auto; }
+.paper ol.steps { margin: 0 0 8px; padding-left: 1.6em; }
+.paper ol.steps li { margin-bottom: 3px; }
+.paper figure { margin: 10px 0 12px; break-inside: avoid; }
+.paper figcaption { font-size: 12.5px; margin-bottom: 4px; }
+.paper figcaption b { font-variant: small-caps; font-weight: 400; }
+.paper pre { margin: 0; padding: 8px 10px; background: var(--pp-bg); color: var(--pp-ink); border: 1px solid var(--pp-line); border-radius: 4px;
+  overflow-x: auto; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.paper pre .c { color: var(--pp-muted); }
+.paper pre.wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.paper pre .l { display: block; padding-left: 4ch; text-indent: -4ch; }
+.paper pre .n { color: var(--pp-muted); user-select: none; display: inline-block; min-width: 3ch; margin-right: 1ch; text-align: right; }
+.paper code { font-size: 13px; }
+.paper .eq { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 6px 0 10px; font-style: italic; break-inside: avoid; }
+.paper .eq span:last-child { font-style: normal; }
+.paper table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.paper th, .paper td { border-top: 1px solid var(--pp-line); border-bottom: 1px solid var(--pp-line); padding: 3px 6px; text-align: left; vertical-align: top; }
+.paper th { font-variant: small-caps; font-weight: 400; }
+.paper ol.refs { font-size: 13px; padding-left: 2.2em; margin: 0; }
+.paper ol.refs li { margin-bottom: 4px; break-inside: avoid; }
+.paper ol.refs li::marker { content: "[" counter(list-item) "]  "; }
+@media print { .paper { border: 0; margin: 0; padding: 0; max-width: none; } .paper .cols { column-count: 2; } }

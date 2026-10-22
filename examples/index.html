@@ -24,38 +24,9 @@
   code { font-size: 14px; }
   .credit { font-size: 13px; color: var(--muted); }
 
-  /* The tutorial note, set like an IEEE paper. */
-  .paper { margin: 40px 0 24px; padding: 28px clamp(16px, 4vw, 44px); background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    font: 15px/1.5 "Times New Roman", Times, Georgia, serif; }
-  .paper header { text-align: center; margin-bottom: 18px; }
-  .paper .kicker { font: 12px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
-  .paper h2.title { font-size: clamp(22px, 3vw, 28px); line-height: 1.2; margin: 0 0 8px; font-weight: 400; }
-  .paper .byline { margin: 0; font-style: italic; color: var(--muted); }
-  .paper .abstract { font-weight: 700; font-size: 14px; }
-  .paper .abstract i, .paper .terms i { font-weight: 700; }
-  .paper .terms { font-weight: 700; font-size: 14px; }
-  .paper .cols { column-gap: 32px; }
-  @media (min-width: 900px) { .paper .cols { column-count: 2; } }
-  .paper h3 { font-size: 15px; font-variant: small-caps; text-align: center; margin: 18px 0 6px; font-weight: 400; letter-spacing: .03em; break-after: avoid; }
-  .paper h4 { font-size: 15px; font-style: italic; font-weight: 400; margin: 12px 0 4px; break-after: avoid; }
-  .paper p { margin: 0 0 8px; text-align: justify; hyphens: auto; }
-  .paper figure { margin: 10px 0 12px; break-inside: avoid; }
-  .paper figcaption { font-size: 12.5px; margin-bottom: 4px; }
-  .paper figcaption b { font-variant: small-caps; font-weight: 400; }
-  .paper pre { margin: 0; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; overflow-x: auto;
-    font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .paper pre .c { color: var(--muted); }
-  .paper code { font-size: 13px; }
-  .paper .eq { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 6px 0 10px; font-style: italic; break-inside: avoid; }
-  .paper .eq span:last-child { font-style: normal; }
-  .paper table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .paper th, .paper td { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
-  .paper th { font-variant: small-caps; font-weight: 400; }
-  .paper ol.refs { font-size: 13px; padding-left: 2.2em; margin: 0; }
-  .paper ol.refs li { margin-bottom: 4px; break-inside: avoid; }
-  .paper ol.refs li::marker { content: "[" counter(list-item) "]  "; }
-  @media print { body { padding: 0; } .grid, main > p, h1 { display: none; } .paper { border: 0; margin: 0; padding: 0; } .paper .cols { column-count: 2; } }
+  @media print { body { padding: 0; } .grid, main > p, h1 { display: none; } }
 </style>
+<link rel="stylesheet" href="paper.css">
 </head>
 <body>
 <main>
@@ -70,22 +41,28 @@ explains how to start your own project.</p>
 <ul class="grid">
   <li><img src="../conex/ships/yodacon/frames/00.png" alt="">
     <div><span class="tag">No library</span><h2><a href="dom/">DOM + CSS</a></h2>
-    <p><code>background-position</code> on <code>sheet-alpha.png</code>. No canvas.</p></div></li>
+    <p><code>background-position</code> on <code>sheet-alpha.png</code>. No canvas.</p>
+    <p><a href="dom/#note">Tutorial note: how it uses the assets</a></p></div></li>
   <li><img src="../conex/ships/dart/frames/03.png" alt="">
     <div><span class="tag">No library</span><h2><a href="canvas/">Canvas 2D</a></h2>
-    <p>An 80-line game loop with the library's <code>drawShip()</code>.</p></div></li>
+    <p>An 80-line game loop with the library's <code>drawShip()</code>.</p>
+    <p><a href="canvas/#note">Tutorial note: how it uses the assets</a></p></div></li>
   <li><img src="../override/ships/callisto/frames/06.png" alt="">
     <div><span class="tag">Web component</span><h2><a href="web-component/">&lt;yodacon-ship&gt;</a></h2>
-    <p>Every ship spinning, and the element's attributes.</p></div></li>
+    <p>Every ship spinning, and the element's attributes.</p>
+    <p><a href="web-component/#note">Tutorial note: how it uses the assets</a></p></div></li>
   <li><img src="../conex/ships/gryphon/frames/09.png" alt="">
     <div><span class="tag">three.js 0.160.0</span><h2><a href="threejs/">three.js</a></h2>
-    <p>A textured quad flown over a grid, and a billboard sprite you orbit.</p></div></li>
+    <p>A textured quad flown over a grid, and a billboard sprite you orbit.</p>
+    <p><a href="threejs/#note">Tutorial note: how it uses the assets</a></p></div></li>
   <li><img src="../conex/ships/trident/frames/12.png" alt="">
     <div><span class="tag">Phaser 3.80.1</span><h2><a href="phaser/">Phaser</a></h2>
-    <p><code>load.spritesheet</code>, Arcade physics, <code>setFrame</code> from heading.</p></div></li>
+    <p><code>load.spritesheet</code>, Arcade physics, <code>setFrame</code> from heading.</p>
+    <p><a href="phaser/#note">Tutorial note: how it uses the assets</a></p></div></li>
   <li><img src="../override/ships/necromancer/frames/15.png" alt="">
     <div><span class="tag">PixiJS 8.6.6</span><h2><a href="pixi/">PixiJS</a></h2>
-    <p>36 textures over one source, ticker-driven flight.</p></div></li>
+    <p>36 textures over one source, ticker-driven flight.</p>
+    <p><a href="pixi/#note">Tutorial note: how it uses the assets</a></p></div></li>
 </ul>
 
 <p>Want more? The <a href="../demo/">demo game</a> is the full version, the
@@ -231,11 +208,14 @@ requestAnimationFrame(function frame(now) {
 <code>projects/</code> (Orbital Defence, Slingshot, ConEx Courier) use it, so they are worked examples of the same loop.</p>
 
 <h3>V. Moving to Another Engine</h3>
+<p>Each example page ends with its own note, Tutorial Notes 2–7 [8]–[13], which walks through that page's
+source line by line: the DOM and CSS sprite, Canvas 2D, the <code>&lt;yodacon-ship&gt;</code> element,
+three.js, Phaser 3 and PixiJS. This section gives the pattern they share.</p>
 <p>Nothing above depends on the browser except <code>drawImage</code>. An engine needs three things: the sheet
 as a texture, the frame grid from Listing 1, and Equation (1). Do <em>not</em> also rotate the sprite; the
 frame already shows the rotation.</p>
 <h4>A. Phaser</h4>
-<p>Phaser slices the sheet itself when given the frame size, and the frame number is (1) [5]:</p>
+<p>Phaser slices the sheet itself when given the frame size, and the frame number is (1) [5], [12]:</p>
 <figure>
 <figcaption><b>Listing 6.</b> <code>examples/phaser/index.html:45</code> and <code>:71–72</code></figcaption>
 <pre>this.load.spritesheet("ship", ship.urls.sheet,
@@ -293,6 +273,12 @@ Listing 5, swap in your engine's draw call, and the 1997 fleet is flying in your
   <li>Yodacon Ship Pack, “Phaser example,” <i>examples/phaser/</i>, Phaser 3.80.1, 2026.</li>
   <li>Yodacon Ship Pack, “three.js example,” <i>examples/threejs/</i>, three.js 0.160.0, 2026.</li>
   <li>Yodacon Ship Pack, <i>USED-IN.md</i> and <i>CONTRIBUTING.md</i>, 2026.</li>
+  <li>Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="dom/#note"><i>examples/dom/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “A game loop on Canvas 2D,” Tutorial Note 3, <a href="canvas/#note"><i>examples/canvas/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “Ships as HTML: the yodacon-ship element,” Tutorial Note 4, <a href="web-component/#note"><i>examples/web-component/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “Pre-rotated sprites in 3-D,” Tutorial Note 5, <a href="threejs/#note"><i>examples/threejs/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “One scene, two assets: the Phaser 3 example,” Tutorial Note 6, <a href="phaser/#note"><i>examples/phaser/</i></a>, 2026.</li>
+  <li>Yodacon Ship Pack, “Thirty-six textures on one image,” Tutorial Note 7, <a href="pixi/#note"><i>examples/pixi/</i></a>, 2026.</li>
 </ol>
 </div>
 </article>

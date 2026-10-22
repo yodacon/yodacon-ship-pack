@@ -19,7 +19,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1>Phaser 3</h1>
   <p>Arrow keys: ← → turn, ↑ thrust, ↓ brake. Arcade physics; the frame follows the heading.</p>
   <div id="game"></div>
@@ -93,5 +93,108 @@
     scene: Flight,
   });
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 6 · October 2026</p>
+  <h2 class="title" id="note-title">One Scene, Two Assets: How the Phaser 3 Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The Phaser 3 example flies a pack ship in a single Arcade-physics scene. This note follows the scene's source: reading <code>ship.json</code> before the game starts, loading <code>sheet-alpha.png</code> as a Phaser spritesheet, selecting a frame from the heading each update, and converting between the pack's and Phaser's angle conventions.</p>
+<p class="terms"><i>Index Terms</i>—Phaser 3, sprite sheets, Arcade physics, pixel art, asset loading.</p>
+
+<h3>I. Introduction</h3>
+<p>The Phaser example is one scene, <code>Flight</code>, in which a pack ship flies under Arcade physics. It
+is a useful model because Phaser has its own loader, its own frame numbering and its own angle convention,
+and the page shows where each meets the pack's. Phaser 3.80.1 is pinned on jsDelivr
+(<code>index.html:18</code>); the page is <code>examples/phaser/index.html</code> [1].</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the scene takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code></td><td><code>index.html:35</code></td><td>Frame size, stats, name</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:45</code></td><td>Phaser texture <code>"ship"</code>, frames 0–35</td></tr>
+<tr><td><code>frameIndex()</code></td><td><code>index.html:31</code></td><td>Heading to frame</td></tr>
+</tbody></table>
+</figure>
+<p>Nothing else is needed: not the opaque sheet, the mask, the single frames nor the pictures.</p>
+
+<h3>III. Two-Stage Loading</h3>
+<p>Phaser's <code>load.spritesheet</code> must be told the frame size up front, and frame sizes differ between
+ships. So the page reads <code>ship.json</code> with the library's <code>loadShipMeta()</code>
+<em>before</em> the game exists, using a module's top-level <code>await</code> (Listing 1). Only then is
+<code>new Phaser.Game</code> created (<code>index.html:84</code>).</p>
+<figure>
+<figcaption><b>Listing 1.</b> Metadata before the game, <code>index.html:34–39</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">34</span>const q = new URLSearchParams(location.search);</span><span class="l"><span class="n">35</span>const ship = await loadShipMeta(q.get(&quot;edition&quot;) || &quot;conex&quot;, q.get(&quot;ship&quot;) || &quot;yodacon&quot;);</span><span class="l"><span class="n">36</span>const { frame_width: frameWidth, frame_height: frameHeight } = ship.sprite;</span><span class="l"><span class="n">37</span>const stats = ship.meta.stats ?? {};</span><span class="l"><span class="n">38</span>const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;</span><span class="l"><span class="n">39</span>const SCALE = frameWidth &gt; 64 ? 1 : 2;               <span class="c">// whole numbers only</span></span></pre>
+</figure>
+<p>Phaser's loader then fetches the image itself in <code>preload()</code> (Listing 2). Phaser numbers a
+sheet's cells left to right, top to bottom, which is exactly the pack's order, so pack frame <i>f</i> is
+Phaser frame <i>f</i>. <code>setCORS("anonymous")</code> lets WebGL use the image when the pack is served from
+another origin, such as a CDN.</p>
+<figure>
+<figcaption><b>Listing 2.</b> preload(), <code>index.html:42–45</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">42</span>preload() {</span><span class="l"><span class="n">43</span>  this.load.setCORS(&quot;anonymous&quot;);                   <span class="c">// needed when the pack is on a CDN</span></span><span class="l"><span class="n">44</span>  <span class="c">// sheet-alpha.png is a 6 × 6 grid; Phaser numbers its cells 0–35 the same way the pack does.</span></span><span class="l"><span class="n">45</span>  this.load.spritesheet(&quot;ship&quot;, ship.urls.sheet, { frameWidth, frameHeight });</span></pre>
+</figure>
+
+<h3>IV. Creating the Sprite</h3>
+<p>The ship is an Arcade physics sprite on texture <code>"ship"</code>, frame 0 (nose up), scaled by a whole
+number (<code>index.html:56</code>). The game config's <code>pixelArt: true</code>
+(<code>index.html:90</code>) switches Phaser to nearest-neighbour sampling, without which the 1997 pixels
+blur when scaled. The 1997 <code>Speed</code> becomes the body's maximum speed
+(<code>index.html:57</code>).</p>
+
+<h3>V. Each Update: Frame, Then Force</h3>
+<p>Listing 3 is the whole asset logic of the scene. The heading turns continuously; the frame is</p>
+<p class="eq"><span>f = ⌊θ / 10⌋ mod 36</span><span>(1)</span></p>
+<p>and <code>setFrame(f)</code> shows it. The sprite's own <code>rotation</code> is never touched: the 36
+frames already are the rotation, and rotating as well would turn the ship twice.</p>
+<figure>
+<figcaption><b>Listing 3.</b> update(), <code>index.html:63–77</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">63</span>update(time, delta) {</span><span class="l"><span class="n">64</span>  const dt = delta / 1000, k = this.keys, body = this.ship.body;</span><span class="l"><span class="n">65</span>  if (k.left.isDown) this.heading -= TURN * dt;</span><span class="l"><span class="n">66</span>  if (k.right.isDown) this.heading += TURN * dt;</span><span class="l"><span class="n">67</span>  this.heading = Phaser.Math.Wrap(this.heading, 0, 360);</span><span class="l"><span class="n">68</span></span><span class="l"><span class="n">69</span>  <span class="c">// Show the frame for the heading; never rotate the sprite itself —</span></span><span class="l"><span class="n">70</span>  <span class="c">// the 36 frames already are the rotation.</span></span><span class="l"><span class="n">71</span>  const frame = frameIndex(this.heading);</span><span class="l"><span class="n">72</span>  this.ship.setFrame(frame);</span><span class="l"><span class="n">73</span></span><span class="l"><span class="n">74</span>  <span class="c">// Phaser&#x27;s angle 0 points right (+x); the pack&#x27;s heading 0 points up.</span></span><span class="l"><span class="n">75</span>  if (k.up.isDown) this.physics.velocityFromAngle(frame * 10 - 90, ACCEL, body.acceleration);</span><span class="l"><span class="n">76</span>  else body.setAcceleration(0, 0);</span><span class="l"><span class="n">77</span>  body.setDrag(k.down.isDown ? ACCEL : 0);          <span class="c">// drag only acts while not accelerating</span></span></pre>
+</figure>
+<p>Phaser measures angles from +<i>x</i> (pointing right), while the pack's heading 0 points up, so thrust uses
+the frame's heading minus 90°:</p>
+<p class="eq"><span>α<sub>Phaser</sub> = 10 f − 90°</span><span>(2)</span></p>
+<p>Using <i>f</i> rather than <i>θ</i> makes the ship accelerate exactly the way it appears to point.</p>
+
+<h3>VI. Handling From the 1997 Record</h3>
+<p>Speed, acceleration and turn rate come from <code>ship.meta.stats</code> (<code>index.html:38</code>):
+<code>Speed</code> and <code>Accel</code> scaled by 0.6 and <code>Maneuver</code> by 40°/s. Swap the ship in
+the query string and the handling changes with it.</p>
+
+<h3>VII. Using It in Your Own Phaser Game</h3>
+<ol class="steps">
+  <li>Read <code>ship.json</code> (with <code>loadShipMeta</code> or a plain <code>fetch</code>) before
+    creating the game, or in a boot scene.</li>
+  <li><code>this.load.spritesheet(key, url, { frameWidth, frameHeight })</code> on
+    <code>sheet-alpha.png</code>.</li>
+  <li>Set <code>pixelArt: true</code> and scale only by whole numbers.</li>
+  <li>Each update, <code>sprite.setFrame(frameIndex(heading))</code>; move with (2).</li>
+</ol>
+<p>For a ship that simply spins, Phaser's animation system works on the same frames:</p>
+<figure>
+<figcaption><b>Listing 4.</b> A spin animation over the 36 frames</figcaption>
+<pre>this.anims.create({ key: "spin", frameRate: 12, repeat: -1,
+  frames: this.anims.generateFrameNumbers("ship",
+                              { start: 0, end: 35 }) });
+sprite.play("spin");</pre>
+</figure>
+
+<h3>VIII. Conclusion</h3>
+<p>The scene uses one image and one JSON file. The only adaptations Phaser needs are loading the metadata
+first and the 90° offset in (2); frame numbering and pixel-art filtering line up with the pack directly.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>Phaser Studio, <i>Phaser 3 API Documentation</i>, v3.80.1, 2024. [Online]. Available: docs.phaser.io</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>

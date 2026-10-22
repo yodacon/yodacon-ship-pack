@@ -19,6 +19,9 @@ moved or renamed file a major one. A tag's files never change.
   and links the ten re-rendered 1997 designs
 - **Examples**: a tutorial note in IEEE form on starting a project with the
   sprites, with listings from the library and a Phaser and a Godot port
+- **Tutorial notes 2–7**: each example page (DOM, Canvas, `<yodacon-ship>`,
+  three.js, Phaser, PixiJS) ends with an IEEE-style note on how it uses the
+  assets, with listings cut from its own source by `tools/example_notes.py`
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`
 - **Style**: `docs/STYLE.md`, `lib/yodacon-style.css` and `styleguide/`;
   `docs/HOUSE-STYLE.md` for the family with treadcore and paulricheson.com

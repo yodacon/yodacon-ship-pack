@@ -18,7 +18,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1>PixiJS 8</h1>
   <p>Arrow keys: ← → turn, ↑ thrust, ↓ brake. One texture per frame, cut from the sheet.</p>
   <div id="stage"></div>
@@ -91,5 +91,82 @@
     label.text = `${ship.name}  heading ${Math.floor(heading)}°  frame ${frame}`;
   });
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 7 · October 2026</p>
+  <h2 class="title" id="note-title">Thirty-Six Textures on One Image: How the PixiJS Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The PixiJS example loads a pack ship's <code>sheet-alpha.png</code> once, cuts it into 36 textures that share one source using the library's <code>frameRect()</code>, and flies a sprite by swapping its texture each tick. This note follows the page's source.</p>
+<p class="terms"><i>Index Terms</i>—PixiJS, texture atlases, sprite sheets, pixel art.</p>
+
+<h3>I. Introduction</h3>
+<p>PixiJS draws sprites from textures, and a texture can frame part of a shared image. The PixiJS example
+uses that to turn the pack's sheet into 36 textures over one GPU upload, then flies a sprite by swapping its
+texture. PixiJS 8.6.6 is imported from a pinned URL (<code>index.html:32</code>).</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code></td><td><code>index.html:36</code></td><td>Frame grid, stats, name</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:50</code></td><td>One texture source</td></tr>
+<tr><td><code>frameRect()</code>, <code>frameIndex()</code></td><td><code>index.html:33</code></td><td>Cells and frame choice</td></tr>
+</tbody></table>
+</figure>
+
+<h3>III. Pixel Art First</h3>
+<p>Before any texture exists, the default sampling is set to nearest-neighbour
+(<code>index.html:41</code>), and the application is created without antialiasing
+(<code>index.html:45</code>). Every texture made afterwards keeps the 1997 pixels square.</p>
+
+<h3>IV. Thirty-Six Textures, One Source</h3>
+<p><code>Assets.load</code> loads the sheet once. Each frame is then a <code>Texture</code> that shares the
+sheet's <code>source</code> and frames one cell, with the rectangle from the library's
+<code>frameRect()</code> (Listing 1):</p>
+<p class="eq"><span>(x, y, w, h) = ((f mod 6) · w, ⌊f / 6⌋ · h, w, h)</span><span>(1)</span></p>
+<figure>
+<figcaption><b>Listing 1.</b> Cutting the sheet, <code>index.html:50–54</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">50</span>const sheet = await Assets.load(ship.urls.sheet);</span><span class="l"><span class="n">51</span>const frames = Array.from({ length: 36 }, (_, i) =&gt; {</span><span class="l"><span class="n">52</span>  const r = frameRect(ship, i);</span><span class="l"><span class="n">53</span>  return new Texture({ source: sheet.source, frame: new Rectangle(r.x, r.y, r.w, r.h) });</span><span class="l"><span class="n">54</span>});</span></pre>
+</figure>
+<p>Because all 36 share one source, the GPU holds one image, and switching frames costs nothing but a
+pointer.</p>
+
+<h3>V. The Sprite</h3>
+<p>The sprite starts on frame 0 with its anchor at the centre, so it turns about its middle, and a
+whole-number scale (<code>index.html:61–63</code>).</p>
+
+<h3>VI. Each Tick</h3>
+<p>The ticker turns the heading, picks <i>f</i> = <code>frameIndex(θ)</code> and assigns
+<code>frames[f]</code> to the sprite (Listing 2). As in every example, <code>sprite.rotation</code> stays 0.
+Thrust follows the frame shown, along (sin <i>a</i>, −cos <i>a</i>) with <i>a</i> = 10<i>f</i>°.</p>
+<figure>
+<figcaption><b>Listing 2.</b> The ticker, <code>index.html:75–84</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">75</span>app.ticker.add((ticker) =&gt; {</span><span class="l"><span class="n">76</span>  const dt = Math.min(ticker.deltaMS / 1000, 0.1);</span><span class="l"><span class="n">77</span>  if (keys.ArrowLeft) heading -= TURN * dt;</span><span class="l"><span class="n">78</span>  if (keys.ArrowRight) heading += TURN * dt;</span><span class="l"><span class="n">79</span>  heading = (heading + 360) % 360;</span><span class="l"><span class="n">80</span>  const frame = frameIndex(heading);</span><span class="l"><span class="n">81</span>  sprite.texture = frames[frame];                  <span class="c">// swap the frame; never set sprite.rotation</span></span><span class="l"><span class="n">82</span></span><span class="l"><span class="n">83</span>  const a = (frame * 10 * Math.PI) / 180;            <span class="c">// heading 0 = up, clockwise</span></span><span class="l"><span class="n">84</span>  if (keys.ArrowUp) { vx += Math.sin(a) * ACCEL * dt; vy -= Math.cos(a) * ACCEL * dt; }</span></pre>
+</figure>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Set <code>scaleMode = "nearest"</code> before loading.</li>
+  <li><code>Assets.load</code> the sheet; build the 36 frame textures once per ship type.</li>
+  <li>Give every ship its own <code>Sprite</code> and assign <code>frames[frameIndex(heading)]</code>.</li>
+</ol>
+<p>Pixi's <code>AnimatedSprite</code> takes the same array if you want a ship that simply spins.</p>
+
+<h3>VIII. Conclusion</h3>
+<p>The sheet becomes an array of textures indexed by Equation (1)'s frame number; from there the pack ship is
+an ordinary Pixi sprite.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>PixiJS authors, <i>PixiJS</i> v8.6.6, 2024. [Online]. Available: pixijs.com</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>

@@ -6,6 +6,18 @@ Every framework is pinned to an exact version on jsDelivr; nothing needs
 installing or building. Serve the pack root (`python3 -m http.server`) and
 open `examples/`.
 
+## Tutorial notes
+
+`index.html` ends with **Tutorial Note 1**, an IEEE-style paper on starting a
+project with the sprites. Each example page ends with its own note (2–7) on how
+that page uses the assets, quoting its source with line numbers. The page notes
+are generated: `tools/example_notes.py` cuts the listings from the live source by
+text pattern, so after editing an example run
+
+    python3 tools/example_notes.py
+
+`make test` runs it with `--check` and fails if a note is out of date.
+
 | Example | What it shows |
 | --- | --- |
 | [`dom/`](dom/) | Plain DOM + CSS sprite: `background-position` on `sheet-alpha.png`, no canvas, no library |

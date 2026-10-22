@@ -36,7 +36,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1><code>&lt;yodacon-ship&gt;</code></h1>
 
   <h2>Attributes</h2>
@@ -104,5 +104,100 @@
   form.addEventListener("input", apply);
   apply();
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 4 · October 2026</p>
+  <h2 class="title" id="note-title">Ships as HTML: How the <code>&lt;yodacon-ship&gt;</code> Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The web-component example builds a playground and a full fleet from <code>catalog.json</code> using the library's <code>&lt;yodacon-ship&gt;</code> element. This note traces the page's source, then the element's own loading, rendering and spin logic in the library.</p>
+<p class="terms"><i>Index Terms</i>—Web components, custom elements, shadow DOM, CSS sprites.</p>
+
+<h3>I. Introduction</h3>
+<p>Importing the pack's library registers a custom element, <code>&lt;yodacon-ship&gt;</code>, that shows any
+ship at any heading from HTML alone. This page demonstrates it twice: a live element driven by a form, and
+every ship in the catalogue spinning. This note covers how the page uses the element, then how the element
+uses the assets inside the library [1].</p>
+
+<h3>II. One Script Tag</h3>
+<p>The page loads the library as a module (<code>index.html:35</code>). From then on,
+markup such as <code>index.html:44</code> is a ship. The element shows its light-DOM children until
+the ship loads, so a plain <code>&lt;img&gt;</code> of frame 00 inside it is a good fallback.</p>
+
+<h3>III. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page and the element take from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>catalog.json</code></td><td><code>index.html:66</code></td><td>Every edition and ship, for the grid and the select</td></tr>
+<tr><td><code>ship.json</code></td><td><code>lib/yodacon-ship-pack.js:266</code></td><td>Frame grid and name, per element</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>lib/yodacon-ship-pack.js:270</code></td><td>CSS background in the shadow DOM</td></tr>
+</tbody></table>
+</figure>
+
+<h3>IV. Building From the Catalogue</h3>
+<p>The page never lists ships itself. It walks <code>catalog.json</code> and creates one spinning element per
+ship (Listing 1), so ships added to the pack appear here with no edit. Scale is chosen per ship to keep whole
+numbers: 1 for frames wider than 64 pixels, else 2.</p>
+<figure>
+<figcaption><b>Listing 1.</b> The grid, <code>index.html:71–84</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">71</span>for (const ed of catalog.editions) {</span><span class="l"><span class="n">72</span>  const h3 = Object.assign(document.createElement(&quot;h3&quot;), { textContent: `${ed.title} · ${ed.year}` });</span><span class="l"><span class="n">73</span>  const grid = Object.assign(document.createElement(&quot;div&quot;), { className: &quot;grid&quot; });</span><span class="l"><span class="n">74</span>  for (const s of ed.ships) {</span><span class="l"><span class="n">75</span>    const fig = document.createElement(&quot;figure&quot;);</span><span class="l"><span class="n">76</span>    const el = document.createElement(&quot;yodacon-ship&quot;);</span><span class="l"><span class="n">77</span>    el.setAttribute(&quot;ship&quot;, s.slug);</span><span class="l"><span class="n">78</span>    el.setAttribute(&quot;edition&quot;, ed.key);</span><span class="l"><span class="n">79</span>    el.setAttribute(&quot;scale&quot;, s.frame_width &gt; 64 ? &quot;1&quot; : &quot;2&quot;);</span><span class="l"><span class="n">80</span>    el.toggleAttribute(&quot;spin&quot;, true);</span><span class="l"><span class="n">81</span>    fig.append(el, Object.assign(document.createElement(&quot;figcaption&quot;), { textContent: s.name }));</span><span class="l"><span class="n">82</span>    grid.append(fig);</span><span class="l"><span class="n">83</span>  }</span><span class="l"><span class="n">84</span>  document.getElementById(&quot;all&quot;).append(h3, grid);</span></pre>
+</figure>
+
+<h3>V. Attributes Are the Interface</h3>
+<p>The form writes attributes; the element observes them and re-renders (Listing 2). Changing
+<code>ship</code> or <code>edition</code> reloads, while <code>heading</code>, <code>scale</code> and
+<code>spin</code> only redraw (<code>lib/yodacon-ship-pack.js:240</code>).</p>
+<figure>
+<figcaption><b>Listing 2.</b> Form to attributes, <code>index.html:93–99</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">93</span>function apply() {</span><span class="l"><span class="n">94</span>  const [edition, ship] = form.ship.value.split(&quot;/&quot;);</span><span class="l"><span class="n">95</span>  live.setAttribute(&quot;edition&quot;, edition);</span><span class="l"><span class="n">96</span>  live.setAttribute(&quot;ship&quot;, ship);</span><span class="l"><span class="n">97</span>  live.setAttribute(&quot;heading&quot;, form.heading.value);</span><span class="l"><span class="n">98</span>  live.setAttribute(&quot;scale&quot;, form.scale.value);</span><span class="l"><span class="n">99</span>  live.toggleAttribute(&quot;spin&quot;, form.spin.checked);</span></pre>
+</figure>
+
+<h3>VI. Inside the Element</h3>
+<p>The element's shadow root holds one <code>&lt;div&gt;</code> painted with the sheet, the DOM technique of
+Tutorial Note 2 [2] packaged as a component. Loading fetches only <code>ship.json</code> in script; the sheet
+is left to the browser as a CSS background (Listing 3). A load counter discards answers to superseded
+requests when attributes change quickly.</p>
+<figure>
+<figcaption><b>Listing 3.</b> Loading, <code>lib/yodacon-ship-pack.js:262–274</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">262</span>async #load() {</span><span class="l"><span class="n">263</span>  const id = ++this.#loadId;</span><span class="l"><span class="n">264</span>  const base = this.getAttribute(&quot;base&quot;) ?? PACK_BASE;</span><span class="l"><span class="n">265</span>  try {</span><span class="l"><span class="n">266</span>    const ship = await loadShipMeta(this.edition, this.ship, base);</span><span class="l"><span class="n">267</span>    if (id !== this.#loadId) return; <span class="c">// a newer attribute change won</span></span><span class="l"><span class="n">268</span>    this.#ship = ship;</span><span class="l"><span class="n">269</span>    this.#frame = frameIndex(this.heading);</span><span class="l"><span class="n">270</span>    this.#sprite.style.backgroundImage = `url(&quot;${ship.urls.sheet}&quot;)`;</span><span class="l"><span class="n">271</span>    this.setAttribute(&quot;aria-label&quot;, ship.name);</span><span class="l"><span class="n">272</span>    this.#sprite.hidden = false;</span><span class="l"><span class="n">273</span>    this.shadowRoot.querySelector(&quot;slot&quot;).hidden = true;</span><span class="l"><span class="n">274</span>    this.#render();</span></pre>
+</figure>
+<p>Rendering sizes the box to one frame times the scale and positions the scaled sheet (Listing 4), with the
+rectangle from <code>frameRect()</code>:</p>
+<p class="eq"><span>(x, y) = ((f mod 6) · w, ⌊f / 6⌋ · h)</span><span>(1)</span></p>
+<figure>
+<figcaption><b>Listing 4.</b> Rendering, <code>lib/yodacon-ship-pack.js:283–293</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">283</span>#render() {</span><span class="l"><span class="n">284</span>  if (!this.#ship) return;</span><span class="l"><span class="n">285</span>  const { w, h, columns, frames } = spriteOf(this.#ship);</span><span class="l"><span class="n">286</span>  const s = this.scale;</span><span class="l"><span class="n">287</span>  if (!this.#spinning()) this.#frame = frameIndex(this.heading);</span><span class="l"><span class="n">288</span>  const r = frameRect(this.#ship, this.#frame);</span><span class="l"><span class="n">289</span>  const st = this.#sprite.style;</span><span class="l"><span class="n">290</span>  st.width = `${w * s}px`;</span><span class="l"><span class="n">291</span>  st.height = `${h * s}px`;</span><span class="l"><span class="n">292</span>  st.backgroundSize = `${columns * w * s}px ${Math.ceil(frames / columns) * h * s}px`;</span><span class="l"><span class="n">293</span>  st.backgroundPosition = `${-r.x * s}px ${-r.y * s}px`;</span></pre>
+</figure>
+
+<h3>VII. Spinning Responsibly</h3>
+<p>A <code>spin</code> element advances one frame at about 12 fps, a full turn in three seconds. Two checks
+keep a page of spinning ships cheap and polite: an <code>IntersectionObserver</code> pauses elements that are
+off screen (<code>lib/yodacon-ship-pack.js:227</code>), and <code>prefers-reduced-motion</code> stops spinning
+altogether (<code>lib/yodacon-ship-pack.js:298</code>).</p>
+
+<h3>VIII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Add one module script tag pointing at the library.</li>
+  <li>Write <code>&lt;yodacon-ship ship="dart" edition="conex" heading="90" scale="2"&gt;</code>.</li>
+  <li>Set <code>heading</code> (attribute or property) from your code; listen for <code>load</code> and
+    <code>error</code> events if you need them.</li>
+</ol>
+<p>The pack page itself uses the element for every ship card, which is the best demonstration of it at scale.</p>
+
+<h3>IX. Conclusion</h3>
+<p>The element turns the pack into HTML vocabulary: a catalogue read once, one JSON file per ship and one CSS
+background, with the frame arithmetic hidden behind a <code>heading</code> attribute.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="../dom/#note">examples/dom/</a>.</li>
+  <li>Yodacon Ship Pack, <i>ship.json</i> and <i>catalog.json</i>, v2.0.0, 2026.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>

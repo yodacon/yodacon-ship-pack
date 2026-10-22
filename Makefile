@@ -25,6 +25,7 @@ manifest:
 test:
 	$(PY) -m unittest discover -s tools
 	node --test projects/konquest/test.mjs
+	$(PY) tools/example_notes.py --check
 
 ## check: serve the pack, load every page in headless Chromium, fail on any error.
 ## ANGLE=vulkan where Chromium has no SwiftShader (e.g. Alpine).

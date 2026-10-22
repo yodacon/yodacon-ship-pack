@@ -29,7 +29,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1>three.js</h1>
   <nav>Mode: <a id="m-plane" href="?mode=plane">Fly — textured plane</a> ·
     <a id="m-billboard" href="?mode=billboard">Orbit — billboard sprite</a></nav>
@@ -187,5 +187,90 @@
   resize();
   view.focus();
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 5 · October 2026</p>
+  <h2 class="title" id="note-title">Pre-Rotated Sprites in 3-D: How the three.js Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The three.js example shows a pack ship as a textured plane and as a billboard. One texture of <code>sheet-alpha.png</code> serves all 36 frames by moving its UV window; for the billboard the frame also accounts for the camera's bearing. This note follows the page's source.</p>
+<p class="terms"><i>Index Terms</i>—three.js, WebGL, texture atlases, billboards, pixel art.</p>
+
+<h3>I. Introduction</h3>
+<p>The three.js example puts a pre-rotated 2-D sprite into a 3-D scene two ways: as a quad lying on a grid
+(<code>?mode=plane</code>) and as a camera-facing billboard you orbit (<code>?mode=billboard</code>). Both use
+one texture whose UV window is moved to the wanted frame. three.js 0.160.0 is pinned through an import map
+(<code>index.html:24</code>).</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code></td><td><code>index.html:49</code></td><td>Frame size, grid, stats, name</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:106</code></td><td>One texture for all 36 frames</td></tr>
+<tr><td><code>frameIndex()</code></td><td><code>index.html:45</code></td><td>Heading to frame</td></tr>
+</tbody></table>
+</figure>
+
+<h3>III. The Sheet as a Texture</h3>
+<p>The texture is loaded once and set up for pixel art: nearest-neighbour filtering both ways and no mipmaps
+(Listing 1). <code>repeat</code> shrinks the visible UV range to one cell; <code>offset</code> moves it.
+three.js flips images vertically on upload, so <i>v</i> = 0 is the sheet's <em>bottom</em> row. For frame
+<i>f</i> in a sheet of <i>C</i> columns and <i>R</i> rows:</p>
+<p class="eq"><span>u₀ = (f mod C) / C,&nbsp;&nbsp; v₀ = 1 − (⌊f / C⌋ + 1) / R</span><span>(1)</span></p>
+<figure>
+<figcaption><b>Listing 1.</b> Texture and frame window, <code>index.html:106–114</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">106</span>const texture = await new THREE.TextureLoader().loadAsync(ship.urls.sheet);</span><span class="l"><span class="n">107</span>texture.colorSpace = THREE.SRGBColorSpace;</span><span class="l"><span class="n">108</span>texture.magFilter = texture.minFilter = THREE.NearestFilter;  <span class="c">// pixel art: no blur</span></span><span class="l"><span class="n">109</span>texture.generateMipmaps = false;</span><span class="l"><span class="n">110</span>texture.repeat.set(1 / cols, 1 / rows);</span><span class="l"><span class="n">111</span>function setFrame(i) {</span><span class="l"><span class="n">112</span>  texture.offset.set((i % cols) / cols, 1 - (Math.floor(i / cols) + 1) / rows);</span><span class="l"><span class="n">113</span>}</span><span class="l"><span class="n">114</span>const material = { map: texture, transparent: true, alphaTest: 0.5 }; <span class="c">// alphaTest: crisp edges, no sorting trouble</span></span></pre>
+</figure>
+<p><code>alphaTest: 0.5</code> discards transparent texels outright, which keeps edges crisp and avoids
+transparency sorting entirely.</p>
+
+<h3>IV. Mode 1: A Plane on the Grid</h3>
+<p>A <code>PlaneGeometry</code> sized to the frame in world units is laid flat, its texture's top pointing to
+−<i>Z</i>, “north” (Listing 2). Each tick picks the frame for the heading and thrusts along that frame's
+direction, (sin <i>a</i>, 0, −cos <i>a</i>) in world space, so motion matches the picture
+(<code>index.html:140</code>).</p>
+<figure>
+<figcaption><b>Listing 2.</b> The plane, <code>index.html:128–147</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">128</span>const plane = new THREE.Mesh(new THREE.PlaneGeometry(fw * SIZE, fh * SIZE), new THREE.MeshBasicMaterial(material));</span><span class="l"><span class="n">129</span>plane.rotation.x = -Math.PI / 2;</span><span class="l"><span class="n">130</span>plane.position.y = 1;</span><span class="l"><span class="n"></span>⋮</span><span class="l"><span class="n">139</span>  const frame = frameIndex(heading);</span><span class="l"><span class="n"></span>⋮</span><span class="l"><span class="n">147</span>  setFrame(frame);</span></pre>
+</figure>
+
+<h3>V. Mode 2: A Billboard</h3>
+<p>A <code>THREE.Sprite</code> always faces the camera, so it must show the ship as seen <em>from</em> the
+camera. If the ship's true heading is <i>θ</i> and the camera's bearing around it is <i>φ</i>, the frame to
+show is</p>
+<p class="eq"><span>f = frameIndex(θ + φ)</span><span>(2)</span></p>
+<p>which the loop computes from the camera position each frame (Listing 3). Orbit the camera with the ship
+still and the sprite turns; the green arrow shows that the ship itself has not.</p>
+<figure>
+<figcaption><b>Listing 3.</b> Frame for the camera, <code>index.html:178–180</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">178</span>const phi = THREE.MathUtils.radToDeg(Math.atan2(camera.position.x - sprite.position.x, camera.position.z - sprite.position.z));</span><span class="l"><span class="n">179</span>const seen = heading + phi;</span><span class="l"><span class="n">180</span>setFrame(frameIndex(seen));</span></pre>
+</figure>
+
+<h3>VI. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Load the sheet with <code>TextureLoader</code>; set <code>NearestFilter</code>, no mipmaps, sRGB.</li>
+  <li>Set <code>repeat</code> to (1/<i>C</i>, 1/<i>R</i>) and move <code>offset</code> with (1).</li>
+  <li>For many ships, clone the texture per ship (<code>texture.clone()</code> shares the image) so each has
+    its own offset.</li>
+  <li>For billboards, add the camera bearing as in (2).</li>
+</ol>
+<p>The Fleet Flyby and Hangar projects scale this up to every ship and to a turntable [2].</p>
+
+<h3>VII. Conclusion</h3>
+<p>In 3-D the pack's convention survives intact: one texture, a UV window chosen by Equation (1), and for
+billboards one extra angle. The sprites keep their 1997 pixels while the scene around them is fully 3-D.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “Sample projects,” <a href="../../projects/">projects/</a>.</li>
+  <li>three.js authors, <i>three.js</i> r160 (0.160.0), 2023. [Online]. Available: threejs.org/docs</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>

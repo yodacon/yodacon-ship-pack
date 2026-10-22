@@ -42,7 +42,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1>Plain DOM + CSS sprite</h1>
   <p>No canvas: a <code>&lt;div&gt;</code> whose background is <code>sheet-alpha.png</code>, moved with
     <code>background-position</code>. Rotate with the buttons or the ← → keys.</p>
@@ -102,5 +102,94 @@
   });
   show();
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 2 · October 2026</p>
+  <h2 class="title" id="note-title">A Ship in Plain HTML and CSS: How the DOM Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The DOM example renders a pre-rotated pack ship with one <code>&lt;div&gt;</code> and CSS custom properties: <code>ship.json</code> supplies the frame grid, <code>sheet-alpha.png</code> becomes a background, and the heading moves <code>background-position</code>. This note walks through the page's own source to show each step and how to reuse it.</p>
+<p class="terms"><i>Index Terms</i>—CSS sprites, background-position, custom properties, pixel art.</p>
+
+<h3>I. Introduction</h3>
+<p>This page shows a ship with no canvas, no library and no framework: a single <code>&lt;div&gt;</code>
+whose CSS background is the ship's sprite sheet. It is the smallest complete use of the pack, and every
+rendering technique in the other examples is this one with a different drawing call [1]. The page is one
+file, <code>examples/dom/index.html</code>; this note cites its lines.</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code></td><td><code>index.html:75</code></td><td>Frame size, columns, name</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:79</code></td><td>The pixels, as a CSS background</td></tr>
+</tbody></table>
+</figure>
+<p>The pack's location is one URL, <code>PACK</code> (<code>index.html:67</code>); point it at your own copy
+or at a pinned jsDelivr release and nothing else changes. The ship's folder follows from the edition and slug
+(<code>index.html:72</code>).</p>
+
+<h3>III. Reading the Frame Grid</h3>
+<p>Frame sizes vary from ship to ship, so the page reads them from <code>ship.json</code> rather than
+assuming one (Listing 1). They become CSS custom properties on the element, together with a whole-number
+scale: 1997 pixel art only stays square at integer scales.</p>
+<figure>
+<figcaption><b>Listing 1.</b> Metadata to CSS properties, <code>index.html:75–84</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">75</span>const meta = await (await fetch(new URL(&quot;ship.json&quot;, dir))).json();</span><span class="l"><span class="n">76</span>const { frame_width: w, frame_height: h, columns: cols } = meta.sprite;</span><span class="l"><span class="n">77</span></span><span class="l"><span class="n">78</span>const el = document.getElementById(&quot;ship&quot;);</span><span class="l"><span class="n">79</span>el.style.setProperty(&quot;--sheet&quot;, `url(&quot;${new URL(&quot;sheet-alpha.png&quot;, dir)}&quot;)`);</span><span class="l"><span class="n">80</span>el.style.setProperty(&quot;--w&quot;, w);</span><span class="l"><span class="n">81</span>el.style.setProperty(&quot;--h&quot;, h);</span><span class="l"><span class="n">82</span>el.style.setProperty(&quot;--cols&quot;, cols);</span><span class="l"><span class="n">83</span>el.style.setProperty(&quot;--scale&quot;, w &gt; 64 ? 2 : 3);   <span class="c">// whole numbers only</span></span><span class="l"><span class="n">84</span>el.setAttribute(&quot;aria-label&quot;, meta.name);</span></pre>
+</figure>
+
+<h3>IV. The Sprite in CSS</h3>
+<p>The element is exactly one frame in size. The background is the whole sheet, scaled by the same factor,
+and shifted so that the wanted cell sits in the box (Listing 2). With column <i>c</i> and row <i>r</i> of
+frame <i>f</i>, scale <i>s</i> and frame width <i>w</i> and height <i>h</i>:</p>
+<p class="eq"><span>background-position = (−c · w · s, −r · h · s)</span><span>(1)</span></p>
+<p>The size of the background must be scaled too, or the offsets in (1) would land in the wrong place;
+<code>auto</code> height keeps the sheet's proportions. <code>image-rendering: pixelated</code>
+(<code>index.html:33</code>) keeps the enlarged pixels sharp.</p>
+<figure>
+<figcaption><b>Listing 2.</b> The sprite rule, <code>index.html:24–33</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">24</span>.ship {</span><span class="l"><span class="n">25</span>  width: calc(var(--w) * var(--scale) * 1px);</span><span class="l"><span class="n">26</span>  height: calc(var(--h) * var(--scale) * 1px);</span><span class="l"><span class="n">27</span>  background-image: var(--sheet);</span><span class="l"><span class="n">28</span>  background-repeat: no-repeat;</span><span class="l"><span class="n">29</span>  background-size: calc(var(--w) * var(--cols) * var(--scale) * 1px) auto;</span><span class="l"><span class="n">30</span>  background-position:</span><span class="l"><span class="n">31</span>    calc(var(--col) * var(--w) * var(--scale) * -1px)</span><span class="l"><span class="n">32</span>    calc(var(--row) * var(--h) * var(--scale) * -1px);</span><span class="l"><span class="n">33</span>  image-rendering: pixelated;      <span class="c">/* keep the 1997 pixels square */</span></span></pre>
+</figure>
+
+<h3>V. Heading to Frame</h3>
+<p>The frame for a heading <i>θ</i> (degrees clockwise from up) is</p>
+<p class="eq"><span>f = ⌊θ / 10⌋ mod 36,&nbsp;&nbsp; c = f mod 6,&nbsp;&nbsp; r = ⌊f / 6⌋</span><span>(2)</span></p>
+<p>and <code>show()</code> writes <i>c</i> and <i>r</i> to the element (Listing 3). Turning never rotates the
+element; it only moves the background, so the 1997 pre-rendered lighting stays correct at every angle.</p>
+<figure>
+<figcaption><b>Listing 3.</b> Turning, <code>index.html:87–95</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">87</span>let heading = 0;</span><span class="l"><span class="n">88</span>function show() {</span><span class="l"><span class="n">89</span>  const frame = Math.floor(heading / 10) % 36;</span><span class="l"><span class="n">90</span>  el.style.setProperty(&quot;--col&quot;, frame % cols);</span><span class="l"><span class="n">91</span>  el.style.setProperty(&quot;--row&quot;, Math.floor(frame / cols));</span><span class="l"><span class="n">92</span>  document.getElementById(&quot;readout&quot;).textContent =</span><span class="l"><span class="n">93</span>    `${meta.name} · heading ${heading}° · frame ${String(frame).padStart(2, &quot;0&quot;)}`;</span><span class="l"><span class="n">94</span>}</span><span class="l"><span class="n">95</span>const turn = (deg) =&gt; { heading = (heading + deg + 360) % 360; show(); };</span></pre>
+</figure>
+
+<h3>VI. Accessibility</h3>
+<p>The sprite is a picture, so it carries <code>role="img"</code> and the ship's name as its label
+(<code>index.html:50</code>, <code>index.html:84</code>); the readout is a polite live region
+(<code>index.html:55</code>) so screen readers hear each new heading.</p>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Copy the pack (or use a pinned CDN URL) and set <code>PACK</code>.</li>
+  <li>Copy the <code>.ship</code> rule and the script.</li>
+  <li>Set the heading from your own game state and call <code>show()</code>.</li>
+</ol>
+<p>Many ships are many such elements. For dozens of moving ships prefer Canvas [2]; for a drop-in element that
+does all of this for you, see <code>&lt;yodacon-ship&gt;</code> [3].</p>
+
+<h3>VIII. Conclusion</h3>
+<p>One fetched JSON file, one background image and Equations (1) and (2) are a complete sprite renderer. Every
+other example replaces only the last step.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “Canvas 2D example,” Tutorial Note 3, <a href="../canvas/#note">examples/canvas/</a>.</li>
+  <li>Yodacon Ship Pack, “The yodacon-ship element,” Tutorial Note 4, <a href="../web-component/#note">examples/web-component/</a>.</li>
+  <li>Yodacon Ship Pack, <i>ship.json</i> and <i>catalog.json</i>, v2.0.0, 2026.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>

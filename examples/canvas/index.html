@@ -18,7 +18,7 @@
 </head>
 <body>
 <main>
-  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a></p>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
   <h1>Canvas 2D game loop</h1>
   <p>Arrow keys: turn and thrust. The library's <code>drawShip()</code> picks the frame and draws it pixelated.</p>
   <canvas id="c" width="800" height="500" tabindex="0" aria-label="Flight area: arrow keys to fly"></canvas>
@@ -85,5 +85,101 @@
   });
   canvas.focus();
 </script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 3 · October 2026</p>
+  <h2 class="title" id="note-title">A Game Loop on Canvas 2D: How the Canvas Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The Canvas example flies a pack ship with the library's <code>loadShip()</code> and <code>drawShip()</code>, handling taken from the ship's 1997 statistics and a fixed-timestep loop. This note follows the page's source and the library code it calls.</p>
+<p class="terms"><i>Index Terms</i>—Canvas 2D, sprite sheets, fixed timestep, pixel art.</p>
+
+<h3>I. Introduction</h3>
+<p>The Canvas example is a flyable ship in under 60 lines of script. It uses two functions from the pack's
+library, <code>loadShip()</code> and <code>drawShip()</code> [1], and a fixed-timestep loop. This note
+follows the page's source, <code>examples/canvas/index.html</code>, from loading to the drawn frame.</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code></td><td><code>index.html:34</code></td><td>Frame size, stats, name</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:34</code></td><td>Decoded once; drawn every frame</td></tr>
+<tr><td><code>lib/yodacon-ship-pack.js</code></td><td><code>index.html:31</code></td><td>Loading and drawing</td></tr>
+</tbody></table>
+</figure>
+
+<h3>III. Loading</h3>
+<p><code>loadShip(edition, slug)</code> fetches <code>ship.json</code>, then loads and decodes the sheet
+(Listing 1). It resolves only when the image is ready, so the first frame never draws an empty sprite. The
+query string picks the ship, so <code>?edition=override&amp;ship=callisto</code> needs no code change.</p>
+<figure>
+<figcaption><b>Listing 1.</b> The library's loader, <code>lib/yodacon-ship-pack.js:156–160</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">156</span>export async function loadShip(edition = &quot;conex&quot;, slug = &quot;yodacon&quot;, base = PACK_BASE) {</span><span class="l"><span class="n">157</span>  const ship = await loadShipMeta(edition, slug, base, &quot;ships&quot;);</span><span class="l"><span class="n">158</span>  ship.sheet = await loadImage(ship.urls.sheet);</span><span class="l"><span class="n">159</span>  return ship;</span><span class="l"><span class="n">160</span>}</span></pre>
+</figure>
+
+<h3>IV. Handling From the 1997 Record</h3>
+<p>The ship's original <i>Escape Velocity</i> numbers live in <code>ship.meta.stats</code>. The page maps
+three of them to its own units (Listing 2): <code>Speed</code> caps velocity, <code>Accel</code> is thrust
+and <code>Maneuver</code> is turn rate, so a Dart and a Large Pin fly differently with no per-ship code.</p>
+<figure>
+<figcaption><b>Listing 2.</b> Scale and stats, <code>index.html:39–43</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">39</span>const SCALE = ship.sprite.frame_width &gt; 64 ? 1 : 2;   <span class="c">// whole numbers only</span></span><span class="l"><span class="n">40</span></span><span class="l"><span class="n">41</span><span class="c">// Handling from ship.json (see demo/demo.js for the reasoning).</span></span><span class="l"><span class="n">42</span>const stats = ship.meta.stats ?? {};</span><span class="l"><span class="n">43</span>const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;</span></pre>
+</figure>
+
+<h3>V. Update: Thrust Along the Frame Shown</h3>
+<p>Heading is continuous, but the picture changes only every 10°. The page thrusts along the heading of the
+<em>frame on screen</em>, <i>a</i> = ⌊<i>θ</i>/10⌋·10°, so the ship always moves the way it appears to point
+(Listing 3). With screen <i>y</i> pointing down, the unit vector is</p>
+<p class="eq"><span>d(a) = (sin a, −cos a)</span><span>(1)</span></p>
+<figure>
+<figcaption><b>Listing 3.</b> Update, <code>index.html:52–65</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">52</span>function update(dt) {</span><span class="l"><span class="n">53</span>  if (keys.ArrowLeft) s.heading -= TURN * dt;</span><span class="l"><span class="n">54</span>  if (keys.ArrowRight) s.heading += TURN * dt;</span><span class="l"><span class="n">55</span>  s.heading = (s.heading + 360) % 360;</span><span class="l"><span class="n">56</span>  if (keys.ArrowUp) {</span><span class="l"><span class="n">57</span>    const a = (Math.floor(s.heading / 10) * 10 * Math.PI) / 180; <span class="c">// thrust along the frame shown</span></span><span class="l"><span class="n">58</span>    s.vx += Math.sin(a) * ACCEL * dt;</span><span class="l"><span class="n">59</span>    s.vy -= Math.cos(a) * ACCEL * dt;                          <span class="c">// screen y points down</span></span><span class="l"><span class="n">60</span>  }</span><span class="l"><span class="n">61</span>  if (keys.ArrowDown) { s.vx *= 0.96; s.vy *= 0.96; }</span><span class="l"><span class="n">62</span>  const v = Math.hypot(s.vx, s.vy);</span><span class="l"><span class="n">63</span>  if (v &gt; MAX) { s.vx *= MAX / v; s.vy *= MAX / v; }</span><span class="l"><span class="n">64</span>  s.x = (s.x + s.vx * dt + canvas.width) % canvas.width;       <span class="c">// wrap around the edges</span></span><span class="l"><span class="n">65</span>  s.y = (s.y + s.vy * dt + canvas.height) % canvas.height;</span></pre>
+</figure>
+
+<h3>VI. Draw: One Library Call</h3>
+<p><code>drawShip(ctx, ship, heading, x, y, scale)</code> (<code>index.html:73</code>) selects the frame
+with <i>f</i> = ⌊<i>θ</i>/10⌋ mod 36, finds its cell, and copies it centred on (<i>x</i>, <i>y</i>) with
+smoothing off and rounded coordinates (Listing 4). The canvas itself is scaled by CSS to fit the page, so
+the page also sets <code>image-rendering: pixelated</code> on it (<code>index.html:14</code>).</p>
+<figure>
+<figcaption><b>Listing 4.</b> The library's draw, <code>lib/yodacon-ship-pack.js:182–187</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">182</span>export function drawShip(ctx, ship, headingDeg, x, y, scale = 1) {</span><span class="l"><span class="n">183</span>  const r = frameRect(ship, frameIndex(headingDeg));</span><span class="l"><span class="n">184</span>  const w = r.w * scale, h = r.h * scale;</span><span class="l"><span class="n">185</span>  ctx.imageSmoothingEnabled = false;</span><span class="l"><span class="n">186</span>  ctx.drawImage(ship.sheet, r.x, r.y, r.w, r.h, Math.round(x - w / 2), Math.round(y - h / 2), w, h);</span><span class="l"><span class="n">187</span>}</span></pre>
+</figure>
+
+<h3>VII. The Loop</h3>
+<p>Physics advances in fixed 1/60 s steps while drawing happens once per animation frame (Listing 5). The
+accumulator is capped at 0.25 s so a background tab does not return to a burst of catch-up steps.</p>
+<figure>
+<figcaption><b>Listing 5.</b> Fixed-timestep loop, <code>index.html:77–84</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">77</span>const STEP = 1 / 60;</span><span class="l"><span class="n">78</span>let last = performance.now(), acc = 0;</span><span class="l"><span class="n">79</span>requestAnimationFrame(function frame(now) {</span><span class="l"><span class="n">80</span>  acc += Math.min(0.25, (now - last) / 1000);</span><span class="l"><span class="n">81</span>  last = now;</span><span class="l"><span class="n">82</span>  while (acc &gt;= STEP) { update(STEP); acc -= STEP; }</span><span class="l"><span class="n">83</span>  draw();</span><span class="l"><span class="n">84</span>  requestAnimationFrame(frame);</span></pre>
+</figure>
+
+<h3>VIII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Import <code>loadShip</code> and <code>drawShip</code> from your copy of the library or a pinned CDN
+    URL (<code>index.html:30</code>).</li>
+  <li>Await one <code>loadShip()</code> per ship type; reuse the result for every ship of that type.</li>
+  <li>Keep each ship's <code>x</code>, <code>y</code> and <code>heading</code>; call <code>drawShip()</code>
+    per ship per frame.</li>
+</ol>
+<p>The flying games in <code>projects/</code> (Orbital Defence, Slingshot, ConEx Courier) are this loop
+grown into games [2].</p>
+
+<h3>IX. Conclusion</h3>
+<p>Two library calls carry the whole asset path from URL to pixels; everything else on the page is ordinary
+game code, which is the point: the pack stays out of your game's way.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “Sample projects,” <a href="../../projects/">projects/</a>.</li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
 </body>
 </html>
