@@ -17,7 +17,8 @@
   <div class="readouts yc-crt">
     <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
     <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">3</span></span>
-    <span class="yc-readout"><span class="yc-label">Stage</span><span class="yc-value" id="stage">1/2</span></span>
+    <span class="yc-readout"><span class="yc-label">Stage</span><span class="yc-value" id="stage">1/3</span></span>
+    <span class="yc-readout"><span class="yc-label">Bomb</span><span class="yc-value" id="smart">ready</span></span>
   </div>
 </header>
 
@@ -34,8 +35,11 @@
     <section class="yc-panel">
       <h2>Controls</h2>
       <p class="muted"><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly ·
-        <kbd>Space</kbd> fire · <kbd>Enter</kbd> another run. On a touch screen your ship follows your finger and fires on its own.
-        Gamepads: stick, A or RT.</p>
+        <kbd>Space</kbd> fire · <kbd>B</kbd> smart bomb · <kbd>Enter</kbd> another run. On a touch screen your ship follows your finger and fires on its own.
+        Gamepads: stick, A or RT, Y for the bomb.</p>
+      <p class="muted"><b>Smart bomb</b>: once a stage, every bomb on screen is wiped out and every raider is hit six
+        times.</p>
+      <p class="buttons"><button type="button" id="bomb-btn" class="yc-plate yc-go">Smart bomb</button></p>
       <p><label class="auto"><input type="checkbox" id="auto"> Fire on its own</label></p>
       <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
         <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
@@ -44,7 +48,8 @@
       <h2>How it works</h2>
       <p class="muted">Your ship flies nose up and banks through frames 35 and 34 (or 1 and 2) as it strafes. Raiders come in on
         frame 18; Darts and Defenders that dive turn on their real frames to come at you. Pick up <b>P</b> for spread shot and
-        <b>S</b> for shield. Each stage ends with a capital ship: the Large Pin, then the 1998 Yodacon.</p>
+        <b>S</b> for shield. Each stage ends with a capital ship: the Large Pin, the 1998 Yodacon, and on the third stage, the Override Line,
+        where Citrus and Advisor fly with the pirates, the Override Callisto.</p>
     </section>
   </aside>
 </main>

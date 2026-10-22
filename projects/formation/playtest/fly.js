@@ -3,11 +3,13 @@
 // turn, then straight), throws out any that meet a mine, the edge or the
 // formation, and of the rest takes the one that ends nearest the stranded
 // ship. Steers through state.steer and steps the game with tick().
+// With nothing safe it phases, if it has a charge. ?mode=drift plays Drift.
 // ?stopAt=n freezes the game once n ships are in line (for screenshots).
 while (!globalThis.formation || globalThis.formation.state.phase === "loading") await sleep(100);
 const g = globalThis.formation, st = g.state, rad = (d) => (d * Math.PI) / 180;
+const q = new URLSearchParams(location.search), mode = q.get("mode"), games = Number(q.get("games") ?? 3), stopAt = Number(q.get("stopAt") ?? Infinity), out = [];
+if (mode) { const m = document.getElementById("mode"); m.value = mode; m.dispatchEvent(new Event("change")); }
 dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" })); dispatchEvent(new KeyboardEvent("keyup", { key: "Enter" }));
-const q = new URLSearchParams(location.search), games = Number(q.get("games") ?? 3), stopAt = Number(q.get("stopAt") ?? Infinity), out = [];
 function plan() {
   const me = st.me, p = st.pickup, body = st.tail.slice(2);
   let best = null;
@@ -24,6 +26,7 @@ function plan() {
     const score = (ok ? 1e6 : t * 1000) - near - Math.abs(s) * 3;
     if (!best || score > best.score) best = { s, score };
   }
+  if (best.score < 1e5 && st.charges > 0 && !(st.phased > 0)) g.phase();   // nothing safe: phase through it
   return best.s;
 }
 for (let n = 0; n < games; n++) {

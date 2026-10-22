@@ -1,6 +1,8 @@
 // A pilot for tools/drive_page.mjs: flies ?hull= (default gryphon) with the
 // arrow keys and auto-fire, lining up under the lowest enemy and sidestepping
-// any bomb about to arrive. Steps the game with tick(); reports how far it got.
+// any bomb about to arrive; when three bombs or more close in at once, or the
+// boss fills the screen with them, it uses the smart bomb. Steps the game
+// with tick(); reports how far it got.
 while (!globalThis.blockade || globalThis.blockade.state.phase === "loading") await sleep(100);
 const g = globalThis.blockade, st = g.state, hull = new URLSearchParams(location.search).get("hull") || "gryphon";
 document.getElementById("auto").checked = true;
@@ -8,7 +10,7 @@ g.newGame(hull);
 const down = new Set();
 const set = (key, on) => { if (on !== down.has(key)) { dispatchEvent(new KeyboardEvent(on ? "keydown" : "keyup", { key })); on ? down.add(key) : down.delete(key); } };
 let steps = 0;
-while (st.phase !== "over" && st.phase !== "won" && steps < 60 * 60 * 6) {
+while (st.phase !== "over" && st.phase !== "won" && steps < 60 * 60 * 10) {
   const me = st.me;
   if (st.phase !== "play" || !me?.alive) { for (const k of [...down]) set(k, false); g.tick(2); steps += 2; await sleep(20); continue; }
   // Threat: a bomb that will pass within 24 px of us in the next 0.6 s.
@@ -24,6 +26,7 @@ while (st.phase !== "over" && st.phase !== "won" && steps < 60 * 60 * 6) {
   // lowest enemy that is still well above.
   for (const e of st.enemies) if (e.t >= 0 && me.y - e.y < 150 && Math.abs(e.x - me.x) < e.k.radius + 40) dodge += e.x < me.x ? 1 : -1;
   const foe = st.enemies.filter((e) => e.t >= 0 && e.y > 0 && me.y - e.y >= 150).sort((a, b) => b.y - a.y)[0];
+  if (Math.abs(dodge) >= 3 || (st.enemies.some((e) => e.boss) && st.bombs.length > 14)) g.smartBomb();   // swamped: bomb
   const goal = dodge ? me.x + Math.sign(dodge) * 70 : foe ? foe.x : 240;
   set("ArrowLeft", goal < me.x - 6);
   set("ArrowRight", goal > me.x + 6);

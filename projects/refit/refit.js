@@ -5,6 +5,9 @@
 // 3 × 3 round it when it is swapped or caught in a blast; five in a row, an
 // L or a T leaves a Large Pin (the only Pin), which clears its row and
 // column. Reach the level's target within the moves.
+// Once a level a scrap order clears every ship of one kind, free. From level
+// 5 asteroids drift into the yard: they can't be swapped or matched, and a
+// match or blast beside one breaks it.
 import { loadShip, drawShip, frameRect } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -18,10 +21,13 @@ const COLORS = ["92 255 92", "127 233 255", "255 179 64", "255 90 70", "194 107 
 const SPECIALS = { bomb: ["conex", "yodacon"], pin: ["conex", "large-pin"] };
 const MOVES = 25, FALL = 900, TURN = 900;                         // px/s, degrees/s
 
+const ROCK_LEVEL = 5;
+const rocksFor = (level) => (level < ROCK_LEVEL ? 0 : Math.min(9, 4 + (level - ROCK_LEVEL)));
+const isRock = (t) => t?.special === "rock";
 const typesFor = (level) => Math.min(TYPES.length, 5 + Math.ceil(level / 2));   // 6, 6, 7, 7, 8, 8, 9 …
 const targetFor = (level) => 1000 + level * 500;
 
-const state = { phase: "loading", level: 1, score: 0, levelScore: 0, moves: MOVES, grid: [], sel: null, cursor: { r: 0, c: 0 },
+const state = { phase: "loading", scrap: "ready", level: 1, score: 0, levelScore: 0, moves: MOVES, grid: [], sel: null, cursor: { r: 0, c: 0 },
   busy: "", timer: 0, swap: null, cascade: 0, idle: 0, hint: null, sparks: [], best: 0 };
 let looks = {};
 
@@ -43,6 +49,10 @@ function fill() {                                                // a fresh boar
       do t = randType(); while ((c >= 2 && state.grid[r][c - 1].type === t && state.grid[r][c - 2].type === t) ||
                                 (r >= 2 && state.grid[r - 1][c].type === t && state.grid[r - 2][c].type === t));
       state.grid[r][c].type = t;
+    }
+    for (let i = 0; i < rocksFor(state.level); i++) {             // the asteroid yard: never in the top row
+      const t = state.grid[1 + Math.floor(Math.random() * (N - 1))][Math.floor(Math.random() * N)];
+      t.special = "rock"; t.rock = Math.random() * 1000;
     }
   } while (!findMove());
   state.busy = "fall";
@@ -75,6 +85,7 @@ function findMove() {
   for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) for (const [dr, dc] of [[0, 1], [1, 0]]) {
     const a = at(r, c), b = at(r + dr, c + dc);
     if (!b) continue;
+    if (isRock(a) || isRock(b)) continue;
     if (a.special || b.special) return { a: [r, c], b: [r + dr, c + dc] };
     swapCells([r, c], [r + dr, c + dc]);
     const ok = findGroups().length > 0;
@@ -89,6 +100,7 @@ function swapCells([r1, c1], [r2, c2]) { const t = state.grid[r1][c1]; state.gri
 
 function trySwap(a, b) {
   if (state.busy || state.phase !== "play" || Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) !== 1) return false;
+  if (isRock(at(...a)) || isRock(at(...b))) { play("error"); state.sel = null; return false; }
   swapCells(a, b);
   state.swap = { a, b };
   state.busy = "swap"; state.sel = null; state.hint = null; state.idle = 0; state.cascade = 0;
@@ -100,7 +112,7 @@ function trySwap(a, b) {
 function afterSwap() {
   const { a, b } = state.swap, ta = at(...a), tb = at(...b);
   const blast = new Set(), groups = findGroups();
-  for (const [p, t] of [[a, ta], [b, tb]]) if (t.special) addBlast(blast, p, t.special);
+  for (const [p, t] of [[a, ta], [b, tb]]) if (t.special && !isRock(t)) addBlast(blast, p, t.special);
   if (!groups.length && !blast.size) {                           // nothing: back it goes
     swapCells(a, b); state.busy = "swapback"; state.swap = null; play("error");
     return;
@@ -119,7 +131,7 @@ function addBlast(set, [r, c], kind) {
   for (const [r2, c2] of cells) {
     const t = at(r2, c2);
     if (!t || set.has(`${r2},${c2}`)) continue;
-    if (t.special) addBlast(set, [r2, c2], t.special);           // specials set each other off
+    if (t.special && !isRock(t)) addBlast(set, [r2, c2], t.special);   // specials set each other off
     else set.add(`${r2},${c2}`);
   }
 }
@@ -142,6 +154,10 @@ function clear(groups, blast, swapped = []) {
     }
   }
   for (const m of make) gone.delete(m.at.join(","));
+  for (const k of [...gone]) {                                   // asteroids beside anything cleared break up
+    const [r, c] = k.split(",").map(Number);
+    for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (isRock(at(r + dr, c + dc))) gone.add(`${r + dr},${c + dc}`);
+  }
   const points = gone.size * 10 * state.cascade + make.length * 50;
   state.score += points; state.levelScore += points;
   for (const k of gone) {
@@ -174,7 +190,19 @@ function settled() {
   if (!findMove()) { banner("No moves", "Reshuffling the yard.", 1.2); fill(); }
 }
 
+// The scrap order: once a level, every ship of one kind goes at once, free.
+function scrap(r, c) {
+  const t = at(r, c);
+  if (state.scrap !== "armed" || state.busy || state.phase !== "play" || !t || t.special) { if (t?.special) play("error"); return false; }
+  const all = new Set();
+  for (let r2 = 0; r2 < N; r2++) for (let c2 = 0; c2 < N; c2++) { const o = at(r2, c2); if (!o.special && o.type === t.type) all.add(`${r2},${c2}`); }
+  state.scrap = "used"; state.sel = null; state.hint = null; state.cascade = 0;
+  clear([], all);
+  return true;
+}
+
 function levelUp() {
+  state.scrap = "ready";
   const left = state.moves, bonus = left * 40;
   state.score += bonus;
   play("won");
@@ -248,6 +276,7 @@ function draw(now) {
   ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, W); ctx.clip();
   for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
     const t = state.grid[r][c];
+    if (isRock(t)) { drawRock(t, now); continue; }
     const look = t.special ? looks[t.special] : looks[t.type];
     let s = look.scale;
     if (t.dying) { s *= Math.max(0, 1 - t.dying / 0.22); ctx.globalAlpha = Math.max(0, 1 - t.dying / 0.22); }
@@ -273,7 +302,28 @@ function draw(now) {
   ctx.globalAlpha = 1;
 }
 
+// An asteroid: a lumpy grey polygon, lit from the upper left, tumbling slowly.
+function drawRock(t, now) {
+  const cx = t.x + CELL / 2, cy = t.y + CELL / 2, k = t.dying ? Math.max(0, 1 - t.dying / 0.22) : 1, spin = now / 4000 + t.rock;
+  ctx.globalAlpha = k;
+  const g = ctx.createLinearGradient(cx - 20, cy - 20, cx + 20, cy + 20);
+  g.addColorStop(0, "#8a8278"); g.addColorStop(0.55, "#4d4741"); g.addColorStop(1, "#1d1a17");
+  ctx.fillStyle = g; ctx.strokeStyle = "#141210";
+  ctx.beginPath();
+  for (let j = 0; j < 9; j++) {
+    const a = spin + (j / 9) * Math.PI * 2, r = CELL * 0.36 * k * (0.78 + 0.22 * Math.sin(t.rock * 7 + j * 2.3));
+    j ? ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r) : ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "rgb(0 0 0 / 0.35)";
+  for (let j = 0; j < 3; j++) { const a = spin + t.rock + j * 2.1; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * 8 * k, cy + Math.sin(a) * 8 * k, 2.5 * k, 0, Math.PI * 2); ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+
 function hud() {
+  $("scrap").disabled = state.scrap === "used" || state.phase !== "play";
+  $("scrap").textContent = state.scrap === "armed" ? "Scrap: pick a ship" : state.scrap === "used" ? "Scrap used" : "Scrap order";
+  $("scrap").setAttribute("aria-pressed", String(state.scrap === "armed"));
   $("level").textContent = state.level;
   $("score").textContent = state.score.toLocaleString();
   $("moves").textContent = state.moves;
@@ -300,6 +350,7 @@ function cellOf(e) {
 let down = null;
 canvas.addEventListener("pointerdown", (e) => {
   const p = cellOf(e); if (!p || state.phase !== "play") return;
+  if (state.scrap === "armed") { scrap(...p); return; }
   down = { p, x: e.clientX, y: e.clientY };
   state.cursor = { r: p[0], c: p[1] };
   if (state.sel && Math.abs(state.sel[0] - p[0]) + Math.abs(state.sel[1] - p[1]) === 1) { trySwap(state.sel, p); down = null; }
@@ -321,15 +372,18 @@ canvas.addEventListener("keydown", (e) => {
     const to = [state.cursor.r + m[0], state.cursor.c + m[1]];
     if (state.sel && at(...to)) { trySwap(state.sel, to); return; }
     state.cursor = { r: Math.max(0, Math.min(N - 1, to[0])), c: Math.max(0, Math.min(N - 1, to[1])) };
+  } else if (e.key === "x" || e.key === "X") {
+    $("scrap").click();
   } else if (e.key === " " || e.key === "Enter") {
     e.preventDefault();
     const p = [state.cursor.r, state.cursor.c];
+    if (state.scrap === "armed") { scrap(...p); return; }
     state.sel = state.sel && state.sel[0] === p[0] && state.sel[1] === p[1] ? null : p;
   }
 });
 
 function newGame() {
-  Object.assign(state, { phase: "play", level: 1, score: 0, levelScore: 0, moves: MOVES, sel: null, hint: null, idle: 0, busy: "" });
+  Object.assign(state, { phase: "play", scrap: "ready", level: 1, score: 0, levelScore: 0, moves: MOVES, sel: null, hint: null, idle: 0, busy: "" });
   $("banner").hidden = true;
   fill();
   renderYard();
@@ -362,9 +416,10 @@ const wanted = [...TYPES, SPECIALS.bomb, SPECIALS.pin];
 const ships = await Promise.all(wanted.map(([ed, slug]) => loadShip(ed, slug)));
 ships.forEach((ship, i) => { looks[i < TYPES.length ? i : i === TYPES.length ? "bomb" : "pin"] = { ship, scale: Math.min(2.2, (CELL * 0.8) / extent(ship)) }; });
 $("new").onclick = newGame;
+$("scrap").onclick = () => { if (state.scrap !== "used" && state.phase === "play") { state.scrap = state.scrap === "armed" ? "ready" : "armed"; play("select"); } };
 $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 newGame();
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.refit = { state, newGame, trySwap, findGroups, swapCells, at, N, CELL, targetFor,
+globalThis.refit = { state, newGame, trySwap, scrap, isRock, findGroups, swapCells, at, N, CELL, targetFor,
   tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

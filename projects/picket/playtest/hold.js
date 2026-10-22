@@ -3,6 +3,7 @@
 // range and not behind a nebula),
 // Gryphons first and then a rotation of the others, and spends what is left on
 // upgrades; then it launches the wave and steps the game with tick().
+// It collapses the stream when a raider gets three quarters of the way down.
 // ?stopWave=n freezes mid-wave n (for screenshots).
 while (!globalThis.picket || globalThis.picket.state.phase === "loading") await sleep(100);
 const p = globalThis.picket, st = p.state;
@@ -37,6 +38,8 @@ function spend() {
 while (st.phase !== "over") {
   if (st.phase === "build") { spend(); p.launchWave(); }
   if (st.wave >= stopWave && st.raiders.length >= 7) { st.phase = "frozen"; return `frozen in wave ${st.wave} for a screenshot`; }
+  // Collapse the stream when a raider is three quarters of the way down.
+  if (st.phase === "wave" && st.collapseReady && st.raiders.some((m) => m.seg / p.MAPS[st.map].lane.length > 0.75)) p.collapseStream();
   for (let i = 0; i < 30; i++) { p.tick(1); for (const m of st.raiders) deepest = Math.max(deepest, m.seg / p.MAPS[st.map].lane.length); }
   await sleep(0);
 }

@@ -23,8 +23,8 @@ carries twin heavy guns; the Yodacon's shots burst. Ships upgrade twice (+30%
 damage, +12% range a level) and sell for 60% of what they cost. Advisor and
 Citrus have no 1997 record, so the game sets their numbers (`KONEX_STATS`).
 
-Seven maps. **The Long Way Round** and **The Switchback (harder)** are open
-space. Five more have terrain, laid out in the source as twelve strings of
+Eight maps. **The Long Way Round** and **The Switchback (harder)** are open
+space. Six more have terrain, laid out in the source as twelve strings of
 twenty cells:
 
 | Map | Terrain |
@@ -34,6 +34,7 @@ twenty cells:
 | **The Gas Pockets** | gas pockets everywhere, entering from the top |
 | **Between Two Nebulae** | the stream snakes between two clouds |
 | **The Relay Chain** | a little of everything |
+| **The Maelstrom** | the stream spirals in round a nebula core to the station in the middle; the longest lane, flown fastest |
 
 - **Asteroids** (`#`) and **gas pockets** (`g`) can't be built on.
 - **Nebulae** (`n`) can't be built on either, and nothing fires through them:
@@ -46,6 +47,11 @@ A shorter lane is flown slower, so every map gives the picket about as long to
 shoot: the Switchback at 0.62, the terrain maps at their length over the Long
 Way Round's times a per-map speed. The best score per map is kept in
 `localStorage`.
+
+**Collapse the stream** (<kbd>C</kbd> or the button): once a wave, the
+stream goes down for three seconds. Every raider on it stops dead, nothing
+comes through the tunnel, the current stops and the channel flickers red,
+while your picket keeps firing.
 
 **The stream.** The lane is drawn as a hyperspace stream, all on the canvas
 each frame:
@@ -71,7 +77,9 @@ builds on the squares that see the most lane (in range, not behind a nebula),
 launches every wave and steps the game with `tick()`. It holds the Long Way
 Round with the station at 15/20 and falls on the Switchback around wave 10.
 On the terrain maps it holds every one, though narrowly: the station ends at
-1–6/20.
+1–6/20. Those runs came before the collapse existed. The pilot now collapses
+the stream whenever a raider is three quarters of the way down, and with it
+holds the Long Way Round at 20/20 and the Maelstrom at 12/20.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override,
 1998), GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

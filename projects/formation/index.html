@@ -18,6 +18,7 @@
     <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
     <span class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value" id="length">0</span></span>
     <span class="yc-readout"><span class="yc-label">Speed</span><span class="yc-value" id="speed">105</span></span>
+    <span class="yc-readout"><span class="yc-label">Phase</span><span class="yc-value" id="charges">1</span></span>
     <span class="yc-readout"><span class="yc-label">Best</span><span class="yc-value" id="best">0</span></span>
   </div>
 </header>
@@ -36,7 +37,13 @@
       <h2>Controls</h2>
       <p class="muted"><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> steer; the Yodacon never stops. On a touch screen,
         hold the left or right half of the field. Gamepad: stick or d-pad. <kbd>Enter</kbd> or <kbd>Space</kbd> starts.</p>
-      <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+      <p class="muted"><b>Phase</b> (<kbd>Space</kbd> or <kbd>Shift</kbd> while flying, or the button): the formation slips
+        into hyperspace for 1.2 seconds, through mines and its own line, though not the edge. One charge to start, another
+        every five rescues.</p>
+      <p><label class="yc-label" for="mode">Level</label>
+        <select id="mode" class="yc-plate"><option value="minefield">Minefield</option><option value="drift">Drift: the mines move</option></select></p>
+      <p class="buttons"><button type="button" id="phase-btn" class="yc-plate yc-go">Phase</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
     </section>
     <section class="yc-panel">
       <h2>How it works</h2>

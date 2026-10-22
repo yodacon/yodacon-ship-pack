@@ -133,12 +133,27 @@ const MAPS = [
     "....#..nn...#....#..",
     "#.g.....#.....##...#"] },
 ];
-const LONG_WAY = 66;                                      // the Long Way Round's lane, in cells
+MAPS.push({ name: "The Maelstrom", speed: 1.5, station: [11, 5],
+  lane: [[-1, 1], [18, 1], [18, 10], [1, 10], [1, 3], [15, 3], [15, 8], [4, 8], [4, 5], [11, 5]], terrain: [
+    "#..##...#....##...#.",
+    "....................",
+    "...g....g....g..#...",
+    ".................g..",
+    "..g....n.....g......",
+    "....................",
+    ".....nnnn.....#.....",
+    ".....nnnnn........g.",
+    "..#.................",
+    "...g....g...g...g...",
+    "....................",
+    "#...##....#...##...#"] });
+const LONG_WAY = 66;
+const COLLAPSE = 3;                                       // seconds the stream stays down when you collapse it                                      // the Long Way Round's lane, in cells
 const GAS_RANGE = 52, GAS_DAMAGE = 40;                    // a pocket's blast, and its damage before wave toughness
 
 // --- State ---------------------------------------------------------------------------------------
 
-const state = { phase: "loading", map: 0, gas: [], chain: [], credits: 0, hull: 20, wave: 0, towers: [], raiders: [], spawnQueue: [], beams: [],
+const state = { phase: "loading", collapse: 0, collapseReady: true, map: 0, gas: [], chain: [], credits: 0, hull: 20, wave: 0, towers: [], raiders: [], spawnQueue: [], beams: [],
   sparks: [], building: null, selected: null, fast: false, kills: 0, time: 0 };
 let pickets = {}, raiders = {}, stationArt = null, lanePts = [], laneCells = new Set();
 let blocked = new Set(), nebula = new Set(), terrainArt = null, laneLen = [], relays = [], flow = [];
@@ -273,9 +288,21 @@ function launchWave() {
   const w = waveOf(state.wave);
   state.spawnQueue = w.list.map((slug, i) => ({ slug, at: state.time + i * 0.9, toughness: w.toughness }));
   state.phase = "wave";
+  state.collapse = 0; state.collapseReady = true;
   for (const g of state.gas) g.burnt = false;              // the pockets fill again between waves
   play("send");
   readouts();
+}
+
+// Collapse the stream: once a wave, every raider on it stops dead for three
+// seconds while the relays reboot. Your picket keeps firing.
+function collapseStream() {
+  if (state.phase !== "wave" || !state.collapseReady) { play("error"); return false; }
+  state.collapseReady = false; state.collapse = COLLAPSE;
+  for (const m of state.raiders) state.sparks.push({ ring: true, x: m.x, y: m.y, r: m.k.radius, life: 0.4, max: 0.4, warp: true });
+  play("held");
+  readouts();
+  return true;
 }
 
 function spawn(q) {
@@ -346,11 +373,13 @@ addEventListener("keydown", (e) => {
   if (e.key === "u") upgrade(state.selected);
   if (e.key === "x") sell(state.selected);
   if (e.key === "f") toggleFast();
+  if (e.key === "c" || e.key === "i") collapseStream();
 });
 
 // --- Simulation ----------------------------------------------------------------------------------
 
 function moveRaider(m, dt) {
+  if (state.collapse > 0) return;                          // the stream is down: nothing moves on it
   const slow = m.slowUntil > state.time ? 0.6 : 1;
   let left = m.k.speed * slow * MAPS[state.map].pace * dt;
   while (left > 0 && m.seg < lanePts.length) {
@@ -421,12 +450,14 @@ function update(dt) {
   for (const p of state.sparks) { p.life -= dt; if (!p.ring) { p.x += p.vx * dt; p.y += p.vy * dt; } }
   for (const g of state.gas) g.flare = Math.max(0, g.flare - dt);
   const total = laneLen[laneLen.length - 1] || 1;
-  for (const f of flow) f.s = (f.s + f.v * dt) % total;  // the stream runs even between waves
+  if (!(state.collapse > 0)) for (const f of flow) f.s = (f.s + f.v * dt) % total;  // the stream runs even between waves
   state.sparks = state.sparks.filter((p) => p.life > 0);
   for (const b of state.beams) b.life -= dt;
   state.beams = state.beams.filter((b) => b.life > 0);
   if (state.phase !== "wave") return;
   state.time += dt;
+  if (state.collapse > 0) { state.collapse -= dt; if (state.collapse <= 0) readouts(); }
+  if (state.collapse > 0) for (const q of state.spawnQueue) q.at += dt;   // and nothing comes through the tunnel
   while (state.spawnQueue.length && state.spawnQueue[0].at <= state.time) spawn(state.spawnQueue.shift());
   for (const m of state.raiders) if (m.alive) moveRaider(m, dt);
   state.chain = state.chain.filter((q) => { if (q.at > state.time) return true; if (!q.g.burnt) ignite(q.g, q.toughness); return false; });
@@ -463,6 +494,8 @@ function readouts() {
   $("station").textContent = `${Math.max(0, state.hull)}/20`;
   $("wave").textContent = `${state.wave}/${WAVES}`;
   $("launch").disabled = state.phase !== "build";
+  $("collapse").disabled = state.phase !== "wave" || !state.collapseReady;
+  $("collapse").textContent = state.collapse > 0 ? "Stream down" : state.phase === "wave" && !state.collapseReady ? "Collapse used" : "Collapse stream";
   $("launch").textContent = state.phase === "wave" ? "Wave under way" : state.wave === 0 ? "Launch wave 1" : `Launch wave ${state.wave + 1}`;
 }
 
@@ -528,7 +561,9 @@ function drawGas(now) {
 // a current of motes running down it like a river, beacons pulsing in turn
 // toward the station, and the tunnel's mouth swirling where raiders come in.
 function drawStream(now) {
-  const t = now / 1000, path = () => { ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); };
+  const down = state.collapse > 0;
+  if (down) state.downAt ??= now; else state.downAt = null;
+  const t = (down ? state.downAt : now) / 1000, path = () => { ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); };
   ctx.lineJoin = "round"; ctx.lineCap = "round";
   for (const [w, c] of [[CELL - 2, "rgb(40 70 200 / 0.13)"], [CELL - 14, "rgb(70 110 255 / 0.14)"], [10, "rgb(140 180 255 / 0.16)"], [3, "rgb(200 225 255 / 0.3)"]]) {
     ctx.strokeStyle = c; ctx.lineWidth = w; path(); ctx.stroke();
@@ -556,6 +591,10 @@ function drawStream(now) {
     ctx.fillStyle = `rgb(${180 + lit * 75} ${230 + lit * 25} 255 / ${0.5 + lit * 0.5})`; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5 + lit * 1.5, 0, Math.PI * 2); ctx.fill();
   });
   ctx.lineWidth = 1;
+  if (down) {                                              // collapsed: the channel flickers red
+    ctx.strokeStyle = `rgb(255 70 50 / ${0.12 + 0.1 * Math.sin(now / 50)})`; ctx.lineWidth = CELL - 8; ctx.lineCap = "round";
+    ctx.beginPath(); lanePts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.stroke(); ctx.lineCap = "butt";
+  }
   const m = laneAt(CELL * 0.5);                            // the tunnel's mouth
   for (let i = 0; i < 4; i++) {
     const a = -t * 2.5 + i * (Math.PI / 2);
@@ -654,8 +693,9 @@ $("map").onchange = () => { state.map = Number($("map").value); newGame(); };
 $("launch").onclick = () => launchWave();
 $("new").onclick = () => newGame();
 $("fast").onclick = toggleFast;
+$("collapse").onclick = () => collapseStream();
 $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 newGame();
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.picket = { state, MAPS, pickets, clearShot, build, upgrade, launchWave, newGame, canBuild, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
+globalThis.picket = { state, MAPS, pickets, clearShot, collapseStream, build, upgrade, launchWave, newGame, canBuild, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

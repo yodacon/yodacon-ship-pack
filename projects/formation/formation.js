@@ -4,6 +4,9 @@
 // mine. Hit a mine, the edge of the field or your own formation and it's
 // over. Every hull is drawn at one length (the pack's run from 24 to 87
 // pixels), so the formation reads as a line, not a pile.
+// Phase (Space): the formation slips into hyperspace for 1.2 s and passes
+// through mines and its own line, though not the edge. One charge to start,
+// another every five rescues. On the Drift level the mines move.
 import { loadShip, drawShip, frameRect } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -19,12 +22,14 @@ const STRANDED = [["conex", "gryphon"], ["conex", "trident"], ["konex", "citrus"
   ["konex", "advisor"], ["conex", "necromancer"], ["override", "callisto"], ["conex", "tomaquad"], ["conex", "large-pin"], ["override", "yodacon"]];
 const WORTH = { "large-pin": 3, yodacon: 3 };
 
-const state = { phase: "loading", t: 0, score: 0, me: null, path: [], tail: [], pickup: null, mines: [], sparks: [], rescued: 0, cause: "" };
+const state = { mode: "minefield", charges: 1, phased: 0, phase: "loading", t: 0, score: 0, me: null, path: [], tail: [], pickup: null, mines: [], sparks: [], rescued: 0, cause: "" };
 let kinds = {}, order = 0;
 const stars = Array.from({ length: 120 }, () => ({ x: Math.random() * W, y: Math.random() * H, z: 0.2 + Math.random() * 0.8 }));
 
-function load() { try { return JSON.parse(localStorage.getItem(SAVE)) ?? {}; } catch { return {}; } }
-function save(d) { try { localStorage.setItem(SAVE, JSON.stringify(d)); } catch { /* not kept */ } }
+const saveKey = () => (state.mode === "drift" ? "formation-drift-v1" : SAVE);   // a best per level
+function load() { try { return JSON.parse(localStorage.getItem(saveKey())) ?? {}; } catch { return {}; } }
+function save(d) { try { localStorage.setItem(saveKey(), JSON.stringify(d)); } catch { /* not kept */ } }
+const PHASE = 1.2;
 const scaleOf = (k) => SIZE / k.len;
 
 // A hull's length on frame 0, from its alpha: the sprites' frames run from 32
@@ -41,7 +46,7 @@ function hullLength(ship) {
 // --- Game ----------------------------------------------------------------------------------------
 
 function newGame() {
-  Object.assign(state, { phase: "play", t: 0, score: 0, tail: [], mines: [], sparks: [], rescued: 0, cause: "" });
+  Object.assign(state, { phase: "play", t: 0, score: 0, tail: [], mines: [], sparks: [], rescued: 0, cause: "", charges: 1, phased: 0 });
   state.me = { k: kinds[LEADER.join("/")], x: W / 2, y: H * 0.7, heading: 0, speed: 105, turn: 0 };
   state.path = [{ x: state.me.x, y: state.me.y, h: 0, d: 0 }];
   order = 0;
@@ -81,6 +86,7 @@ addEventListener("keydown", (e) => {
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (state.phase === "play" && (k.startsWith("Arrow") || k === " ")) e.preventDefault();
   if ((k === "Enter" || k === " ") && state.phase !== "play") newGame();
+  else if ((k === " " || k === "Shift") && !e.repeat) phase();
   held.add(k);
 });
 addEventListener("keyup", (e) => held.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key));
@@ -91,6 +97,14 @@ canvas.addEventListener("pointerdown", (e) => {
   touch.side = e.clientX - b.left < b.width / 2 ? -1 : 1;
 });
 for (const ev of ["pointerup", "pointercancel", "pointerleave"]) canvas.addEventListener(ev, () => { touch.side = 0; });
+
+function phase() {
+  if (state.phase !== "play" || state.phased > 0 || state.charges <= 0) return false;
+  state.charges--; state.phased = PHASE;
+  burst(state.me.x, state.me.y, 18, "#b49bff", 80);
+  play("send");
+  return true;
+}
 
 function steering() {
   let s = 0;
@@ -138,10 +152,18 @@ function update(dt) {
   if (cut > 200) state.path.splice(0, cut);
 
   if (me.x < EDGE || me.x > W - EDGE || me.y < EDGE || me.y > H - EDGE) return crash("Flew off the edge of the field");
-  for (const m of state.mines) if (Math.hypot(m.x - me.x, m.y - me.y) < 15) return crash("Hit a mine");
-  for (let i = 2; i < state.tail.length; i++) {
-    const f = state.tail[i];
-    if (Math.hypot(f.x - me.x, f.y - me.y) < SIZE * 0.55) return crash(`Rammed your own ${f.k.name}`);
+  if (state.mode === "drift") for (const m of state.mines) {     // Drift: the mines wander and bounce
+    m.x += m.vx * dt; m.y += m.vy * dt;
+    if (m.x < 30 || m.x > W - 30) m.vx = -m.vx;
+    if (m.y < 30 || m.y > H - 30) m.vy = -m.vy;
+  }
+  if (state.phased > 0) state.phased -= dt;                     // phased: through mines and your own line
+  else {
+    for (const m of state.mines) if (Math.hypot(m.x - me.x, m.y - me.y) < 15) return crash("Hit a mine");
+    for (let i = 2; i < state.tail.length; i++) {
+      const f = state.tail[i];
+      if (Math.hypot(f.x - me.x, f.y - me.y) < SIZE * 0.55) return crash(`Rammed your own ${f.k.name}`);
+    }
   }
   const p = state.pickup;
   if (p && Math.hypot(p.x - me.x, p.y - me.y) < SIZE * 0.8) {
@@ -152,7 +174,9 @@ function update(dt) {
     burst(p.x, p.y, 14, "#5cff5c", 60);
     play("pickup");
     me.speed = Math.min(190, 105 + state.rescued * 4);
-    state.mines.push(freeSpot(140));                             // every rescue lays another mine
+    const mine = freeSpot(140), a = Math.random() * Math.PI * 2, v = 14 + Math.random() * 16;
+    state.mines.push({ ...mine, vx: Math.cos(a) * v, vy: Math.sin(a) * v });   // every rescue lays another mine
+    if (state.rescued % 5 === 0) { state.charges++; play("coin"); }
     placePickup();
   }
 }
@@ -193,14 +217,18 @@ function draw() {
     ctx.beginPath(); ctx.arc(p.x, p.y, SIZE * 0.8, 0, Math.PI * 2); ctx.stroke();
     drawShip(ctx, p.k.ship, p.spin, p.x, p.y, scaleOf(p.k));
   }
+  if (state.phased > 0) ctx.globalAlpha = 0.35 + 0.2 * Math.sin(state.t * 40);   // phased: a flickering ghost
   for (let i = state.tail.length - 1; i >= 0; i--) { const f = state.tail[i]; drawShip(ctx, f.k.ship, f.heading, f.x, f.y, scaleOf(f.k)); }
   const me = state.me;
   if (me && state.phase !== "over") drawShip(ctx, me.k.ship, me.heading, me.x, me.y, scaleOf(me.k) * 1.15);
+  ctx.globalAlpha = 1;
   for (const s of state.sparks) { ctx.globalAlpha = Math.min(1, (s.life / s.max) * 1.5); ctx.fillStyle = s.color; ctx.fillRect(s.x - 1, s.y - 1, 2, 2); }
   ctx.globalAlpha = 1;
 }
 
 function hud() {
+  $("charges").textContent = state.phased > 0 ? "phased" : state.charges ?? 1;
+  $("phase-btn").disabled = state.phase !== "play" || !(state.charges > 0) || state.phased > 0;
   $("score").textContent = state.score.toLocaleString();
   $("length").textContent = state.tail.length;
   $("speed").textContent = Math.round(state.me?.speed ?? 0);
@@ -232,5 +260,7 @@ $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 // tick(n) runs n simulation steps at once; steer (-1..1, or null for the
 // keys) lets a play-test fly without key events.
-globalThis.formation = { state, newGame, SIZE, EDGE, W, H, spacings,
+$("phase-btn").onclick = () => phase();
+$("mode").onchange = () => { state.mode = $("mode").value; $("mode").blur(); if (state.phase === "play") newGame(); };
+globalThis.formation = { state, newGame, phase, SIZE, EDGE, W, H, spacings,
   tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };

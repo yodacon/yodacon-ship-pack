@@ -2,7 +2,10 @@
 // up and banks through frames 35 and 34 (or 1 and 2) as it strafes; raiders
 // come in nose down on frame 18, and divers turn on their real frames to come
 // at you. Two stages, each ending with a capital ship: the Large Pin, then
-// the 1998 Yodacon.
+// the 1998 Yodacon, and a third stage, the Override Line, where konex's
+// Citrus and Advisor fly with the pirates and the Override Callisto leads.
+// A smart bomb (B), once a stage, wipes every bomb on screen and hurts every
+// raider.
 import { loadShip, loadImage, drawShip, frameIndex, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -16,7 +19,8 @@ const rad = (d) => (d * Math.PI) / 180, deg = (r) => (r * 180) / Math.PI;
 // Six to fly; konex's Advisor and Citrus get numbers in the 1997 ranges.
 const FLYABLE = [["conex", "defender"], ["conex", "gryphon"], ["conex", "trident"], ["konex", "citrus"], ["konex", "advisor"], ["override", "callisto"]];
 const ENEMIES = [["conex", "gryphon"], ["conex", "trident"], ["conex", "dart"], ["conex", "necromancer"], ["conex", "tomaquad"],
-  ["conex", "yodacon"], ["conex", "defender"], ["conex", "large-pin"], ["override", "yodacon"]];
+  ["conex", "yodacon"], ["conex", "defender"], ["conex", "large-pin"], ["override", "yodacon"],
+  ["konex", "citrus"], ["konex", "advisor"], ["override", "callisto"]];
 const KONEX_STATS = {
   advisor: { Speed: 380, Accel: 600, Maneuver: 4, Shield: 350, Armor: 150 },
   citrus: { Speed: 420, Accel: 650, Maneuver: 5, Shield: 180, Armor: 120 },
@@ -43,7 +47,13 @@ const STAGES = [
     [1, "swoop", "trident", 8], [4, "dive", "dart", 4], [8, "turret", "necromancer", 3], [11, "line", "defender", 8],
     [15, "tank", "yodacon", 1], [18, "swoop", "gryphon", 10], [22, "dive", "dart", 6], [26, "tank", "tomaquad", 3],
     [30, "turret", "necromancer", 4], [34, "swoop", "defender", 10], [38, "dive", "dart", 6], [41, "tank", "yodacon", 2] ] },
+  { name: "The Override Line", boss: "callisto98", planet: "garden", waves: [
+    [1, "swoop", "citrus", 8], [4, "line", "advisor", 6], [8, "dive", "dart", 5], [11, "turret", "necromancer", 3],
+    [14, "swoop", "trident", 10], [18, "tank", "yodacon", 2], [21, "dive", "citrus", 6], [24, "line", "advisor", 8],
+    [28, "turret", "necromancer", 4], [31, "swoop", "defender", 12], [35, "dive", "dart", 7], [38, "tank", "tomaquad", 3],
+    [41, "swoop", "citrus", 10], [44, "tank", "yodacon", 2] ] },
 ];
+const BOMB_DAMAGE = 6;
 
 // --- State ---------------------------------------------------------------------------------------
 
@@ -64,7 +74,7 @@ function newGame(slug) {
 }
 
 function startStage() {
-  Object.assign(state, { phase: "play", t: 0, wave: 0, enemies: [], shots: [], bombs: [], pickups: [], bossOut: false });
+  Object.assign(state, { phase: "play", t: 0, wave: 0, enemies: [], shots: [], bombs: [], pickups: [], bossOut: false, smart: 1 });
   state.planet = { img: planets[STAGES[state.stage].planet], x: W * 0.72, y: -120 };
   respawn();
   banner(STAGES[state.stage].name, `Stage ${state.stage + 1} of ${STAGES.length}`, 1.8);
@@ -90,6 +100,7 @@ addEventListener("keydown", (e) => {
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (state.phase === "play" && (k.startsWith("Arrow") || k === " ")) e.preventDefault();
   if (k === "Enter" && (state.phase === "over" || state.phase === "won")) showPick();
+  if ((k === "b" || k === "x") && !e.repeat) smartBomb();
   held.add(k);
 });
 addEventListener("keyup", (e) => held.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key));
@@ -99,6 +110,21 @@ const toGame = (e) => { const b = canvas.getBoundingClientRect(); return { x: ((
 canvas.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") Object.assign(touch, toGame(e)); });
 canvas.addEventListener("pointermove", (e) => { if (e.pointerType !== "mouse" && touch.x !== null) Object.assign(touch, toGame(e)); });
 for (const ev of ["pointerup", "pointercancel"]) canvas.addEventListener(ev, () => { touch.x = touch.y = null; });
+
+let padBomb = false;
+// The smart bomb: once a stage, every bomb on screen gone and every raider
+// hit for six (a boss too).
+function smartBomb() {
+  const me = state.me;
+  if (state.phase !== "play" || !me?.alive || state.smart <= 0) return false;
+  state.smart--;
+  for (const b of state.bombs) { b.dead = true; burst(b.x, b.y, 2, "#e8f4ff", 30); }
+  for (const e of state.enemies) if (e.alive && e.t >= 0 && e.y > -20) for (let i = 0; i < BOMB_DAMAGE && e.alive; i++) hitEnemy(e);
+  state.sparks.push({ ring: true, x: me.x, y: me.y, life: 0.6, max: 0.6 });
+  state.flash = 0.25;
+  play("boom");
+  return true;
+}
 
 function controls() {
   const c = { x: 0, y: 0, fire: held.has(" ") || $("auto").checked };
@@ -112,6 +138,8 @@ function controls() {
     if (Math.abs(ax) > 0.25) c.x = ax; if (Math.abs(ay) > 0.25) c.y = ay;
     if (b(14)) c.x = -1; if (b(15)) c.x = 1; if (b(12)) c.y = -1; if (b(13)) c.y = 1;
     c.fire ||= b(0) || b(2) || b(7);
+    if (b(3) && !padBomb) smartBomb();
+    padBomb = b(3);
   }
   if (touch.x !== null && state.me) {
     const dx = touch.x - state.me.x, dy = touch.y - state.me.y;
@@ -139,7 +167,7 @@ function spawnBoss() {
   const slug = STAGES[state.stage].boss, k = kinds[slug];
   state.enemies.push({ k, hp: enemyHp(k.ship) * 8, max: enemyHp(k.ship) * 8, pattern: "boss", t: 0, x: W / 2, y: -80, heading: 180, cool: 1.5, alive: true, boss: true });
   state.bossOut = true;
-  banner(k.name + (slug === "yodacon98" ? " (1998)" : ""), "Capital ship", 1.6);
+  banner(k.name + (slug === "yodacon98" ? " (1998)" : slug === "callisto98" ? " (Override)" : ""), "Capital ship", 1.6);
   play("error");
 }
 
@@ -189,7 +217,8 @@ function fly(e, dt) {
 function update(dt) {
   for (const s of stars) { s.y += 60 * s.z * dt; if (s.y > H) { s.y -= H; s.x = Math.random() * W; } }
   if (state.planet) state.planet.y += 14 * dt;
-  for (const p of state.sparks) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  if (state.flash > 0) state.flash -= dt;
+  for (const p of state.sparks) { p.life -= dt; if (!p.ring) { p.x += p.vx * dt; p.y += p.vy * dt; } }
   state.sparks = state.sparks.filter((p) => p.life > 0);
   if (state.phase !== "play") return;
   state.t += dt;
@@ -311,6 +340,7 @@ function burst(x, y, n, color, speed) {
 // --- Drawing -------------------------------------------------------------------------------------
 
 function hud() {
+  $("smart").textContent = state.smart > 0 ? "ready" : "used";
   $("score").textContent = state.score.toLocaleString();
   $("lives").textContent = Math.max(0, state.lives);
   $("stage").textContent = `${Math.min(state.stage + 1, STAGES.length)}/${STAGES.length}`;
@@ -319,6 +349,7 @@ function hud() {
 function draw() {
   ctx.fillStyle = "#04050a";
   ctx.fillRect(0, 0, W, H);
+  if (state.flash > 0) { ctx.fillStyle = `rgb(232 244 255 / ${state.flash * 2})`; ctx.fillRect(0, 0, W, H); }
   if (state.planet) { const p = state.planet; ctx.globalAlpha = 0.85; ctx.drawImage(p.img, p.x - p.img.width / 2, p.y - p.img.height / 2); ctx.globalAlpha = 1; }
   for (const s of stars) { ctx.fillStyle = `rgb(160 170 210 / ${s.z})`; ctx.fillRect(s.x, s.y, 1, s.z > 0.8 ? 2 : 1); }
   for (const p of state.pickups) {
@@ -344,7 +375,14 @@ function draw() {
   ctx.strokeStyle = "#7ef0a8"; ctx.lineWidth = 2;
   for (const s of state.shots) { ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx * 0.02, s.y - s.vy * 0.02); ctx.stroke(); }
   for (const b of state.bombs) { ctx.fillStyle = "#ff7a59"; ctx.beginPath(); ctx.arc(b.x, b.y, 3, 0, Math.PI * 2); ctx.fill(); }
-  for (const p of state.sparks) { ctx.globalAlpha = Math.min(1, (p.life / p.max) * 1.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1, p.y - 1, 2, 2); }
+  for (const p of state.sparks) {
+    if (p.ring) {                                                 // the smart bomb's shock ring
+      ctx.strokeStyle = `rgb(232 244 255 / ${p.life / p.max})`; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(p.x, p.y, (1 - p.life / p.max) * H, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
+      continue;
+    }
+    ctx.globalAlpha = Math.min(1, (p.life / p.max) * 1.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
+  }
   ctx.globalAlpha = 1;
   if (me) {                                                       // shield pips
     for (let i = 0; i < me.k.shield; i++) { ctx.fillStyle = i < me.shield ? "#8fd8ff" : "rgb(255 255 255 / 0.15)"; ctx.fillRect(8 + i * 9, H - 12, 7, 5); }
@@ -383,14 +421,15 @@ requestAnimationFrame(function frame(now) {
 const [own, foes, ...arts] = await Promise.all([
   Promise.all(FLYABLE.map(([ed, s]) => loadShip(ed, s))),
   Promise.all(ENEMIES.map(([ed, s]) => loadShip(ed, s))),
-  ...["gas", "lava"].map((t) => loadImage(new URL(`planets/${t}/large/planet.png`, PACK_BASE).href)),
+  ...["gas", "lava", "garden"].map((t) => loadImage(new URL(`planets/${t}/large/planet.png`, PACK_BASE).href)),
 ]);
 own.forEach((s) => { flyers[s.slug] = flyerOf(s); });
 foes.forEach((s, i) => { kinds[ENEMIES[i][0] === "override" ? `${s.slug}98` : s.slug] = { ship: s, slug: s.slug, name: s.name, radius: s.sprite.frame_width * 0.38 }; });
-planets = { gas: arts[0], lava: arts[1] };
+planets = { gas: arts[0], lava: arts[1], garden: arts[2] };
 $("mute").onclick = () => { setMuted(!isMuted()); $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").textContent = `Sound: ${isMuted() ? "off" : "on"}`;
 $("new").onclick = showPick;
+$("bomb-btn").onclick = () => smartBomb();
 showPick();
 // tick(n) runs n simulation steps at once, for play-tests on slow machines.
-globalThis.blockade = { state, newGame, showPick, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
+globalThis.blockade = { state, newGame, showPick, smartBomb, tick: (n = 1) => { for (let i = 0; i < n; i++) update(STEP); } };
