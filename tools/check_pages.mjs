@@ -65,6 +65,10 @@ const chrome = spawn(process.env.CHROMIUM || "chromium", [
 ], { stdio: "ignore" });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Stopped from outside: take the browser down too, and its profile.
+for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+  process.on(sig, () => { chrome.kill(); setTimeout(() => { rmSync(profile, { recursive: true, force: true }); process.exit(130); }, 300); });
+}
 
 async function browserReady() {
   for (let i = 0; i < 75; i++) {

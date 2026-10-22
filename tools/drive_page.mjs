@@ -37,6 +37,9 @@ const done = (code) => {
   setTimeout(() => { rmSync(profile, { recursive: true, force: true }); process.exit(code); }, 300);
 };
 setTimeout(() => { console.error(`timed out after ${timeout} ms`); done(1); }, timeout).unref?.();
+// Stopped from outside (Ctrl-C, kill, a timeout wrapper): take the browser down
+// too, or it keeps rendering the page with nobody watching.
+for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(sig, () => done(130));
 
 let ws;
 for (let i = 0; i < 50 && !ws; i++) {
