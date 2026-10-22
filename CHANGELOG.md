@@ -56,9 +56,11 @@ moved or renamed file a major one. A tag's files never change.
   formations, a tractor), **Broadside** (turn-based gravity artillery, a
   special shot per ship) and **Spec Sheet** (Top Trumps on the 1997 records,
   a scanner)
-- **Wake** (light cycles over five arenas, a jump over any wake) and
+- **Wake** (light cycles over five arenas, a jump over any wake),
   **Patrol** (Pac-Man in a maze of asteroid belts, four pirates with the
-  arcade's four rules, a decoy beacon)
+  arcade's four rules, a decoy beacon), **Tug** (Sokoban with derelicts,
+  ten yards generated with a known par, a tractor pull) and **Touchdown**
+  (Lunar Lander on five worlds and a Large Pin's deck, retro rockets)
 - **A new level and a special ability in every game** (Konquest's rules
   unchanged):
 

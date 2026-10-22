@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Touchdown · Yodacon Ship Pack</title>
+<meta name="description" content="Lunar Lander with the pack's ships: land upright and slow on five worlds, the last the moving deck of a Large Pin carrier. Every hull flies by its 1997 record.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="touchdown.css">
+<script type="module" src="touchdown.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Touchdown</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value" id="ships">3</span></span>
+    <span class="yc-readout"><span class="yc-label">World</span><span class="yc-value" id="world">1/5</span></span>
+    <span class="yc-readout"><span class="yc-label">Retros</span><span class="yc-value" id="retros">2</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The landing ground">
+    <canvas id="screen" width="900" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h" hidden>
+      <h2 id="pick-h">Choose your lander</h2>
+      <div id="hulls" class="hulls"></div>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Instruments</h2>
+      <div class="gauges yc-crt">
+        <span class="yc-readout"><span class="yc-label">Down</span><span class="yc-value" id="vy">0</span></span>
+        <span class="yc-readout"><span class="yc-label">Across</span><span class="yc-value" id="vx">0</span></span>
+        <span class="yc-readout"><span class="yc-label">Tilt</span><span class="yc-value" id="tilt">0°</span></span>
+        <span class="yc-readout"><span class="yc-label">Height</span><span class="yc-value" id="alt">0</span></span>
+      </div>
+      <p class="fuel"><span class="yc-label">Fuel</span><span class="bar"><span id="fuel-bar"></span></span></p>
+      <p class="muted">Land at 42 or less down, 22 or less across (10 on the ice), within 10° of upright. Green is safe.</p>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> or <kbd>Space</kbd> thrust · <kbd>Shift</kbd> or <kbd>B</kbd>
+        retro rockets · <kbd>Enter</kbd> another game.</p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Five worlds: a rocky moon; ice, where the pads are slick; a garden world with wind and air; lava, whose
+        vents throw rocks; and the deck of a Large Pin carrier moving over a gas giant. Then round again, heavier and with
+        narrower pads. Points are 50 plus 10 a second of fuel left, times the pad. Three ships.</p>
+      <p class="muted"><b>Retro rockets</b>: twice a world, kill three quarters of your speed in under half a second.</p>
+      <p class="muted">Thrust comes from each hull's <code>Accel</code>, turning from <code>Maneuver</code>, fuel from <code>Fuel</code>.</p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Turn left">◀</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Thrust">▲</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Turn right">▶</button>
+    <button type="button" class="yc-plate" data-pad="retro" aria-label="Retro rockets">RETRO</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

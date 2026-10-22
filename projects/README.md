@@ -28,6 +28,8 @@ To try code without copying anything, use the [playground](../playground/).
 | [**Spec Sheet**](spec-sheet/) | **Pure DOM card game.** Top Trumps on the 1997 records: call a line from your card, the higher number takes both; a scanner, and an Admiral who reads your card. |
 | [**Wake**](wake/) | **Canvas game.** Light cycles: four ships on a grid, each leaving an ion wake; be the last one flying. Five arenas (rocks, planets, a closing ring), rivals who count open space, and a jump over any wake. |
 | [**Patrol**](patrol/) | **Canvas game.** Pac-Man in a maze of asteroid belts: four pirates with the arcade's four rules, fuel cells that turn them to run, a Large Pin freighter for a bonus, and a decoy beacon. |
+| [**Tug**](tug/) | **Canvas puzzle.** Sokoban in a salvage yard: push every derelict into a repair berth, each hull turning through its frames to face the push. Ten generated yards with a known par, two tractor pulls a yard, free undo. |
+| [**Touchdown**](touchdown/) | **Canvas game.** Lunar Lander on five worlds (moon, ice, wind, lava) and the moving deck of a Large Pin carrier, read from its sprite. Every hull thrusts, turns and carries fuel by its record; retro rockets. |
 | [**Fleet Tactics**](fleet-tactics/) | **DOM card game.** Draft ships within a budget, then fight card by card against a computer that drafts for value and focuses fire. Hull, firepower and initiative come from each ship's 1997 record. |
 | [**Orbital Defence**](orbital-defence/) | **Canvas game.** Hold a planet against waves of ConEx ships. Fire the planet's cannon, and between waves buy Advisor patrols that orbit and fire on their own, or repair. |
 | [**Slingshot**](slingshot/) | **Canvas game.** Gravity golf with the 1997 Dart: drag back and let go, and only the planets steer it through the gate. Six levels against par. |
@@ -77,6 +79,10 @@ To try code without copying anything, use the [playground](../playground/).
 [![Wake](wake/screenshot.png)](wake/)
 
 [![Patrol](patrol/screenshot.png)](patrol/)
+
+[![Tug](tug/screenshot.png)](tug/)
+
+[![Touchdown](touchdown/screenshot.png)](touchdown/)
 
 [![Fleet Tactics](fleet-tactics/screenshot.png)](fleet-tactics/)
 

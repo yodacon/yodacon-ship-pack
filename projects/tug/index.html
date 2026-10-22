@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tug · Yodacon Ship Pack</title>
+<meta name="description" content="Sokoban in a salvage yard: push every derelict ship into a repair berth. Ten yards, two tractor pulls a yard, free undo.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="tug.css">
+<script type="module" src="tug.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Tug</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Yard</span><span class="yc-value" id="level">1/10</span></span>
+    <span class="yc-readout"><span class="yc-label">Moves</span><span class="yc-value" id="moves">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Pushes/par</span><span class="yc-value" id="pushes">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Pulls</span><span class="yc-value" id="pulls">2</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The salvage yard">
+    <canvas id="screen" width="720" height="560"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2 id="yard-name">Yard</h2>
+      <p id="derelicts" class="muted"></p>
+      <div id="levels" class="levels" aria-label="Yards"></div>
+      <p class="buttons"><button type="button" id="undo" class="yc-plate">Undo</button>
+        <button type="button" id="restart" class="yc-plate">Restart</button>
+        <button type="button" id="tug" class="yc-plate">Tug: Citrus</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Push every derelict into a berth (the dashed squares). The tug pushes one hull at a time and can't pull,
+        so a hull pushed into a corner stays there. Each derelict turns through its frames to face the way it is pushed.</p>
+      <p class="muted"><b>Tractor pull</b>: hold <kbd>Shift</kbd> as you back away from a hull and it comes with you. Two pulls
+        a yard. Every yard can be done without them; par is the fewest pushes.</p>
+      <p class="muted"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move ·
+        <kbd>Z</kbd> undo · <kbd>R</kbd> restart · <kbd>Enter</kbd> next yard. On a touch screen, swipe the yard.</p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Left">◀</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Up">▲</button>
+    <button type="button" class="yc-plate" data-pad="down" aria-label="Down">▼</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Right">▶</button>
+    <button type="button" class="yc-plate" data-pad="pull" id="pull" aria-pressed="false">PULL</button>
+    <button type="button" class="yc-plate" data-pad="undo">UNDO</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>
