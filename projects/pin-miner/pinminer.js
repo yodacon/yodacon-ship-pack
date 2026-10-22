@@ -1,6 +1,9 @@
 // Pin Miner: an idle game in plain DOM. Every ship and rock is a <div>; ships
 // show a frame of their sprite sheet through background-position, chosen from
 // their heading. Cargo and speed come from each hull's 1997 record.
+// A deep-field charter opens three rich asteroids at the far edge, ore worth
+// three times as much. Overdrive: thirty seconds of every ship at three times
+// speed and mining rate, then five minutes to recharge.
 import { loadShip, frameRect, frameIndex, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -8,6 +11,7 @@ const $ = (id) => document.getElementById(id);
 const field = $("field");
 const SAVE = "pin-miner-v1";
 const OFFLINE_CAP_S = 8 * 3600;      // earnings while away: up to eight hours
+const OVERDRIVE_S = 30, OVERDRIVE_EVERY_S = 300, RICH = 3;
 
 // The fleet you can buy. Cargo is Holds / 10 tons of ore, speed is Speed × 0.45
 // px/s (ship.json); prices rise 15% with each ship of a kind you own.
@@ -19,18 +23,20 @@ const UPGRADES = [
   { key: "laser", name: "Mining lasers", text: "Mine 25% faster", base: 60, growth: 2.2 },
   { key: "price", name: "Ore contracts", text: "Ore sells for 20% more", base: 90, growth: 2.4 },
   { key: "rocks", name: "Survey drones", text: "Find another asteroid", base: 150, growth: 2.6, max: 6 },
+  { key: "deep", name: "Deep-field charter", text: `Three rich asteroids at the far edge: ore worth ${RICH}×`, base: 20000, growth: 1, max: 1 },
 ];
 
 const ships = new Map();          // slug → loaded pack ship
 const startedAt = performance.now();
 let save, rocks = [], fleet = [], lastSave = 0, earnedThisMinute = [];
 
-const defaultSave = () => ({ credits: 30, owned: { "small-pin": 1 }, upgrades: { laser: 0, price: 0, rocks: 0 },
+const defaultSave = () => ({ credits: 30, owned: { "small-pin": 1 }, upgrades: { laser: 0, price: 0, rocks: 0, deep: 0 },
   savedAt: Date.now(), total: 0 });
 
 function load() {
   try { save = { ...defaultSave(), ...JSON.parse(localStorage.getItem(SAVE) ?? "null") }; }
   catch { save = defaultSave(); }
+  save.upgrades = { ...defaultSave().upgrades, ...save.upgrades };   // saves from before the charter
 }
 function persist() {
   save.savedAt = Date.now();
@@ -40,12 +46,16 @@ function persist() {
 // --- Numbers -----------------------------------------------------------------------------------
 
 const orePrice = () => 2 * (1 + 0.2 * save.upgrades.price);
-const mineRate = () => 2 * (1 + 0.25 * save.upgrades.laser);       // tons per second, per ship
+let overdriveUntil = 0, overdriveReady = 0;                         // performance.now() times
+const boost = () => (performance.now() < overdriveUntil ? 3 : 1);
+const baseMine = () => 2 * (1 + 0.25 * save.upgrades.laser);        // tons per second, per ship
+const mineRate = () => baseMine() * boost();
 const priceOf = (hull) => Math.round(hull.price * 1.15 ** (save.owned[hull.slug] ?? 0));
 const upgradeCost = (u) => Math.round(u.base * u.growth ** save.upgrades[u.key]);
 const statsOf = (slug) => ships.get(slug).meta.stats;
 const cargoOf = (slug) => Math.max(4, Math.round(statsOf(slug).Holds / 10));
-const speedOf = (slug) => statsOf(slug).Speed * 0.45;
+const baseSpeed = (slug) => statsOf(slug).Speed * 0.45;
+const speedOf = (slug) => baseSpeed(slug) * boost();
 
 /** The average flight from the station to an asteroid, in px. */
 function meanDistance() {
@@ -54,9 +64,9 @@ function meanDistance() {
   return rocks.reduce((s, r) => s + Math.hypot(r.x - home.x, r.y - home.y), 0) / rocks.length;
 }
 
-/** Credits a ship earns per second on average: one round trip, mined and sold. */
+/** Credits a ship earns per second on average: one round trip, mined and sold (overdrive aside). */
 function yieldPerSecond(slug, distance = meanDistance()) {
-  const trip = 2 * distance / speedOf(slug) + cargoOf(slug) / mineRate();
+  const trip = 2 * distance / baseSpeed(slug) + cargoOf(slug) / baseMine();
   return cargoOf(slug) * orePrice() / trip;
 }
 
@@ -81,6 +91,16 @@ function layoutRocks() {
     field.append(el);
     return { el, x, y };
   });
+  if (save.upgrades.deep) for (let i = 0; i < 3; i++) {     // the deep field: far right, glowing, rich
+    const el = document.createElement("div");
+    el.className = "rock rich";
+    el.title = `Rich ore: ${RICH}× the price`;
+    el.innerHTML = `<img src="${new URL("planets/lava/small/planet.png", PACK_BASE).href}" width="38" height="38" alt="">`;
+    const x = w * 0.95, y = h * (0.2 + 0.3 * i);
+    el.style.left = `${x}px`; el.style.top = `${y}px`;
+    field.append(el);
+    rocks.push({ el, x, y, rich: true });
+  }
 }
 
 function addShipSprite(slug) {
@@ -134,7 +154,7 @@ function update(dt) {
       u.heading = (u.heading + dt * 30) % 360;     // turning slowly while the lasers work
       if (u.cargo >= cargoOf(u.slug)) u.state = "home";
     } else if (u.state === "home" && moveTowards(u, home.x + 30, home.y, dt)) {
-      const earned = Math.round(u.cargo * orePrice());
+      const earned = Math.round(u.cargo * orePrice() * (u.rock.rich ? RICH : 1));
       sell(earned, home);
       u.cargo = 0;
       u.rock = rocks[Math.floor(Math.random() * rocks.length)];
@@ -176,7 +196,7 @@ function buyUpgrade(u) {
   if (save.credits < cost || (u.max && save.upgrades[u.key] >= u.max)) { play("error"); return false; }
   save.credits -= cost;
   save.upgrades[u.key]++;
-  if (u.key === "rocks") { layoutRocks(); for (const s of fleet) s.rock = rocks[Math.floor(Math.random() * rocks.length)]; }
+  if (u.key === "rocks" || u.key === "deep") { layoutRocks(); for (const s of fleet) s.rock = rocks[Math.floor(Math.random() * rocks.length)]; }
   logLine(`${u.name} ${save.upgrades[u.key]}.`);
   play("send");
   persist(); renderShop(); hud();
@@ -188,7 +208,7 @@ function renderShop() {
     const ship = ships.get(hull.slug);
     const li = document.createElement("li");
     li.innerHTML = `<img src="${ship.urls.yard}" alt="${ship.name}, in the shipyard">
-      <span class="what"><b>${ship.name}</b> × ${save.owned[hull.slug] ?? 0}<br>${cargoOf(hull.slug)} t, ${Math.round(speedOf(hull.slug))} px/s,
+      <span class="what"><b>${ship.name}</b> × ${save.owned[hull.slug] ?? 0}<br>${cargoOf(hull.slug)} t, ${Math.round(baseSpeed(hull.slug))} px/s,
       ~${(yieldPerSecond(hull.slug) * 60).toFixed(0)}/min</span>`;
     const b = Object.assign(document.createElement("button"), { type: "button", className: "yc-plate", textContent: `Buy ${priceOf(hull)}` });
     b.disabled = save.credits < priceOf(hull);
@@ -199,7 +219,7 @@ function renderShop() {
   $("upgrades").replaceChildren(...UPGRADES.map((u) => {
     const li = document.createElement("li");
     const maxed = u.max && save.upgrades[u.key] >= u.max;
-    li.innerHTML = `<img src="${new URL(u.key === "rocks" ? "planets/rocky/medium/planet.png" : "conex/ships/yodacon/target.png", PACK_BASE).href}" alt="">
+    li.innerHTML = `<img src="${new URL(u.key === "rocks" ? "planets/rocky/medium/planet.png" : u.key === "deep" ? "planets/lava/medium/planet.png" : "conex/ships/yodacon/target.png", PACK_BASE).href}" alt="">
       <span class="what"><b>${u.name}</b> ${save.upgrades[u.key]}${u.max ? `/${u.max}` : ""}<br>${u.text}</span>`;
     const b = Object.assign(document.createElement("button"), { type: "button", className: "yc-plate",
       textContent: maxed ? "Done" : `Buy ${upgradeCost(u)}` });
@@ -224,6 +244,26 @@ function hud() {
     const cost = Number(b.textContent.replace(/\D/g, ""));
     if (cost) b.disabled = save.credits < cost;
   }
+}
+
+// Overdrive: thirty seconds at three times speed and mining, then five
+// minutes to recharge.
+function overdrive() {
+  const now = performance.now();
+  if (now < overdriveReady) { play("error"); return false; }
+  overdriveUntil = now + OVERDRIVE_S * 1000;
+  overdriveReady = now + (OVERDRIVE_S + OVERDRIVE_EVERY_S) * 1000;
+  field.classList.add("overdrive");
+  setTimeout(() => field.classList.remove("overdrive"), OVERDRIVE_S * 1000);
+  logLine("Overdrive: every ship at three times speed for thirty seconds.");
+  play("send");
+  overdriveHud();
+  return true;
+}
+function overdriveHud() {
+  const now = performance.now(), b = $("overdrive");
+  b.disabled = now < overdriveReady;
+  b.textContent = now < overdriveUntil ? `Overdrive: ${Math.ceil((overdriveUntil - now) / 1000)} s` : now < overdriveReady ? `Recharging: ${Math.ceil((overdriveReady - now) / 1000)} s` : "Overdrive";
 }
 
 function logLine(text) {
@@ -260,12 +300,13 @@ function frame(now) {
   last = now;
   requestAnimationFrame(frame);
 }
-setInterval(hud, 1000);
+setInterval(() => { hud(); overdriveHud(); }, 1000);
+$("overdrive").addEventListener("click", overdrive);
 new ResizeObserver(() => { if (rocks.length) layoutRocks(); }).observe(field);
 
 // For play-test scripts (playtest/).
 globalThis.pinMiner = { get save() { return save; }, get fleet() { return fleet; }, HULLS, UPGRADES,
-  buyShip, buyUpgrade, priceOf, upgradeCost, yieldPerSecond };
+  buyShip, buyUpgrade, priceOf, upgradeCost, yieldPerSecond, overdrive, get rocks() { return rocks; } };
 
 await Promise.all(HULLS.map(async (h) => ships.set(h.slug, await loadShip("conex", h.slug, PACK_BASE))));
 load();

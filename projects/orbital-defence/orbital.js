@@ -1,7 +1,10 @@
 // Orbital Defence: hold a planet against waves of ConEx ships.
 // Canvas 2D on a fixed 60 Hz step. Enemies are pack ships whose toughness and
 // speed come from their 1997 records; the planet is the pack's generated
-// garden world; shots are the pack's drawn missile.
+// garden world; shots are the pack's drawn missile. Once a wave the planet
+// can loose a shockwave: a ring out to 220 px that hits every raider it
+// passes and throws it back. The Ice world level has a moon in orbit that
+// stops raiders and your shots alike, faster raiders, and the 1998 Yodacon.
 import { loadShip, loadWeapon, drawShip, loadImage, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -10,6 +13,11 @@ const canvas = $("screen"), ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height, CX = W / 2, CY = H / 2;
 const STEP = 1 / 60;
 const DEFENDER_COST = 50, REPAIR_COST = 30, REPAIR_HP = 20, MAX_HP = 100, MAX_PATROLS = 6;
+const WAVE_R = 220, WAVE_SPEED = 330, MOON_ORBIT = 150, MOON_R = 22;
+const LEVELS = {
+  garden: { name: "Garden world", planet: "garden", pace: 1, boss: "yodacon" },
+  ice: { name: "Ice world, with a moon", planet: "ice", pace: 1.35, boss: "yodacon98", moon: true },
+};
 
 // The attackers, weakest first. hp from Shield + Armor, speed from Speed
 // (ship.json stats), reward to match. A wave mixes the hulls unlocked so far.
@@ -20,7 +28,8 @@ const HULLS = [
 ];
 
 const sprites = new Map();
-let planetImg, missile, defenderShip;
+let planetImg, missile, defenderShip, planets = {}, moonImg;
+let level = "garden";
 let game;
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -29,7 +38,9 @@ const headingTo = (from, to) => (Math.atan2(to.x - from.x, -(to.y - from.y)) * 1
 
 function newGame() {
   game = { wave: 0, hp: MAX_HP, credits: 100, score: 0, phase: "build", enemies: [], shots: [],
-    defenders: [], booms: [], cooldown: 0, toSpawn: [], spawnTimer: 0, over: false };
+    defenders: [], booms: [], cooldown: 0, toSpawn: [], spawnTimer: 0, over: false, level, shock: true, ring: null,
+    moon: LEVELS[level].moon ? { angle: 0, x: CX + MOON_ORBIT, y: CY } : null };
+  planetImg = planets[LEVELS[level].planet];
   $("banner").hidden = true;
   updateHud();
 }
@@ -41,7 +52,7 @@ function enemyFrom(slug) {
   const s = ship.meta.stats;
   // Tougher every wave: a fifth more health per wave after the first.
   const hp = Math.max(2, Math.round((s.Shield + s.Armor) / 120 * (1 + (game.wave - 1) * 0.2)));
-  return { ship, slug, name: ship.name, hp, maxHp: hp, speed: 26 + s.Speed * 0.12,
+  return { ship, slug, name: slug === "yodacon98" ? "1998 Yodacon" : ship.name, hp, maxHp: hp, speed: (26 + s.Speed * 0.12) * LEVELS[game.level].pace,
     reward: 5 + hp * 2, damage: Math.min(30, 4 + Math.round(hp / 2)), radius: ship.sprite.frame_width / 2.6 };
 }
 
@@ -53,7 +64,8 @@ function launchWave() {
   const count = 4 + game.wave * 2;
   game.toSpawn = Array.from({ length: count }, (_, i) =>
     HULLS[Math.min(unlocked - 1, Math.floor(Math.random() ** 1.6 * unlocked))][1]);
-  if (game.wave % 5 === 0) game.toSpawn.push("yodacon");   // a boss every fifth wave
+  if (game.wave % 5 === 0) game.toSpawn.push(LEVELS[game.level].boss);   // a boss every fifth wave
+  game.shock = true;
   game.spawnTimer = 0;
   play("endTurn");
   showRoster();
@@ -82,6 +94,17 @@ function shoot(from, angle, speed, power) {
   game.shots.push({ x: from.x, y: from.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
     life: 1.4, power, heading: (angle * 180 / Math.PI + 90 + 360) % 360 });
   play("shot");
+}
+
+// The shockwave: once a wave, a ring from the planet out to 220 px. Each
+// raider it passes takes two hits and is thrown 70 px back.
+function shockwave() {
+  if (game.over || game.phase !== "wave" || !game.shock) { play("error"); return false; }
+  game.shock = false;
+  game.ring = { r: 50, hit: new Set() };
+  play("boom");
+  updateHud();
+  return true;
 }
 
 function buyDefender() {
@@ -113,6 +136,22 @@ function update(dt) {
       game.spawnTimer = Math.max(0.25, 0.9 - game.wave * 0.07);
     }
   }
+  if (game.moon) {                                    // the moon: a slow orbit, a wall for everyone
+    game.moon.angle += dt * 0.35;
+    game.moon.x = CX + Math.cos(game.moon.angle) * MOON_ORBIT;
+    game.moon.y = CY + Math.sin(game.moon.angle) * MOON_ORBIT;
+  }
+  if (game.ring) {
+    game.ring.r += WAVE_SPEED * dt;
+    for (const e of game.enemies) {
+      if (e.dead || game.ring.hit.has(e) || Math.abs(Math.hypot(e.x - CX, e.y - CY) - game.ring.r) > 14) continue;
+      game.ring.hit.add(e);
+      const d = Math.hypot(e.x - CX, e.y - CY) || 1;
+      e.x += ((e.x - CX) / d) * 70; e.y += ((e.y - CY) / d) * 70;
+      hurt(e, 2);
+    }
+    if (game.ring.r > WAVE_R) game.ring = null;
+  }
   // Enemies spiral in: mostly towards the planet, partly around it.
   for (const e of game.enemies) {
     const dx = CX - e.x, dy = CY - e.y, d = Math.hypot(dx, dy) || 1;
@@ -121,6 +160,12 @@ function update(dt) {
     e.vy = (dy / d * inward + dx / d * around) * e.speed;
     e.x += e.vx * dt; e.y += e.vy * dt;
     e.heading = (Math.atan2(e.vx, -e.vy) * 180 / Math.PI + 360) % 360;
+    if (game.moon && Math.hypot(e.x - game.moon.x, e.y - game.moon.y) < MOON_R + e.radius * 0.5) {   // flew into the moon
+      e.dead = true;
+      boom(e.x, e.y, 20);
+      play("hit");
+      continue;
+    }
     if (d < 40 + e.radius * 0.5) {                     // reached the planet
       game.hp -= e.damage;
       e.dead = true;
@@ -144,19 +189,11 @@ function update(dt) {
   // Shots fly, and hit.
   for (const s of game.shots) {
     s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
+    if (game.moon && Math.hypot(s.x - game.moon.x, s.y - game.moon.y) < MOON_R) { s.spent = true; boom(s.x, s.y, 5); continue; }
     for (const e of game.enemies) {
       if (!e.dead && !s.spent && Math.hypot(s.x - e.x, s.y - e.y) < e.radius) {
         s.spent = true;
-        e.hp -= s.power;
-        if (e.hp <= 0) {
-          e.dead = true;
-          game.credits += e.reward;
-          game.score += e.reward * game.wave;
-          boom(e.x, e.y, 18 + e.radius);
-          play("boom");
-        } else {
-          boom(s.x, s.y, 6);
-        }
+        if (!hurt(e, s.power)) boom(s.x, s.y, 6);
       }
     }
   }
@@ -177,6 +214,18 @@ function update(dt) {
     banner(`Wave ${game.wave} held`, "Spend your credits, then launch the next wave.", false, 1.6);
   }
   updateHud();
+}
+
+// Damage a raider; true if that finished it.
+function hurt(e, n) {
+  e.hp -= n;
+  if (e.hp > 0) return false;
+  e.dead = true;
+  game.credits += e.reward;
+  game.score += e.reward * game.wave;
+  boom(e.x, e.y, 18 + e.radius);
+  play("boom");
+  return true;
 }
 
 function boom(x, y, size) { game.booms.push({ x, y, size, t: 0, life: 0.45 }); }
@@ -204,6 +253,11 @@ function render() {
   ctx.arc(CX, CY, 54, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (game.hp / MAX_HP));
   ctx.stroke();
   ctx.lineWidth = 1;
+  if (game.moon) ctx.drawImage(moonImg, game.moon.x - MOON_R - 2, game.moon.y - MOON_R - 2, MOON_R * 2 + 4, MOON_R * 2 + 4);
+  if (game.ring) {                                     // the shockwave
+    ctx.strokeStyle = `rgba(127,233,255,${1 - game.ring.r / WAVE_R})`; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(CX, CY, game.ring.r, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
+  }
   for (const def of game.defenders) drawShip(ctx, defenderShip, def.heading, def.x, def.y, 1);
   for (const e of game.enemies) {
     drawShip(ctx, e.ship, e.heading, e.x, e.y, 1);
@@ -230,6 +284,8 @@ function updateHud() {
   $("launch").disabled = game.over || game.phase !== "build";
   $("buy").disabled = game.over || game.credits < DEFENDER_COST || game.defenders.length >= MAX_PATROLS;
   $("repair").disabled = game.over || game.credits < REPAIR_COST || game.hp >= MAX_HP;
+  $("shock").disabled = game.over || game.phase !== "wave" || !game.shock;
+  $("shock").textContent = game.phase === "wave" && !game.shock ? "Shockwave used" : "Shockwave";
   $("phase").lastChild.textContent = game.over ? "Planet lost" : game.phase === "build"
     ? `Between waves: build, then launch wave ${game.wave + 1}` : `Wave ${game.wave}: ${game.enemies.length + game.toSpawn.length} incoming`;
 }
@@ -269,11 +325,14 @@ canvas.addEventListener("pointerdown", (e) => {
 $("launch").addEventListener("click", launchWave);
 $("buy").addEventListener("click", buyDefender);
 $("repair").addEventListener("click", repair);
+$("shock").addEventListener("click", shockwave);
+$("level").addEventListener("change", () => { level = $("level").value; $("level").blur(); newGame(); });
 document.addEventListener("keydown", (e) => {
   if (e.target.closest?.("input, textarea")) return;
   if (e.key === " ") { e.preventDefault(); launchWave(); }
   else if (e.key === "d" || e.key === "D") buyDefender();
   else if (e.key === "r" || e.key === "R") repair();
+  else if (e.key === "s" || e.key === "S") shockwave();
 });
 const showMute = () => { $("mute").textContent = isMuted() ? "Sound: off" : "Sound: on"; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").addEventListener("click", () => { setMuted(!isMuted()); showMute(); });
@@ -290,15 +349,18 @@ function frame(now) {
 }
 
 // For play-test scripts (playtest/): read-only access to the game.
-globalThis.orbital = { get game() { return game; }, fireAt, launchWave, buyDefender, repair };
+globalThis.orbital = { get game() { return game; }, fireAt, launchWave, buyDefender, repair, shockwave };
 
-const [planet, weapon, defender] = await Promise.all([
+const [planet, weapon, defender, icePlanet, moon] = await Promise.all([
   loadImage(new URL("planets/garden/large/planet.png", PACK_BASE).href),
   loadWeapon("missile-repeater", PACK_BASE),
   loadShip("konex", "advisor", PACK_BASE),   // your patrols: Advisors, so they never look like the enemy
+  loadImage(new URL("planets/ice/large/planet.png", PACK_BASE).href),
+  loadImage(new URL("planets/rocky/medium/planet.png", PACK_BASE).href),
+  (async () => sprites.set("yodacon98", await loadShip("override", "yodacon", PACK_BASE)))(),
   ...HULLS.map(async ([edition, slug]) => sprites.set(slug, await loadShip(edition, slug, PACK_BASE))),
 ]);
-planetImg = planet; missile = weapon; defenderShip = defender;
+planets = { garden: planet, ice: icePlanet }; moonImg = moon; missile = weapon; defenderShip = defender;
 newGame();
 banner("Orbital Defence", "Buy a patrol or two, then launch the first wave.", false, 2.5);
 requestAnimationFrame(frame);

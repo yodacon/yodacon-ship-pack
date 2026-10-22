@@ -9,7 +9,7 @@ To try code without copying anything, use the [playground](../playground/).
 | Project | What it is |
 | --- | --- |
 | [**Konquest**](konquest/) | **DOM + Canvas game.** KDE's Konquest with its exact rules, read from the source and tested rule by rule: send fleets between planets, production, kill percentages, three computer players. The fleets fly as pack ships. |
-| [**ConEx Courier**](courier/) | **Canvas + DOM game.** *Escape Velocity* in miniature: fly between four systems, trade five goods, carry courier missions, fight Override pirates and buy any of the ten 1997 hulls, with numbers from their `shïp` records. Work up to a Large Pin. |
+| [**ConEx Courier**](courier/) | **Canvas + DOM game.** *Escape Velocity* in miniature: fly between five systems, trade five goods, carry courier missions, fight Override pirates and buy any of the ten 1997 hulls, with numbers from their `shïp` records. Work up to a Large Pin. |
 | [**Gauntlet**](gauntlet/) | **Canvas game.** Pick any of the thirteen designs and fight the others one by one, weakest first, ending with the 1998 Yodacon. Every hull flies by its record. One or two players, keyboard or gamepads (Gamepad API). |
 | [**Rally**](rally/) | **Canvas game.** Three laps through gates around planets against five computer racers; every hull handles by its record. A following camera, a minimap, three tracks and best times. |
 | [**Convoy**](convoy/) | **Canvas + DOM game.** Escort a Large Pin freighter through six pirate raids with two wingmen who take EV-style orders. The target panel shows each ship's 1997 targeting picture; hails come with comm portraits. |

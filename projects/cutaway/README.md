@@ -12,14 +12,16 @@ runs out. Ten rounds; faster answers and streaks score more.
 | Technique | plain DOM; a CSS gradient for the scanning slice, `scaleX(-1)` for mirrored rounds |
 | Pictures | three kinds per ship from the pack: target (the question), comm (the answers), yard (the reveal) |
 | Ships | every ship in `catalog.json` with a target picture, all three editions |
-| Rounds | 1–3 the whole picture; then a scanning slice; then mirrored; then both |
-| Keys | <kbd>1</kbd>–<kbd>4</kbd> answer |
+| Rounds | 1–3 the whole picture; then a scanning slice; then mirrored; then both. **Expert** adds rounds 11–15: silhouettes, the ship's sprite at a random heading, blacked out with CSS `filter: brightness(0)` and a green rim |
+| 50/50 | once a game, strikes out two wrong answers |
+| Keys | <kbd>1</kbd>–<kbd>4</kbd> answer, <kbd>5</kbd> or <kbd>F</kbd> 50/50 |
 
 Some pictures are shared in the originals: the three 1997 Pins have one target
 picture, as do the 1998 Pins, and the 1/4 Defender has the Defender's. So no
 two answers share a name, a Pin never stands against another Pin, and the 1/4
 Defender sits out. `playtest/spotter.js` plays a full game and checks that
-every round offers four distinct names with the right one among them.
+every round offers four distinct names with the right one among them. It uses
+the 50/50 on round 3; `?expert=1` plays the fifteen-round Expert game.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997),
 GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

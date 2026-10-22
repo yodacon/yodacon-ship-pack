@@ -2,6 +2,9 @@
 // Canvas flight between four systems, landing, trade, courier missions, a
 // shipyard and pirates. The ten ConEx 1.2 hulls are for sale, with their
 // numbers from the 1997 shïp records; the pirates fly the 1998 Override ships.
+// Past Ember lies the Override Reach: the richest market, and pirates every
+// time, the 1998 Yodacon and Callisto among them. Once a launch you can make
+// an emergency jump (Shift+J or E): from anywhere, for two fuel.
 import { loadShip, loadShipMeta, loadImage, drawShip, PACK_BASE } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -39,11 +42,16 @@ const SYSTEMS = [
       blurb: "A hollowed asteroid. The pirates drink here too." },
     { name: "Cinder", type: "lava", size: "medium", x: 340, y: -220, prices: "HHMML",
       blurb: "Foundries on the day side, dormitories on the night side." } ] },
-  { name: "Ember", danger: 0.8, links: [2, 0], planets: [
+  { name: "Ember", danger: 0.8, links: [2, 0, 4], planets: [
     { name: "Ember", type: "lava", size: "large", x: 0, y: 0, prices: "MLLHH",
       blurb: "A furnace world that pays well for anything that arrives intact." },
     { name: "Ash", type: "rocky", size: "small", x: 420, y: 330, prices: "HMLMH",
       blurb: "A clinic station on a cinder of a moon." } ] },
+  { name: "Override Reach", danger: 1, links: [3], pirates: ["defender", "necromancer", "callisto", "yodacon"], planets: [
+    { name: "Garden Rest", type: "garden", size: "large", x: -180, y: -200, prices: "HHHLH",
+      blurb: "Green and quiet, the last port before the Override fleet's anchorage. Everything is short here but electronics." },
+    { name: "Outpost 98", type: "ice", size: "medium", x: 360, y: 240, prices: "HHHHL",
+      blurb: "The Override's own trading post. They pay for anything from outside, and sell luxuries cheap to whoever gets this far." } ] },
 ];
 const PLANETS = SYSTEMS.flatMap((s, si) => s.planets.map((p) => Object.assign(p, { system: si })));
 
@@ -120,10 +128,12 @@ async function spawnPirates() {
   let n = Math.random() < danger ? 1 : 0;
   if (n && Math.random() < danger * 0.6) n++;
   for (let i = 0; i < n; i++) {
-    const slug = PIRATES[Math.floor(Math.random() * PIRATES.length)];
+    const kinds = SYSTEMS[currentSystem()].pirates ?? PIRATES;
+    const slug = kinds[Math.floor(Math.random() * kinds.length)];
     const meta = await loadShipMeta("override", slug);
     const h = hullStats(meta, true);
     const a = Math.random() * Math.PI * 2;
+    if (slug === "yodacon") { h.name = "1998 Yodacon"; h.speed *= 1.6; }   // its 1998 Speed is 100: give it a chance to catch you
     pirates.push({ ...h, edition: "override", x: Math.cos(a) * 750, y: Math.sin(a) * 750, vx: 0, vy: 0, heading: 0,
       hp: h.shield + h.armour, max: h.shield + h.armour, cool: 1 + Math.random(), sprite: await sprite("override", slug) });
   }
@@ -271,17 +281,24 @@ function takeOff() {
   $("port").hidden = true;
   const a = Math.random() * 360, [dx, dy] = dir(a);
   spawnMe(p.x + dx * (planetRadius(p) + 30), p.y + dy * (planetRadius(p) + 30), a, dx * 60, dy * 60);
+  emergencyUsed = false;
   spawnPirates();
   play("send");
   hud();
 }
 
-function tryJump() {
+// An emergency jump goes from anywhere, close to a planet or not, for two
+// fuel; once a launch.
+let emergencyUsed = false;
+function tryJump(emergency = false) {
   if (landedAt) { say("Take off first."); play("error"); return; }
   const to = Number($("jump-to").value);
-  if (Math.hypot(me.x, me.y) < JUMP_RADIUS) { say(`Fly clear of the planets to jump: ${Math.round(JUMP_RADIUS - Math.hypot(me.x, me.y))} more.`); play("error"); return; }
-  if (state.fuel < 1) { say("No fuel. Land and refuel."); play("error"); return; }
-  state.fuel--; state.day++; state.system = to;
+  if (emergency && emergencyUsed) { say("The emergency jump drive is still cooling. Land to reset it."); play("error"); return; }
+  if (!emergency && Math.hypot(me.x, me.y) < JUMP_RADIUS) { say(`Fly clear of the planets to jump: ${Math.round(JUMP_RADIUS - Math.hypot(me.x, me.y))} more (or Shift+J, an emergency jump for 2 fuel).`); play("error"); return; }
+  const cost = emergency ? 2 : 1;
+  if (state.fuel < cost) { say(emergency ? "An emergency jump takes 2 fuel." : "No fuel. Land and refuel."); play("error"); return; }
+  if (emergency) { emergencyUsed = true; burst(me.x, me.y, 30, "#b49bff"); }
+  state.fuel -= cost; state.day++; state.system = to;
   // Arrive on the side facing where you came from, heading in.
   const a = Math.random() * 360, [dx, dy] = dir(a);
   spawnMe(dx * 800, dy * 800, (a + 180) % 360, -dx * 120, -dy * 120);
@@ -502,7 +519,8 @@ document.addEventListener("keydown", (e) => {
   const k = KEYMAP[e.key.length === 1 ? e.key.toLowerCase() : e.key];
   if (k) { keys.add(k); e.preventDefault(); return; }
   if (e.key === "l" || e.key === "L") landedAt ? null : tryLand();
-  else if (e.key === "j" || e.key === "J") tryJump();
+  else if (e.key === "j" || e.key === "J") tryJump(e.shiftKey);
+  else if (e.key === "e" || e.key === "E") tryJump(true);
 });
 document.addEventListener("keyup", (e) => { const k = KEYMAP[e.key.length === 1 ? e.key.toLowerCase() : e.key]; if (k) keys.delete(k); });
 window.addEventListener("blur", () => keys.clear());
@@ -511,7 +529,7 @@ for (const b of document.querySelectorAll("#pad [data-key]")) {
   const off = () => { keys.delete(b.dataset.key); b.classList.remove("down"); };
   b.addEventListener("pointerdown", on); b.addEventListener("pointerup", off); b.addEventListener("pointercancel", off); b.addEventListener("pointerleave", off);
 }
-$("pad").addEventListener("click", (e) => { const t = e.target.closest("[data-tap]")?.dataset.tap; if (t === "land") tryLand(); else if (t === "jump") tryJump(); });
+$("pad").addEventListener("click", (e) => { const t = e.target.closest("[data-tap]")?.dataset.tap; if (t === "land") tryLand(); else if (t === "jump") tryJump(); else if (t === "ejump") tryJump(true); });
 $("port").addEventListener("click", portClick);
 $("takeoff").addEventListener("click", takeOff);
 const showMute = () => { $("mute").textContent = isMuted() ? "Sound: off" : "Sound: on"; $("mute").setAttribute("aria-pressed", String(isMuted())); };
@@ -531,7 +549,7 @@ function frame(t) {
 // For play-test scripts (playtest/).
 globalThis.courier = {
   get state() { return state; }, get me() { return me; }, get landedAt() { return landedAt; }, get pirates() { return pirates; },
-  get offers() { return offers; }, keys, PLANETS, SYSTEMS, GOODS, hulls, price, jumps, JUMP_RADIUS, LAND_REACH, LAND_SPEED,
+  get offers() { return offers; }, keys, tryJump, PLANETS, SYSTEMS, GOODS, hulls, price, jumps, JUMP_RADIUS, LAND_REACH, LAND_SPEED,
 };
 
 // Load everything the screen draws, then put the player in port.

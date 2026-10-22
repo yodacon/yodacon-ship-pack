@@ -26,7 +26,10 @@
     <h2 id="ctl-h" class="sr-title">Orders</h2>
     <p id="hint" class="hint"></p>
     <p class="buttons"><button type="button" id="go" class="yc-plate yc-go">Battle</button>
+      <button type="button" id="broadside" class="yc-plate yc-go" aria-pressed="false" hidden>Broadside</button>
       <button type="button" id="again" class="yc-plate" hidden>New draft</button>
+      <label class="level">Level <select id="level" class="yc-plate"><option value="standard">Standard</option>
+        <option value="admiral">Admiral (they have 72)</option></select></label>
       <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
     <ol id="log" class="log yc-crt" aria-live="polite"></ol>
   </section>

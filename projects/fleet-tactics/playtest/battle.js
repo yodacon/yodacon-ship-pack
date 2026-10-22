@@ -1,8 +1,12 @@
 // A tactician for tools/drive_page.mjs: plays six full games through the
 // page. Drafts the most hull and firepower per credit by clicking cards,
 // presses Battle, and on each of its turns clicks a target: something it
-// can finish off, else the enemy with the most firepower.
+// can finish off, else the enemy with the most firepower. It fires its
+// broadside early at the toughest enemy. ?level=admiral plays Admiral.
 const out = [];
+const lv = new URLSearchParams(location.search).get("level");
+if (lv) { const sel = document.getElementById("level"); sel.value = lv; sel.dispatchEvent(new Event("change")); await sleep(100); }
+let broadsides = 0;
 const cards = (row) => [...document.querySelectorAll(`#${row} .card`)];
 const num = (b, sym) => Number(b.textContent.match(new RegExp(`${sym} (\\d+)`))[1]);
 let wins = 0;
@@ -15,6 +19,12 @@ for (let game = 1; game <= 6; game++) {
   for (let k = 0; k < 600 && tactics.phase === "battle"; k++) {
     const targets = cards("enemy").filter((b) => b.classList.contains("targetable"));
     if (targets.length) {
+      // Broadside the toughest enemy once, when the fleet is still whole.
+      if (tactics.broadside === "ready" && tactics.mine.filter((u) => u.hp > 0).length >= 3) {
+        document.getElementById("broadside").click();
+        targets.sort((a, b) => num(b, "♦") - num(a, "♦"))[0].click(); broadsides++; turns++;
+        await sleep(120); continue;
+      }
       const atk = tactics.active.atk;
       const kill = targets.filter((b) => num(b, "♦") <= atk).sort((a, b) => num(b, "✸") - num(a, "✸"))[0];
       (kill ?? targets.sort((a, b) => num(b, "✸") - num(a, "✸"))[0]).click(); turns++;
@@ -27,5 +37,5 @@ for (let game = 1; game <= 6; game++) {
   document.getElementById("again").click();
   await sleep(300);
 }
-out.push(`won ${wins} of 6`);
+out.push(`won ${wins} of 6${lv ? ` on ${lv}` : ""}, ${broadsides} broadsides`);
 return out.join("\n");

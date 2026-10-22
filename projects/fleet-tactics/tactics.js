@@ -4,6 +4,9 @@
 //   firepower  4 + 2 × guns carried + Maneuver
 //   initiative Speed (who acts first each round)
 // konex's two ships, which have konex stats instead, use their own.
+// Once a battle, a broadside: on your turn every ship you have left fires at
+// one target, each at half its firepower. On Admiral the computer drafts
+// with 72 to your 60, from a bigger offer.
 import { loadCatalog, loadShipMeta } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
@@ -11,7 +14,8 @@ const $ = (id) => document.getElementById(id);
 const BUDGET = 60, OFFER = 8, AI_DELAY = 700;
 
 let pool = [], phase = "draft", offer = [], picked = new Set(), mine = [], theirs = [];
-let queue = [], active = null, busy = false;
+let queue = [], active = null, busy = false, broadside = "ready", level = "standard";
+const LEVELS = { standard: { budget: BUDGET, offer: OFFER }, admiral: { budget: 72, offer: 10 } };
 
 function cardStats(meta) {
   const s = meta.stats;
@@ -49,7 +53,7 @@ function newDraft() {
   phase = "draft";
   offer = sample(OFFER);
   picked = new Set();
-  mine = []; theirs = []; queue = []; active = null;
+  mine = []; theirs = []; queue = []; active = null; broadside = "ready";
   $("log").replaceChildren();
   $("again").hidden = true;
   $("go").hidden = false;
@@ -65,10 +69,11 @@ function togglePick(card) {
 
 /** The computer's draft: the best hull + firepower for the money, from its own offer. */
 function aiDraft() {
-  const choices = sample(OFFER, new Set(picked)).sort((a, b) => (b.maxHp + b.atk * 1.4) / b.cost - (a.maxHp + a.atk * 1.4) / a.cost);
+  const lv = LEVELS[level];
+  const choices = sample(lv.offer, new Set(picked)).sort((a, b) => (b.maxHp + b.atk * 1.4) / b.cost - (a.maxHp + a.atk * 1.4) / a.cost);
   const fleet = [];
-  let budget = BUDGET;
-  for (const c of choices) if (c.cost <= budget && fleet.length < 5) { fleet.push(c); budget -= c.cost; }
+  let budget = lv.budget;
+  for (const c of choices) if (c.cost <= budget && fleet.length < 6) { fleet.push(c); budget -= c.cost; }
   return fleet;
 }
 
@@ -124,6 +129,22 @@ function attack(attacker, target) {
   setTimeout(() => { busy = false; nextTurn(); }, 450);
 }
 
+// The broadside: your active ship's turn, spent with every survivor firing
+// at one target at half firepower. Once a battle.
+function fireBroadside(target) {
+  if (busy || phase !== "battle" || active?.side !== "mine" || broadside !== "armed") return false;
+  broadside = "used";
+  let total = 0;
+  for (const u of alive(mine)) total += Math.max(1, Math.round(u.atk * 0.5 * (0.8 + Math.random() * 0.4)));
+  target.hp = Math.max(0, target.hp - total);
+  logLine(`Broadside: all ${alive(mine).length} of your ships fire on their ${target.name} for ${total}` + (target.hp === 0 ? ": destroyed." : "."));
+  play(target.hp === 0 ? "boom" : "hit");
+  busy = true;
+  render(target.uid, total);
+  setTimeout(() => { busy = false; nextTurn(); }, 600);
+  return true;
+}
+
 function finish() {
   phase = "over";
   active = null;
@@ -172,12 +193,16 @@ function render(hitUid, dmg) {
   const myTurn = phase === "battle" && active?.side === "mine" && !busy;
   const draw = (u) => cardEl(u, {
     cls: [u.hp <= 0 && "dead", u === active && "active", myTurn && u.side === "theirs" && u.hp > 0 && "targetable", u.uid === hitUid && "hit"].filter(Boolean),
-    onClick: myTurn && u.side === "theirs" && u.hp > 0 ? () => attack(active, u) : null,
+    onClick: myTurn && u.side === "theirs" && u.hp > 0 ? () => (broadside === "armed" ? fireBroadside(u) : attack(active, u)) : null,
     hitDmg: u.uid === hitUid ? dmg : 0,
   });
   $("enemy").replaceChildren(...theirs.map(draw));
   $("mine").replaceChildren(...mine.map(draw));
-  $("hint").textContent = phase === "over" ? "Draft again?" : myTurn ? `Your ${active.name} acts: pick a target.` : "Their move…";
+  $("hint").textContent = phase === "over" ? "Draft again?" : myTurn ? (broadside === "armed" ? "Broadside: pick the target for your whole fleet." : `Your ${active.name} acts: pick a target.`) : "Their move…";
+  $("broadside").hidden = phase !== "battle";
+  $("broadside").disabled = broadside === "used" || !myTurn;
+  $("broadside").textContent = broadside === "used" ? "Broadside fired" : broadside === "armed" ? "Broadside: pick a target" : "Broadside";
+  $("broadside").setAttribute("aria-pressed", String(broadside === "armed"));
 }
 
 function logLine(text) {
@@ -188,12 +213,14 @@ function logLine(text) {
 
 $("go").addEventListener("click", startBattle);
 $("again").addEventListener("click", newDraft);
+$("broadside").addEventListener("click", () => { if (broadside !== "used") { broadside = broadside === "armed" ? "ready" : "armed"; play("select"); render(); } });
+$("level").addEventListener("change", () => { level = $("level").value; if (phase !== "battle") newDraft(); });
 const showMute = () => { $("mute").textContent = isMuted() ? "Sound: off" : "Sound: on"; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").addEventListener("click", () => { setMuted(!isMuted()); showMute(); });
 showMute();
 
 // For play-test scripts (playtest/).
-globalThis.tactics = { get phase() { return phase; }, get offer() { return offer; }, get mine() { return mine; },
+globalThis.tactics = { get broadside() { return broadside; }, get phase() { return phase; }, get offer() { return offer; }, get mine() { return mine; },
   get theirs() { return theirs; }, get active() { return active; }, get pool() { return pool; } };
 
 await buildPool();

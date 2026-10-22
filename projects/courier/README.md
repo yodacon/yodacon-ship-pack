@@ -2,7 +2,7 @@
 
 *Escape Velocity* in miniature. Start in a Small Pin with 3,000 credits at
 Express Yard, then trade, carry courier missions and fight pirates across
-four linked systems until you can buy a Large Pin, the flagship of the Pin
+five linked systems until you can buy a Large Pin, the flagship of the Pin
 line. Progress is saved in the browser each time you land.
 
 ![Leaving Express Yard in a Small Pin, the radar top right](screenshot.png)
@@ -10,12 +10,13 @@ line. Progress is saved in the browser each time you land.
 | | |
 | --- | --- |
 | Technique | Canvas 2D with the library's `drawShip()`; the port is plain DOM |
-| Flight | arrows or WASD turn and thrust, <kbd>↓</kbd> turns to reverse, <kbd>Space</kbd> fires, <kbd>L</kbd> lands, <kbd>J</kbd> jumps; touch buttons on phones |
-| Systems | Consolidated (safe), Vela, Hollow and Ember (more pirates), in a ring; two planets each, from the pack's generated planet art |
+| Flight | arrows or WASD turn and thrust, <kbd>↓</kbd> turns to reverse, <kbd>Space</kbd> fires, <kbd>L</kbd> lands, <kbd>J</kbd> jumps, <kbd>Shift</kbd>+<kbd>J</kbd> or <kbd>E</kbd> makes an emergency jump; touch buttons on phones |
+| Systems | Consolidated (safe), Vela, Hollow and Ember (more pirates), in a ring; past Ember, the **Override Reach**: the richest prices, and pirates every time. Two planets each, from the pack's generated planet art |
+| Emergency jump | once each time you take off, jump from anywhere, even beside a planet or under fire, for two fuel instead of one |
 | Trade | five goods; each planet sells each one low, middling or high (green and amber in the table) |
 | Missions | three offers per port: carry so many tons to a planet, paid by distance and danger |
 | Shipyard | the ten ConEx 1.2 hulls; your old ship trades in at half price |
-| Pirates | the Override Gryphon, Trident, Defender and Necromancer; bounty when destroyed |
+| Pirates | the Override Gryphon, Trident, Defender and Necromancer; in the Reach the Defender, Necromancer, Callisto and the 1998 Yodacon (sped up from its record's 100, so it can catch you); bounty when destroyed |
 
 Ship numbers come from each hull's 1997 `shïp` record:
 

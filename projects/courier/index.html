@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ConEx Courier · Yodacon Ship Pack</title>
-<meta name="description" content="Escape Velocity in miniature: fly ConEx ships between four systems, trade, run courier missions, fight pirates and work up to a Large Pin.">
+<meta name="description" content="Escape Velocity in miniature: fly ConEx ships between five systems, trade, run courier missions, fight pirates and work up to a Large Pin.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../lib/yodacon-style.css">
 <link rel="stylesheet" href="courier.css">
@@ -37,6 +37,7 @@
       <button type="button" data-key="fire" aria-label="Fire">Fire</button>
       <button type="button" data-tap="land">Land</button>
       <button type="button" data-tap="jump">Jump</button>
+      <button type="button" data-tap="ejump">E-jump</button>
     </div>
     <section id="port" class="yc-panel port" hidden aria-labelledby="port-name">
       <h2 id="port-name">Port</h2>
@@ -66,7 +67,9 @@
       <h2>Navigation</h2>
       <label class="nav-label" for="jump-to">Jump to</label>
       <select id="jump-to" class="yc-plate"></select>
-      <p class="muted">Fly clear of the planets (past the ring on the radar), then press <kbd>J</kbd>. One fuel a jump.</p>
+      <p class="muted">Fly clear of the planets (past the ring on the radar), then press <kbd>J</kbd>. One fuel a jump.
+        <b>Emergency jump</b> (<kbd>Shift</kbd>+<kbd>J</kbd> or <kbd>E</kbd>): from anywhere, even beside a planet or under fire,
+        for two fuel; once each time you take off.</p>
     </section>
     <section class="yc-panel">
       <h2>Missions</h2>
@@ -75,7 +78,7 @@
     <section class="yc-panel">
       <h2>Controls</h2>
       <p class="muted"><kbd>←</kbd><kbd>→</kbd> turn · <kbd>↑</kbd> thrust · <kbd>↓</kbd> turn to reverse ·
-        <kbd>Space</kbd> fire · <kbd>L</kbd> land · <kbd>J</kbd> jump</p>
+        <kbd>Space</kbd> fire · <kbd>L</kbd> land · <kbd>J</kbd> jump · <kbd>E</kbd> emergency jump</p>
       <p class="buttons"><button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
     </section>
   </aside>

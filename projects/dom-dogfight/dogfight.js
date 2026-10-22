@@ -8,6 +8,10 @@
 //   - explosions are a CSS animation that removes itself.
 // The game itself runs on a fixed timestep (60 updates a second, whatever the
 // display's refresh rate) and collides objects as circles.
+// Cloak (C or Shift): three seconds the Defenders lose you and fly at where
+// you were, and their missiles pass through you; firing breaks it, and it
+// takes ten seconds to come back. Every fifth wave a Tomaquad gunship leads
+// the Defenders, firing three missiles at a time.
 //
 // Ships by Paul Richeson (ConEx, 1997–1998). GPL-2.0-or-later.
 
@@ -18,6 +22,7 @@ const PACK = new URL("../../", import.meta.url);
 const q = new URLSearchParams(location.search);
 const PLAYER_SHIP = (q.get("ship") || "conex/yodacon").split("/");   // ?ship=override/callisto
 const STEP = 1 / 60;                       // seconds per simulation step
+const CLOAK = 3, CLOAK_EVERY = 10;
 const TAU = Math.PI * 2;
 const rad = (deg) => (deg * Math.PI) / 180;
 const wrapDeg = (d) => ((d % 360) + 360) % 360;
@@ -77,7 +82,7 @@ function boom(x, y, size = 1) {
 }
 
 // --- Input: keyboard and the on-screen pad share one `keys` object --------------
-const keys = { left: false, right: false, up: false, down: false, fire: false };
+const keys = { left: false, right: false, up: false, down: false, fire: false, cloak: false };
 
 // Attract mode: until the visitor touches a control, the computer flies the
 // player's ship (it turns toward the nearest Defender and fires).
@@ -92,6 +97,7 @@ function takeControl() {
 const KEYMAP = {
   ArrowLeft: "left", a: "left", A: "left", ArrowRight: "right", d: "right", D: "right",
   ArrowUp: "up", w: "up", W: "up", ArrowDown: "down", s: "down", S: "down", " ": "fire",
+  c: "cloak", C: "cloak", Shift: "cloak",
 };
 addEventListener("keydown", (e) => {
   if (e.key === " " && e.target.closest?.("a, button")) return; // let Space press focused buttons
@@ -142,9 +148,22 @@ function spawnEnemy() {
   enemies.push(e);
 }
 
+// The gunship: a Tomaquad, slow and tough, firing a spread of three.
+function spawnGunship() {
+  const x = Math.random() < 0.5 ? -50 : world.w + 50, y = Math.random() * world.h;
+  const hp = 8 + wave;
+  enemies.push({
+    sheet: sheets.gunship, scale: 1, el: makeSprite(sheets.gunship, 1, "gunship"), x, y, vx: 0, vy: 0,
+    heading: wrapDeg(Math.atan2(player.x - x, -(player.y - y)) * 180 / Math.PI), r: 24,
+    hp, maxHp: hp, cooldown: 2, frame: -1, speed: 70 + wave * 3, turn: 45, boss: true,
+  });
+}
+
 function startWave() {
   $("wave").textContent = wave;
-  for (let i = 0; i < Math.min(2 + wave, 9); i++) spawnEnemy();
+  const boss = wave % 5 === 0;
+  for (let i = 0; i < Math.min(2 + wave, 9) - (boss ? 2 : 0); i++) spawnEnemy();
+  if (boss) spawnGunship();
 }
 
 function restart() {
@@ -156,7 +175,7 @@ function restart() {
     heading: 0, r: Math.max(12, ps.w * 0.34), shield: 100, cooldown: 0, hurt: 0, frame: -1,
     // Scaled from the ship's own 1997 stats, so a different ?ship= flies differently.
     accel: 140 + (ps.stats.Accel ?? 400) * 0.4, max: 120 + (ps.stats.Speed ?? 300) * 0.5,
-    turn: 120 + (ps.stats.Maneuver ?? 3) * 30,
+    turn: 120 + (ps.stats.Maneuver ?? 3) * 30, cloak: 0, cloakReady: 0,
   };
   enemies = []; missiles = []; score = 0; wave = 1; over = false; paused = false;
   if (autopilot) player.shield = 1e9;        // the demo pilot can't lose
@@ -212,16 +231,24 @@ function update(dt) {
   p.x += p.vx * dt; p.y += p.vy * dt;
   wrap(p);
   p.cooldown -= dt;
+  p.cloakReady -= dt;
+  if (keys.cloak && p.cloak <= 0 && p.cloakReady <= 0) {          // cloak: the Defenders fly at where you were
+    p.cloak = CLOAK; p.cloakReady = CLOAK + CLOAK_EVERY; p.ghost = { x: p.x, y: p.y, vx: 0, vy: 0 };
+    p.el.classList.add("cloaked");
+  }
+  if (p.cloak > 0 && ((p.cloak -= dt) <= 0 || (keys.fire && p.cooldown <= 0))) { p.cloak = 0; p.el.classList.remove("cloaked"); }
   if (keys.fire && p.cooldown <= 0) { fire(p, false); p.cooldown = 0.22; }
+  cloakHud(p);
   if (p.hurt > 0 && (p.hurt -= dt) <= 0) p.el.classList.remove("hurt");
 
   // Defenders: lead the player a little, turn toward that point, thrust when
   // roughly facing it, keep apart from each other, and shoot when lined up.
+  const seen = p.cloak > 0 ? p.ghost : p;
   for (const e of enemies) {
-    const lead = { x: p.x + p.vx * 0.4, y: p.y + p.vy * 0.4 };
+    const lead = { x: seen.x + seen.vx * 0.4, y: seen.y + seen.vy * 0.4 };
     const off = steer(e, bearing(e, lead), e.turn, dt);
     const ea = rad(Math.floor(e.heading / 10) * 10);
-    const thrust = off < 50 ? 260 : 60;
+    const thrust = (off < 50 ? 260 : 60) * (e.boss ? 0.4 : 1);
     e.vx += Math.sin(ea) * thrust * dt; e.vy -= Math.cos(ea) * thrust * dt;
     for (const o of enemies) {
       if (o === e) continue;
@@ -233,9 +260,14 @@ function update(dt) {
     e.x += e.vx * dt; e.y += e.vy * dt;
     wrap(e);
     e.cooldown -= dt;
-    if (e.cooldown <= 0 && off < 12 && Math.hypot(p.x - e.x, p.y - e.y) < 380) {
-      fire(e, true);
-      e.cooldown = Math.max(0.9, 2.6 - wave * 0.15) + Math.random();
+    if (e.cooldown <= 0 && off < (e.boss ? 25 : 12) && Math.hypot(seen.x - e.x, seen.y - e.y) < (e.boss ? 450 : 380)) {
+      if (e.boss) {                                          // the gunship's spread of three
+        for (const d of [-15, 0, 15]) fire({ ...e, heading: e.heading + d }, true);
+        e.cooldown = 1.8;
+      } else {
+        fire(e, true);
+        e.cooldown = Math.max(0.9, 2.6 - wave * 0.15) + Math.random();
+      }
     }
   }
 
@@ -252,20 +284,22 @@ function update(dt) {
     wrap(m);
     if ((m.life -= dt) <= 0) { remove(missiles, m); continue; }
     if (m.enemy) {
-      if (hit(m, p)) { boom(m.x, m.y, 0.5); remove(missiles, m); damage(14); }
+      if (p.cloak <= 0 && hit(m, p)) { boom(m.x, m.y, 0.5); remove(missiles, m); damage(14); }
     } else {
       const e = enemies.find((en) => hit(m, en));
       if (e) {
         boom(m.x, m.y, 0.5);
         remove(missiles, m);
-        if (--e.hp <= 0) { boom(e.x, e.y, 1.2); remove(enemies, e); addScore(100 + wave * 10); }
+        if (--e.hp <= 0) { boom(e.x, e.y, e.boss ? 2.4 : 1.2); remove(enemies, e); addScore(e.boss ? 1000 + wave * 50 : 100 + wave * 10); }
       }
     }
   }
 
   // Ramming: both take damage; the Defender doesn't survive it.
   for (const e of [...enemies]) {
-    if (hit(e, p)) { boom(e.x, e.y, 1.2); remove(enemies, e); addScore(25); damage(22); }
+    if (p.cloak > 0 || !hit(e, p)) continue;
+    if (e.boss) { damage(30); p.vx = -p.vx; p.vy = -p.vy; boom(p.x, p.y, 0.8); continue; }   // the gunship shrugs it off
+    boom(e.x, e.y, 1.2); remove(enemies, e); addScore(25); damage(22);
   }
 
   if (!over && enemies.length === 0) { wave++; startWave(); }
@@ -283,6 +317,12 @@ function fly(p) {
   keys.up = Math.abs(diff) < 40 && d > 200 ** 2;
   keys.down = d < 120 ** 2;
   keys.fire = Math.abs(diff) < 20;
+}
+
+let cloakShown = "";
+function cloakHud(p) {
+  const text = p.cloak > 0 ? "cloaked" : p.cloakReady > 0 ? `${Math.ceil(p.cloakReady)} s` : "ready";
+  if (text !== cloakShown) { cloakShown = text; $("cloak").textContent = text; }
 }
 
 function damage(n) {
@@ -357,6 +397,12 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+// For play-test scripts: a look at the game, and a jump to a wave.
+globalThis.dogfight = {
+  get player() { return player; }, get enemies() { return enemies; }, get wave() { return wave; },
+  jump(n) { for (const e of enemies) e.el.remove(); enemies = []; wave = n; startWave(); },
+};
+
 // --- Start --------------------------------------------------------------------------
 try {
   const [pe, ps] = PLAYER_SHIP;
@@ -364,6 +410,7 @@ try {
     player: await loadSheet(pe, "ships", ps),
     enemy: await loadSheet("conex", "ships", "defender"),
     missile: await loadSheet(null, "weapons", "missile-repeater"),
+    gunship: await loadSheet("conex", "ships", "tomaquad"),
   };
   $("player-name").textContent = sheets.player.name;
   $("best").textContent = best;

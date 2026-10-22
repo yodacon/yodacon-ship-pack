@@ -35,10 +35,17 @@
         <button type="button" id="launch" class="yc-plate yc-go">Launch wave</button>
         <button type="button" id="buy" class="yc-plate">Patrol (50)</button>
         <button type="button" id="repair" class="yc-plate">Repair (30)</button>
+        <button type="button" id="shock" class="yc-plate" disabled>Shockwave</button>
         <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
       </p>
       <p class="muted">Click or tap space to fire. Patrols orbit and fire on their own.
-        Keys: <kbd>Space</kbd> launch, <kbd>D</kbd> patrol, <kbd>R</kbd> repair.</p>
+        Keys: <kbd>Space</kbd> launch, <kbd>D</kbd> patrol, <kbd>R</kbd> repair, <kbd>S</kbd> shockwave.</p>
+      <p class="muted"><b>Shockwave</b>: once a wave, a ring from the planet out to 220 px; every raider it passes takes two hits
+        and is thrown back.</p>
+      <p><label for="level">Level</label> <select id="level" class="yc-plate"><option value="garden">Garden world</option>
+        <option value="ice">Ice world, with a moon</option></select></p>
+      <p class="muted"><b>Ice world</b>: a moon orbits close in. Raiders that fly into it are destroyed, but it stops your
+        shots too. Raiders come a third faster, and the boss is the 1998 Yodacon.</p>
     </section>
     <section class="yc-panel">
       <h2>Incoming</h2>

@@ -18,9 +18,21 @@ Last fleet standing wins.
 | Ships | every ship in `catalog.json` but the 1/4 Defender; konex's Advisor and Citrus carry konex stats, so they get hull 30 and firepower from `TurnSpeed` |
 
 The computer drafts the most hull and firepower per credit it can afford (at
-most five ships), and in battle finishes off any ship it can, otherwise firing
-on your biggest gun. Playing the same way, `playtest/battle.js` wins about two
-games in three; shooting the weakest ship instead loses nearly every time.
+most six ships), and in battle finishes off any ship it can, otherwise firing
+on your biggest gun.
+
+**Broadside**: once a battle, on one of your turns, press Broadside and pick a
+target. Every ship you have left fires at it, each at half its firepower, and
+that uses the turn.
+
+**Admiral** (the Level menu): the computer drafts with 72 to your 60, from an
+offer of ten.
+
+Playing the same way as the computer, and firing its broadside early at the
+toughest enemy, `playtest/battle.js` wins about two games in three on
+Standard (4 of 6) and about half on Admiral (2 and 4 of 6 in two runs);
+shooting the weakest ship instead loses nearly every time. `?level=admiral`
+plays Admiral.
 
 Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997),
 GPL-2.0-or-later — https://github.com/yodacon/yodacon-ship-pack

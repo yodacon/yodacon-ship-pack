@@ -1,14 +1,18 @@
 // Cutaway: name the ship from its 1997 targeting cutaway.
 // Plain DOM. The question is a ship's target picture; the answers are four
-// comm portraits. Everything comes from catalog.json.
+// comm portraits. Everything comes from catalog.json. Expert adds five
+// rounds of silhouettes: the ship's sprite, blacked out, at a random heading.
+// Once a game, 50/50 strikes out two wrong answers.
 import { loadCatalog } from "../../lib/yodacon-ship-pack.js";
 import { play, isMuted, setMuted } from "../../lib/yodacon-sound.js";
 
 const $ = (id) => document.getElementById(id);
-const ROUNDS = 10;
+const ROUNDS = 10, EXPERT_ROUNDS = 15;
 const isPin = (ship) => /Pin$/.test(ship.name);
 
 let pool = [], round = 0, score = 0, streak = 0, current = null, timer = null, deadline = 0, answered = false;
+let expert = false, fifty = true;
+const rounds = () => (expert ? EXPERT_ROUNDS : ROUNDS);
 
 // Some pictures are shared: the three 1997 Pins have one target picture, the
 // 1998 Pins another, and the 1/4 Defender reuses the Defender's. So no two
@@ -38,11 +42,12 @@ function pickChoices(answer) {
 
 // Harder as it goes: full picture, then a scanning slice, then mirrored, then both.
 function difficulty(r) {
+  if (r > ROUNDS) return { silhouette: true, scan: false, mirror: false, seconds: 8 };   // Expert's last five
   return { scan: r >= 4 && r !== 7 && r !== 8, mirror: r >= 7, seconds: r < 4 ? 10 : r < 7 ? 9 : 8 };
 }
 
 function nextRound() {
-  if (round >= ROUNDS) return finish();
+  if (round >= rounds()) return finish();
   round++;
   answered = false;
   current = pool[Math.floor(Math.random() * pool.length)];
@@ -50,8 +55,9 @@ function nextRound() {
   const scope = $("scope");
   scope.classList.toggle("mirror", d.mirror);
   scope.classList.toggle("scan", d.scan);
-  $("target").src = current.urls.target;
-  $("prompt").textContent = d.mirror ? "Mirrored: which ship?" : d.scan ? "Scanning: which ship?" : "Which ship is this?";
+  scope.classList.toggle("silhouette", !!d.silhouette);
+  $("target").src = d.silhouette ? current.urls.frames(Math.floor(Math.random() * 36)) : current.urls.target;
+  $("prompt").textContent = d.silhouette ? "Silhouette: which ship?" : d.mirror ? "Mirrored: which ship?" : d.scan ? "Scanning: which ship?" : "Which ship is this?";
   $("choices").replaceChildren(...pickChoices(current).map((s, i) => {
     const b = document.createElement("button");
     b.type = "button";
@@ -62,10 +68,22 @@ function nextRound() {
     b.addEventListener("click", () => answer(s, b));
     return b;
   }));
+  $("fifty").disabled = !fifty;
   deadline = performance.now() + d.seconds * 1000;
   clearInterval(timer);
   timer = setInterval(tick, 50);
   hud();
+}
+
+// 50/50: once a game, two wrong answers struck out.
+function fiftyFifty() {
+  if (!fifty || answered || !current) return false;
+  fifty = false;
+  $("fifty").disabled = true;
+  const wrong = [...$("choices").children].filter((b) => !(b.dataset.slug === current.slug && b.dataset.edition === current.edition));
+  for (const b of wrong.sort(() => Math.random() - 0.5).slice(0, 2)) { b.disabled = true; b.classList.add("struck"); }
+  play("select");
+  return true;
 }
 
 function tick() {
@@ -104,7 +122,8 @@ function answer(choice, button) {
     play(choice ? "error" : "lost");
     reveal(choice ? "Not quite." : "Out of time.");
   }
-  $("scope").classList.remove("scan", "mirror");     // show the whole picture once answered
+  $("scope").classList.remove("scan", "mirror", "silhouette");   // show the whole picture once answered
+  if (difficulty(round).silhouette) $("target").src = current.urls.target;
   hud();
   setTimeout(nextRound, 1900);
 }
@@ -126,14 +145,15 @@ function finish() {
 }
 
 function start() {
-  round = 0; score = 0; streak = 0;
+  round = 0; score = 0; streak = 0; fifty = true;
+  expert = $("expert").checked;
   $("again").hidden = true;
   $("info").innerHTML = "<p>Name the ship from its cutaway. Faster answers score more.</p>";
   nextRound();
 }
 
 function hud() {
-  $("round").textContent = `${Math.min(round, ROUNDS)}/${ROUNDS}`;
+  $("round").textContent = `${Math.min(round, rounds())}/${rounds()}`;
   $("score").textContent = score;
   $("streak").textContent = streak;
 }
@@ -141,14 +161,18 @@ function hud() {
 document.addEventListener("keydown", (e) => {
   const n = Number(e.key);
   if (n >= 1 && n <= 4) $("choices").children[n - 1]?.click();
+  if (e.key === "5" || e.key === "f" || e.key === "F") fiftyFifty();
 });
 $("again").addEventListener("click", start);
+$("fifty").addEventListener("click", fiftyFifty);
+$("expert").addEventListener("change", start);
 const showMute = () => { $("mute").textContent = isMuted() ? "Sound: off" : "Sound: on"; $("mute").setAttribute("aria-pressed", String(isMuted())); };
 $("mute").addEventListener("click", () => { setMuted(!isMuted()); showMute(); });
 showMute();
 
 // For play-test scripts (playtest/).
-globalThis.cutaway = { get current() { return current; }, get round() { return round; }, get score() { return score; }, get pool() { return pool; } };
+globalThis.cutaway = { get current() { return current; }, get round() { return round; }, get score() { return score; }, get pool() { return pool; },
+  get rounds() { return rounds(); }, fiftyFifty };
 
 await buildPool();
 start();

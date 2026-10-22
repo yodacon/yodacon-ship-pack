@@ -79,3 +79,5 @@ h1 { margin: 0 0 8px; font-size: 22px; }
 
 .help { color: var(--muted); font-size: 14px; }
 .credit { font-size: 13px; color: var(--muted); }
+.sprite.player.cloaked { opacity: 0.25; filter: drop-shadow(0 0 4px #7fe9ff); transition: opacity 0.2s; }
+.pad button.cloak { width: 84px; font-size: 13px; font-weight: 700; }

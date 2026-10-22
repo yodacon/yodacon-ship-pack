@@ -40,3 +40,8 @@ kbd { font: 700 11px var(--yc-mono); color: var(--yc-ice); border: 1px solid var
 .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .credit { max-width: 1100px; margin: 16px auto 0; color: var(--yc-phos-dim); font-size: 0.75rem; }
 @media (max-width: 520px) { body { padding: 8px; } .game.yc-console { padding: 6px; } .readouts { gap: 10px; } }
+/* Expert's silhouettes: the sprite blacked out, with a faint green rim. */
+.scope-pic.silhouette { display: grid; place-items: center; background: radial-gradient(circle, #0d3d12 0, #05070a 70%); }
+.scope-pic.silhouette img { width: auto; height: 80%; filter: brightness(0) drop-shadow(0 0 2px rgb(92 255 92 / 0.8)); }
+.choice.struck { opacity: 0.25; text-decoration: line-through; }
+.expert { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }

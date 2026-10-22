@@ -52,6 +52,30 @@ moved or renamed file a major one. A tag's files never change.
   all drawn at one measured length
 - **Refit**: match-3; ships turn to face the way they move, Yodacon and Large
   Pin specials
+- **A new level and a special ability in every game** (Konquest's rules
+  unchanged):
+
+  | Game | New level | Ability |
+  | --- | --- | --- |
+  | Dock | 1998 Yodacon | side jets |
+  | Crossing | warping freighters | hyperjump |
+  | Salvo | Admiral | sensor sweep |
+  | Flak | Night raid | the Large Pin's pulse |
+  | Formation | Drift | phase |
+  | Refit | asteroid yard | scrap order |
+  | Picket | the Maelstrom | collapse the stream |
+  | Blockade | the Override Line | smart bomb |
+  | Recall | Expert sets of three | sensor scan |
+  | Rally | Rocky Chicane | afterburner |
+  | Convoy | Elite and the flagship raid | ion pulse |
+  | Gauntlet | the Override Wing | overcharge |
+  | Slingshot | Binary | mid-flight burn |
+  | Orbital Defence | Ice world with a moon | shockwave |
+  | DOM Dogfight | Tomaquad gunship | cloak |
+  | Cutaway | Expert silhouettes | 50/50 |
+  | Pin Miner | deep-field charter | overdrive |
+  | Fleet Tactics | Admiral | broadside |
+  | Courier | the Override Reach | emergency jump |
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

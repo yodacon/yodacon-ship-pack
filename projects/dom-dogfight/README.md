@@ -9,13 +9,18 @@ No canvas, no WebGL, no game engine, no build step.
 
 - You fly the 1997 **Yodacon**. Waves of ConEx **Defenders** come in from the
   edges, chase you, ram you and fire missiles (the pack's stand-in line sprite).
-  Each wave is bigger and quicker. Two hits kill a Defender.
+  Each wave is bigger and quicker. Two hits kill a Defender. Every fifth wave
+  a **Tomaquad gunship** leads them: slow, tough (8 hits plus one a wave), and
+  firing three missiles at a time. Ramming it hurts you, not it.
+- **Cloak** (C or Shift, or the CLOAK button): for three seconds you fade to a
+  ghost, the Defenders fly at where you were, and their missiles and rams pass
+  through you. Firing breaks the cloak; it takes ten seconds to come back.
 - Until you touch a control the computer flies your ship (attract mode), so
   the page is never still. Press any flight key or on-screen button to take
   over and start a fresh game.
 - Controls: ← → or A D turn, ↑ or W thrust, ↓ or S brake, Space fire,
-  P pause, R restart. The on-screen pad (◀ ▲ ▶ FIRE) works with touch and
-  mouse; hold the buttons down.
+  C or Shift cloak, P pause, R restart. The on-screen pad (◀ ▲ ▶ FIRE CLOAK)
+  works with touch and mouse; hold the buttons down.
 - `?ship=override/callisto` (any `edition/slug`) puts you in another ship. Its
   1997/98 Speed, Accel and Maneuver stats change how it flies.
 - The best score is kept in `localStorage` (if available).

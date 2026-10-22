@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DOM Dogfight · Yodacon Ship Pack</title>
 <meta name="description" content="A small arcade dogfight made only of DOM elements: sprite-sheet divs, a fixed-timestep loop and circle collisions.">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="dogfight.css">
 <script type="module" src="dogfight.js"></script>
 </head>
@@ -17,6 +18,7 @@
     <span>Score <b id="score">0</b></span>
     <span>Wave <b id="wave">1</b></span>
     <span>Best <b id="best">0</b></span>
+    <span>Cloak <b id="cloak">ready</b></span>
     <span class="shield">Shield <span class="bar"><span id="shield-bar"></span></span></span>
   </div>
 
@@ -37,10 +39,13 @@
     <button type="button" data-key="up" aria-label="Thrust">▲</button>
     <button type="button" data-key="right" aria-label="Turn right">▶</button>
     <button type="button" data-key="fire" class="fire" aria-label="Fire">FIRE</button>
+    <button type="button" data-key="cloak" class="cloak" aria-label="Cloak">CLOAK</button>
   </div>
 
   <p class="help">← → or A D turn · ↑ or W thrust · ↓ or S brake · Space fire · P pause · R restart.
-    Your ship: the 1997 <b id="player-name">Yodacon</b>. The enemy: ConEx Defenders, armed with missiles.</p>
+    Your ship: the 1997 <b id="player-name">Yodacon</b>. The enemy: ConEx Defenders, armed with missiles, and every fifth wave a
+    Tomaquad gunship that fires three at a time. <b>Cloak</b> (<kbd>C</kbd> or <kbd>Shift</kbd>): three seconds the Defenders
+    lose you and their missiles pass through; firing breaks it; ten seconds to recharge.</p>
 
   <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
     <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a> ·
