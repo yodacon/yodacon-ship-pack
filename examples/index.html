@@ -23,6 +23,38 @@
   .tag { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   code { font-size: 14px; }
   .credit { font-size: 13px; color: var(--muted); }
+
+  /* The tutorial note, set like an IEEE paper. */
+  .paper { margin: 40px 0 24px; padding: 28px clamp(16px, 4vw, 44px); background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    font: 15px/1.5 "Times New Roman", Times, Georgia, serif; }
+  .paper header { text-align: center; margin-bottom: 18px; }
+  .paper .kicker { font: 12px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+  .paper h2.title { font-size: clamp(22px, 3vw, 28px); line-height: 1.2; margin: 0 0 8px; font-weight: 400; }
+  .paper .byline { margin: 0; font-style: italic; color: var(--muted); }
+  .paper .abstract { font-weight: 700; font-size: 14px; }
+  .paper .abstract i, .paper .terms i { font-weight: 700; }
+  .paper .terms { font-weight: 700; font-size: 14px; }
+  .paper .cols { column-gap: 32px; }
+  @media (min-width: 900px) { .paper .cols { column-count: 2; } }
+  .paper h3 { font-size: 15px; font-variant: small-caps; text-align: center; margin: 18px 0 6px; font-weight: 400; letter-spacing: .03em; break-after: avoid; }
+  .paper h4 { font-size: 15px; font-style: italic; font-weight: 400; margin: 12px 0 4px; break-after: avoid; }
+  .paper p { margin: 0 0 8px; text-align: justify; hyphens: auto; }
+  .paper figure { margin: 10px 0 12px; break-inside: avoid; }
+  .paper figcaption { font-size: 12.5px; margin-bottom: 4px; }
+  .paper figcaption b { font-variant: small-caps; font-weight: 400; }
+  .paper pre { margin: 0; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; overflow-x: auto;
+    font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .paper pre .c { color: var(--muted); }
+  .paper code { font-size: 13px; }
+  .paper .eq { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 6px 0 10px; font-style: italic; break-inside: avoid; }
+  .paper .eq span:last-child { font-style: normal; }
+  .paper table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .paper th, .paper td { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+  .paper th { font-variant: small-caps; font-weight: 400; }
+  .paper ol.refs { font-size: 13px; padding-left: 2.2em; margin: 0; }
+  .paper ol.refs li { margin-bottom: 4px; break-inside: avoid; }
+  .paper ol.refs li::marker { content: "[" counter(list-item) "]  "; }
+  @media print { body { padding: 0; } .grid, main > p, h1 { display: none; } .paper { border: 0; margin: 0; padding: 0; } .paper .cols { column-count: 2; } }
 </style>
 </head>
 <body>
@@ -32,7 +64,8 @@
 <p>One small page for each way of drawing the ships. Each loads one ship (any
 <code>?edition=&amp;ship=</code> from the catalogue works) and lets you turn or fly it.
 Frameworks are pinned to exact versions on jsDelivr; nothing needs installing.
-Every folder has a README that walks through the code.</p>
+Every folder has a README that walks through the code, and the <a href="#tutorial">tutorial note</a> below
+explains how to start your own project.</p>
 
 <ul class="grid">
   <li><img src="../conex/ships/yodacon/frames/00.png" alt="">
@@ -58,6 +91,211 @@ Every folder has a README that walks through the code.</p>
 <p>Want more? The <a href="../demo/">demo game</a> is the full version, the
 <a href="../projects/">sample projects</a> are complete little apps, and the
 <a href="../playground/">playground</a> runs any of this in your browser.</p>
+
+
+<article class="paper" id="tutorial" aria-labelledby="paper-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 1 · October 2026</p>
+  <h2 class="title" id="paper-title">From Sprite Sheet to Moving Ship: Starting a Game With the Yodacon Ship Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The Yodacon Ship Pack publishes the starships of the 1997–1998 ConEx
+<i>Escape Velocity</i> plugins as GPL-licensed PNG sprite sheets with a JSON description of each ship.
+This note shows a newcomer how to start a project with them: where the files are, the one convention that
+governs every sprite, the three functions that turn a heading into pixels on screen, and how to carry those
+three functions into an engine of their own. Every listing is taken from, and cites, the pack's own code.</p>
+<p class="terms"><i>Index Terms</i>—sprite sheets, 2-D rendering, game loops, pixel art, asset pipelines.</p>
+
+<h3>I. Introduction</h3>
+<p>A ship in a 1990s top-down space game is not rotated at run time. It is drawn 36 times in advance, once per
+10° of heading, and the game shows whichever drawing is closest to the way the ship points. The pack keeps
+that design [1]. Rendering a ship is therefore not image rotation but <em>frame selection</em>: compute one
+integer from the heading, find that frame's rectangle in a sheet, and copy the rectangle to the screen. The
+rest of this note builds those steps (Section III), puts them in a game loop (Section IV), moves them to
+other engines (Section V), and adds your own content (Section VI).</p>
+
+<h3>II. What Is in the Pack</h3>
+<p>Each ship lives in a folder <code>&lt;edition&gt;/ships/&lt;slug&gt;/</code>, where the edition is
+<code>conex</code> (1997), <code>override</code> (1998) or <code>konex</code>. Table I lists the files.
+<code>catalog.json</code> at the root lists every edition and ship, and is the only file a program needs to
+discover the rest [2].</p>
+<figure>
+<figcaption><b>Table I.</b> Files in one ship folder</figcaption>
+<table>
+<thead><tr><th>File</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td><code>sheet-alpha.png</code></td><td>36 frames, 6 × 6, transparent; the file to draw from</td></tr>
+<tr><td><code>sheet.png</code>, <code>mask.png</code></td><td>The 1997 opaque sheet and its 1-bit mask</td></tr>
+<tr><td><code>frames/NN.png</code></td><td>The same 36 frames as single files, 00–35</td></tr>
+<tr><td><code>target</code>, <code>yard</code>, <code>comm</code>, <code>thumb</code></td><td>Targeting, shipyard, comm and thumbnail pictures</td></tr>
+<tr><td><code>ship.json</code></td><td>Name, frame size, file names and the 1997 statistics</td></tr>
+</tbody></table>
+</figure>
+<p>The part of <code>ship.json</code> a renderer needs is the <code>sprite</code> object (Listing 1). Frame sizes
+differ between ships (36 to 120 pixels), so never hard-code them; read them here.</p>
+<figure>
+<figcaption><b>Listing 1.</b> The <code>sprite</code> block of <code>conex/ships/dart/ship.json</code></figcaption>
+<pre>"sprite": { "frame_width": 80, "frame_height": 80,
+            "columns": 6, "rows": 6, "frames": 36,
+            "rotation": "frame 00 nose-up, 10 degrees
+                         clockwise per frame" }</pre>
+</figure>
+
+<h3>III. The Core: Heading to Pixels</h3>
+<h4>A. The Convention</h4>
+<p>Heading <i>θ</i> is measured in degrees clockwise from straight up, which matches screen coordinates whose
+<i>y</i> axis points down. Frame 00 is nose-up and each following frame is 10° further clockwise [3, lines 12–17].
+The frame to show and its place in the sheet follow directly:</p>
+<p class="eq"><span>f = ⌊θ / 10⌋ mod 36</span><span>(1)</span></p>
+<p class="eq"><span>x = (f mod 6) · w,&nbsp;&nbsp; y = ⌊f / 6⌋ · h</span><span>(2)</span></p>
+<p>where <i>w</i> and <i>h</i> are <code>frame_width</code> and <code>frame_height</code>. The modulo in (1) must
+wrap negative headings too, which JavaScript's <code>%</code> does not; Listing 2 corrects for it.</p>
+<figure>
+<figcaption><b>Listing 2.</b> Frame selection, <code>lib/yodacon-ship-pack.js:115</code> and <code>:131</code></figcaption>
+<pre>export function frameIndex(headingDeg) {
+  const i = Math.floor(headingDeg / 10) % FRAMES;
+  return i &lt; 0 ? i + FRAMES : i;      <span class="c">// -10° → 35</span>
+}
+export function frameRect(ship, i) {
+  const { w, h, columns } = spriteOf(ship);
+  const f = frameIndex(i * 10);
+  return { x: (f % columns) * w,          <span class="c">// (2)</span>
+           y: Math.floor(f / columns) * h, w, h };
+}</pre>
+</figure>
+<h4>B. Loading</h4>
+<p>A ship is its <code>ship.json</code> plus one decoded image. <code>loadShip()</code> fetches both
+(Listing 3) and caches the image, so ten ships of one kind cost one download [3, line 56].</p>
+<figure>
+<figcaption><b>Listing 3.</b> Loading, <code>lib/yodacon-ship-pack.js:156</code></figcaption>
+<pre>export async function loadShip(edition = "conex",
+    slug = "yodacon", base = PACK_BASE) {
+  const ship = await loadShipMeta(edition, slug,
+                                  base, "ships");
+  ship.sheet = await loadImage(ship.urls.sheet);
+  return ship;
+}</pre>
+</figure>
+<h4>C. Drawing</h4>
+<p>Drawing copies the rectangle from (2) to a point centred on the ship (Listing 4). Two details matter for 1997
+pixel art: turn off image smoothing, and round the destination to whole pixels; scale only by whole numbers, or the
+pixels smear.</p>
+<figure>
+<figcaption><b>Listing 4.</b> Drawing, <code>lib/yodacon-ship-pack.js:182</code></figcaption>
+<pre>export function drawShip(ctx, ship, headingDeg,
+                         x, y, scale = 1) {
+  const r = frameRect(ship, frameIndex(headingDeg));
+  const w = r.w * scale, h = r.h * scale;
+  ctx.imageSmoothingEnabled = false;  <span class="c">// crisp pixels</span>
+  ctx.drawImage(ship.sheet, r.x, r.y, r.w, r.h,
+    Math.round(x - w / 2), Math.round(y - h / 2), w, h);
+}</pre>
+</figure>
+
+<h3>IV. A First Game Loop</h3>
+<p>With Listings 2–4, a flyable ship is a page and some 40 lines. Create <code>index.html</code> beside a copy of
+the pack (or import the library from yodacon.org or jsDelivr [3, lines 6–8]) and serve the folder with any static
+server, for example <code>python3 -m http.server</code>; ES modules do not load from <code>file://</code>.
+Listing 5 is the loop of the Canvas example [4]: turn with the arrow keys, thrust along the
+<em>frame shown</em> so motion matches the picture, integrate by the frame time, and draw.</p>
+<figure>
+<figcaption><b>Listing 5.</b> Game loop, after <code>examples/canvas/index.html:34–84</code></figcaption>
+<pre>import { loadShip, drawShip }
+  from "./yodacon-ship-pack/lib/yodacon-ship-pack.js";
+const ship = await loadShip("conex", "dart");
+const s = { x: 380, y: 260, vx: 0, vy: 0, heading: 0 };
+const keys = {};
+onkeydown = (e) =&gt; keys[e.key] = true;
+onkeyup   = (e) =&gt; keys[e.key] = false;
+let last = performance.now();
+requestAnimationFrame(function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  if (keys.ArrowLeft)  s.heading -= 180 * dt;
+  if (keys.ArrowRight) s.heading += 180 * dt;
+  s.heading = (s.heading + 360) % 360;
+  if (keys.ArrowUp) {          <span class="c">// along the frame shown</span>
+    const a = Math.floor(s.heading / 10) * 10
+              * Math.PI / 180;
+    s.vx += Math.sin(a) * 200 * dt;    <span class="c">// x: sin θ</span>
+    s.vy -= Math.cos(a) * 200 * dt;    <span class="c">// y: −cos θ</span>
+  }
+  s.x += s.vx * dt;  s.y += s.vy * dt;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawShip(ctx, ship, s.heading, s.x, s.y, 1);
+  requestAnimationFrame(frame);
+});</pre>
+</figure>
+<p>The unit vector for heading <i>θ</i> under this convention is (sin <i>θ</i>, −cos <i>θ</i>). The demo and the flying games in
+<code>projects/</code> (Orbital Defence, Slingshot, ConEx Courier) use it, so they are worked examples of the same loop.</p>
+
+<h3>V. Moving to Another Engine</h3>
+<p>Nothing above depends on the browser except <code>drawImage</code>. An engine needs three things: the sheet
+as a texture, the frame grid from Listing 1, and Equation (1). Do <em>not</em> also rotate the sprite; the
+frame already shows the rotation.</p>
+<h4>A. Phaser</h4>
+<p>Phaser slices the sheet itself when given the frame size, and the frame number is (1) [5]:</p>
+<figure>
+<figcaption><b>Listing 6.</b> <code>examples/phaser/index.html:45</code> and <code>:71–72</code></figcaption>
+<pre>this.load.spritesheet("ship", ship.urls.sheet,
+                      { frameWidth, frameHeight });
+<span class="c">// each update:</span>
+this.ship.setFrame(frameIndex(this.heading));</pre>
+</figure>
+<h4>B. Godot 4</h4>
+<p>A <code>Sprite2D</code> with the sheet as its texture slices a grid through <code>hframes</code> and
+<code>vframes</code>; the frame is (1) again. Turn off filtering on the texture for crisp pixels.</p>
+<figure>
+<figcaption><b>Listing 7.</b> GDScript for a <code>Sprite2D</code></figcaption>
+<pre>extends Sprite2D
+var heading := 0.0       <span class="c"># degrees clockwise from up</span>
+func _ready():
+    texture = load("res://ships/dart/sheet-alpha.png")
+    hframes = 6; vframes = 6
+    texture_filter = TEXTURE_FILTER_NEAREST
+func _process(delta):
+    heading = fposmod(heading + Input.get_axis(
+        "ui_left", "ui_right") * 180.0 * delta, 360.0)
+    frame = int(heading / 10.0) % 36</pre>
+</figure>
+<h4>C. Any Other Engine</h4>
+<p>In three.js, pygame, raylib, SDL, Unity or Bevy the pattern is the same: load <code>sheet-alpha.png</code>,
+compute the source rectangle with (2), and draw it. In UV terms the rectangle is
+<i>u</i> = (<i>f</i> mod 6)/6, <i>v</i> = ⌊<i>f</i>/6⌋/6 with size 1/6 × 1/6, flipping <i>v</i> in engines whose
+texture origin is the bottom left [6]. If an engine cannot take a sheet, use the single files
+<code>frames/NN.png</code> and index them by <i>f</i>.</p>
+
+<h3>VI. Building On It</h3>
+<h4>A. Finding Ships</h4>
+<p>Read <code>catalog.json</code> instead of hard-coding slugs, so new ships appear in your game when the pack
+grows. <code>loadCatalog()</code> [3, line 77] returns every edition with every ship's file URLs.</p>
+<h4>B. Using the 1997 Numbers</h4>
+<p><code>ship.json</code> keeps each ship's original <i>Escape Velocity</i> statistics under <code>stats</code>:
+<code>Speed</code>, <code>Accel</code>, <code>Maneuver</code>, <code>Shield</code>, <code>Armor</code>,
+<code>Holds</code> and more. Scale them into your units rather than inventing new ones; Fleet Tactics and ConEx
+Courier in <code>projects/</code> show two such mappings in their READMEs.</p>
+<h4>C. Licence and Credit</h4>
+<p>The art is GPL-2.0-or-later. Keep the credit line (<code>CREDIT</code> in the library) in your game, and if you
+ship it, add it to the pack's leaderboard through <code>USED-IN.md</code> [7].</p>
+
+<h3>VII. Conclusion</h3>
+<p>Rendering a pre-rotated sprite comes down to Equation (1), Equation (2) and one copy of a rectangle. Those
+three steps are about a dozen lines in the pack's library and carry unchanged into any engine. Start from
+Listing 5, swap in your engine's draw call, and the 1997 fleet is flying in your project.</p>
+
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “README,” 2026. [Online]. Available: github.com/yodacon/yodacon-ship-pack</li>
+  <li>Yodacon Ship Pack, <i>catalog.json</i>, v2.0.0, 2026.</li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>Yodacon Ship Pack, “Canvas 2D example,” <i>examples/canvas/</i>, 2026.</li>
+  <li>Yodacon Ship Pack, “Phaser example,” <i>examples/phaser/</i>, Phaser 3.80.1, 2026.</li>
+  <li>Yodacon Ship Pack, “three.js example,” <i>examples/threejs/</i>, three.js 0.160.0, 2026.</li>
+  <li>Yodacon Ship Pack, <i>USED-IN.md</i> and <i>CONTRIBUTING.md</i>, 2026.</li>
+</ol>
+</div>
+</article>
 
 <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997),
 GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
