@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Tactics · Yodacon Ship Pack</title>
+<meta name="description" content="Draft a fleet of ConEx ships within a budget, then fight it out card by card: comm portraits, stats from the 1997 records.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="tactics.css">
+<script type="module" src="tactics.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Fleet Tactics</h1>
+  <p id="phase" class="phase yc-crt">Draft</p>
+</header>
+
+<main class="board yc-console">
+  <section class="yc-panel" aria-labelledby="enemy-h">
+    <h2 id="enemy-h">Opposing fleet</h2>
+    <div id="enemy" class="row"></div>
+  </section>
+  <section class="yc-panel middle" aria-labelledby="ctl-h">
+    <h2 id="ctl-h" class="sr-title">Orders</h2>
+    <p id="hint" class="hint"></p>
+    <p class="buttons"><button type="button" id="go" class="yc-plate yc-go">Battle</button>
+      <button type="button" id="again" class="yc-plate" hidden>New draft</button>
+      <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    <ol id="log" class="log yc-crt" aria-live="polite"></ol>
+  </section>
+  <section class="yc-panel" aria-labelledby="mine-h">
+    <h2 id="mine-h">Your fleet <span id="budget" class="budget"></span></h2>
+    <div id="mine" class="row"></div>
+  </section>
+</main>
+
+<footer class="credit">
+  <p>Ships, comm portraits and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</footer>
+</body>
+</html>
