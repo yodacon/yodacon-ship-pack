@@ -13,6 +13,7 @@ To try code without copying anything, use the [playground](../playground/).
 | [**Gauntlet**](gauntlet/) | **Canvas game.** Pick any of the thirteen designs and fight the others one by one, weakest first, ending with the 1998 Yodacon. Every hull flies by its record. One or two players, keyboard or gamepads (Gamepad API). |
 | [**Rally**](rally/) | **Canvas game.** Three laps through gates around planets against five computer racers; every hull handles by its record. A following camera, a minimap, three tracks and best times. |
 | [**Convoy**](convoy/) | **Canvas + DOM game.** Escort a Large Pin freighter through six pirate raids with two wingmen who take EV-style orders. The target panel shows each ship's 1997 targeting picture; hails come with comm portraits. |
+| [**Picket**](picket/) | **Canvas game.** Tower defence: build six hulls beside the lane and hold the station against fifteen waves; raiders fly on the frame for their direction, your ships turn to face their targets. Prices, range and guns from the 1997 records. |
 | [**Fleet Tactics**](fleet-tactics/) | **DOM card game.** Draft ships within a budget, then fight card by card against a computer that drafts for value and focuses fire. Hull, firepower and initiative come from each ship's 1997 record. |
 | [**Orbital Defence**](orbital-defence/) | **Canvas game.** Hold a planet against waves of ConEx ships. Fire the planet's cannon, and between waves buy Advisor patrols that orbit and fire on their own, or repair. |
 | [**Slingshot**](slingshot/) | **Canvas game.** Gravity golf with the 1997 Dart: drag back and let go, and only the planets steer it through the gate. Six levels against par. |
@@ -32,6 +33,8 @@ To try code without copying anything, use the [playground](../playground/).
 [![Rally](rally/screenshot.png)](rally/)
 
 [![Convoy](convoy/screenshot.png)](convoy/)
+
+[![Picket](picket/screenshot.png)](picket/)
 
 [![Fleet Tactics](fleet-tactics/screenshot.png)](fleet-tactics/)
 

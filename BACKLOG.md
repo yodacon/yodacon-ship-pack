@@ -73,6 +73,8 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 - [x] Gauntlet (all thirteen designs, one round each; two players, Gamepad API)
 - [x] Rally (gate racing round planets; every hull handles by its record)
 - [x] Convoy (escort a freighter; wing orders, targeting pictures, comm hails)
+- [x] Picket (tower defence; ships turn to face their targets)
+- [ ] Recall (memory: yard picture to targeting picture)
 
 ## Assets
 

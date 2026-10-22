@@ -32,6 +32,8 @@ moved or renamed file a major one. A tag's files never change.
   tracks of gates round the planets, five computer racers) and Convoy (escort
   a Large Pin with two wingmen on EV-style orders; targeting pictures and comm
   hails). The three Pins count as one hull in all of them
+- **Picket**: tower defence; six hulls with roles from their records, two maps,
+  upgrades, a `tick()` play-test
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

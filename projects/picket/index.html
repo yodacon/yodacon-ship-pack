@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picket · Yodacon Ship Pack</title>
+<meta name="description" content="Tower defence with the pack's ships: build a picket of six hulls beside the lane and hold the station against fifteen waves of raiders.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="picket.css">
+<script type="module" src="picket.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Picket</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Credits</span><span class="yc-value" id="credits">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Station</span><span class="yc-value" id="station">20/20</span></span>
+    <span class="yc-readout"><span class="yc-label">Wave</span><span class="yc-value" id="wave">0/15</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <div class="main-col">
+    <section class="yc-viewport view" aria-label="The lane and your picket">
+      <canvas id="screen" width="800" height="480"></canvas>
+      <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    </section>
+    <p class="buttons">
+      <button type="button" id="launch" class="yc-plate yc-go">Launch wave 1</button>
+      <button type="button" id="fast" class="yc-plate" aria-pressed="false">Speed: ×1</button>
+      <button type="button" id="new" class="yc-plate">New game</button>
+      <label class="map">Map <select id="map" class="yc-plate"></select></label>
+      <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button>
+    </p>
+  </div>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Build</h2>
+      <div id="shop" class="shop"></div>
+    </section>
+    <section class="yc-panel">
+      <h2>Selected</h2>
+      <div id="info" class="info"></div>
+    </section>
+    <section class="yc-panel">
+      <h2>How to play</h2>
+      <p class="muted">Pick a ship, then click a square beside the lane. Each turns to face what it shoots and fires on the raider
+        furthest along. <kbd>Space</kbd> launches the next wave; the station pays between waves. Click a ship to upgrade
+        (<kbd>U</kbd>) or sell (<kbd>X</kbd>); <kbd>F</kbd> doubles the speed. A Large Pin costs the station five hull.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships, portraits, targeting pictures and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998),
+  with konex's Advisor and Citrus, GPL-2.0-or-later —
+  <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>. The station is the pack's generated ice planet.</p>
+</footer>
+</body>
+</html>
