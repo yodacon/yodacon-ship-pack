@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wake · Yodacon Ship Pack</title>
+<meta name="description" content="Light cycles with the pack's ships: four ships on a grid, each leaving an ion wake; be the last one flying. Five arenas and a jump.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="wake.css">
+<script type="module" src="wake.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Wake</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">3</span></span>
+    <span class="yc-readout"><span class="yc-label">Arena</span><span class="yc-value" id="arena">1/5</span></span>
+    <span class="yc-readout"><span class="yc-label">Jump</span><span class="yc-value" id="jump">ready</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The grid">
+    <canvas id="screen" width="768" height="528"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h" hidden>
+      <h2 id="pick-h">Choose your ship</h2>
+      <div id="hulls" class="hulls"></div>
+      <p id="best" class="best"></p>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>On the grid</h2>
+      <ul id="riders" class="riders"></ul>
+    </section>
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> turn ·
+        <kbd>Space</kbd> jump · <kbd>Enter</kbd> another game. On a touch screen, swipe the grid to turn and tap it to jump.</p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Every ship leaves an ion wake. Fly into a wake, a rock or the edge and you are out; be the last one
+        flying to clear the arena. Five arenas, each faster, with three rivals each; three lives.</p>
+      <p class="muted"><b>Jump</b>: once a round, three cells straight ahead over anything in between. It leaves a gap in
+        your wake that anyone can use. From the fourth arena the rivals have one too.</p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Turn left">◀</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Turn up">▲</button>
+    <button type="button" class="yc-plate" data-pad="down" aria-label="Turn down">▼</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Turn right">▶</button>
+    <button type="button" class="yc-plate" data-pad="jump" aria-label="Jump">JUMP</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>

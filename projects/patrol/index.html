@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patrol · Yodacon Ship Pack</title>
+<meta name="description" content="Pac-Man with the pack's ships: sweep a maze of asteroid belts of cargo pods while four pirates hunt you, each its own way. Fuel cells, a decoy beacon and a Large Pin freighter.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="patrol.css">
+<script type="module" src="patrol.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Patrol</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Ships</span><span class="yc-value" id="lives">3</span></span>
+    <span class="yc-readout"><span class="yc-label">Level</span><span class="yc-value" id="level">1</span></span>
+    <span class="yc-readout"><span class="yc-label">Decoy</span><span class="yc-value" id="decoy">ready</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The maze">
+    <canvas id="screen" width="648" height="528"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h" hidden>
+      <h2 id="pick-h">Choose your ship</h2>
+      <div id="hulls" class="hulls"></div>
+      <p id="best" class="best"></p>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p id="mode" class="mode" aria-live="polite"></p>
+      <p class="muted"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> steer ·
+        <kbd>Space</kbd> or <kbd>E</kbd> decoy · <kbd>Enter</kbd> another game. On a touch screen, swipe to steer, tap to drop the decoy.</p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>The pirates</h2>
+      <p class="muted"><b class="c1">Dart</b> chases you. <b class="c2">Necromancer</b> heads four tiles in front of you.
+        <b class="c3">Trident</b> aims past you from wherever the Dart is. <b class="c4">Tomaquad</b> chases until it gets close,
+        then loses its nerve. From level 4 the 1998 Yodacon leads in the Dart's place, a little faster.</p>
+      <p class="muted">Pods 10, fuel cells 50: they turn the pirates to run, and each one caught doubles, 200 to 1,600.
+        The Large Pin freighter calls twice a level below the hold. A ship every 10,000.</p>
+      <p class="muted"><b>Decoy</b>: once a level, a beacon where you are; for six seconds the pirates go after it instead.</p>
+    </section>
+  </aside>
+  <div class="pad" aria-label="Touch controls">
+    <button type="button" class="yc-plate" data-pad="left" aria-label="Left">◀</button>
+    <button type="button" class="yc-plate" data-pad="up" aria-label="Up">▲</button>
+    <button type="button" class="yc-plate" data-pad="down" aria-label="Down">▼</button>
+    <button type="button" class="yc-plate" data-pad="right" aria-label="Right">▶</button>
+    <button type="button" class="yc-plate" data-pad="decoy" aria-label="Decoy">DECOY</button>
+  </div>
+</main>
+
+<footer class="credit">
+  <p>Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and Citrus,
+  GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.</p>
+</footer>
+</body>
+</html>
