@@ -36,6 +36,8 @@ moved or renamed file a major one. A tag's files never change.
   upgrades, a `tick()` play-test
 - **Recall**: a pure-DOM memory game matching each ship across two of its
   pictures, three levels
+- **Blockade**: a vertical scroller; banking through the frames, two stages
+  with the Large Pin and the 1998 Yodacon as bosses
 - **Pack page**: “Made with it”, the example games as inspiration, Konquest
   first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`

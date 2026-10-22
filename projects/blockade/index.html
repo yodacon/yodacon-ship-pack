@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blockade · Yodacon Ship Pack</title>
+<meta name="description" content="A vertical scroller with the pack's ships: bank through the frames, run two stages of raiders and two capital ships.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../lib/yodacon-style.css">
+<link rel="stylesheet" href="blockade.css">
+<script type="module" src="blockade.js"></script>
+</head>
+<body class="yc-space">
+<header class="top">
+  <p class="crumbs"><a href="../">← Projects</a> · <a href="../../">Ship Pack</a></p>
+  <h1 class="yc-title">Blockade</h1>
+  <div class="readouts yc-crt">
+    <span class="yc-readout"><span class="yc-label">Score</span><span class="yc-value" id="score">0</span></span>
+    <span class="yc-readout"><span class="yc-label">Lives</span><span class="yc-value" id="lives">3</span></span>
+    <span class="yc-readout"><span class="yc-label">Stage</span><span class="yc-value" id="stage">1/2</span></span>
+  </div>
+</header>
+
+<main class="game yc-console">
+  <section class="yc-viewport view" aria-label="The blockade">
+    <canvas id="screen" width="480" height="640"></canvas>
+    <div id="banner" class="banner" hidden><p id="banner-title" class="banner-title"></p><p id="banner-text"></p></div>
+    <section id="pick" class="pick" aria-labelledby="pick-h">
+      <h2 id="pick-h">Choose your ship</h2>
+      <div id="hulls" class="hulls"></div>
+    </section>
+  </section>
+  <aside class="side">
+    <section class="yc-panel">
+      <h2>Controls</h2>
+      <p class="muted"><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly ·
+        <kbd>Space</kbd> fire · <kbd>Enter</kbd> another run. On a touch screen your ship follows your finger and fires on its own.
+        Gamepads: stick, A or RT.</p>
+      <p><label class="auto"><input type="checkbox" id="auto"> Fire on its own</label></p>
+      <p class="buttons"><button type="button" id="new" class="yc-plate">Change ship</button>
+        <button type="button" id="mute" class="yc-plate" aria-pressed="false">Sound: on</button></p>
+    </section>
+    <section class="yc-panel">
+      <h2>How it works</h2>
+      <p class="muted">Your ship flies nose up and banks through frames 35 and 34 (or 1 and 2) as it strafes. Raiders come in on
+        frame 18; Darts and Defenders that dive turn on their real frames to come at you. Pick up <b>P</b> for spread shot and
+        <b>S</b> for shield. Each stage ends with a capital ship: the Large Pin, then the 1998 Yodacon.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="credit">
+  <p>Ships and stats from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997; ConEx Override, 1998), with konex's Advisor and
+  Citrus, GPL-2.0-or-later — <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+  The planets are the pack's generated art.</p>
+</footer>
+</body>
+</html>

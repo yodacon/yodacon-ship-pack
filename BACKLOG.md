@@ -75,6 +75,7 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 - [x] Convoy (escort a freighter; wing orders, targeting pictures, comm hails)
 - [x] Picket (tower defence; ships turn to face their targets)
 - [x] Recall (memory: sprite, yard, comm and targeting pictures)
+- [x] Blockade (vertical scroller; banking frames, two bosses)
 
 ## Assets
 
