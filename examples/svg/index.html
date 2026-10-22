@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>SVG Sprite · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 860px; margin: 0 auto; }
+  #scene { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #05060b; }
+  #scene image { image-rendering: pixelated; }   /* keep the 1997 pixels square at any size */
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  button { font: inherit; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: inherit; touch-action: none; user-select: none; }
+  button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  output { font-family: ui-monospace, monospace; color: var(--muted); }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
+  <h1>SVG sprite</h1>
+  <p>Every ship is a nested <code>&lt;svg&gt;</code> holding the whole <code>sheet-alpha.png</code>; its
+    <code>viewBox</code> looks at one frame, and the nested viewport clips the rest. Fly with ← → ↑, or the
+    buttons; three escorts orbit the planet.</p>
+
+  <svg id="scene" viewBox="0 0 640 400" role="img" aria-labelledby="scene-title">
+    <title id="scene-title">Loading ships</title>
+    <defs>
+      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="6" dy="8" stdDeviation="2" flood-color="#000" flood-opacity="0.8"/>
+      </filter>
+    </defs>
+    <g id="stars" fill="#8a93b8"></g>
+    <image id="planet" href="../../planets/gas/large/planet.png" x="272" y="152" width="96" height="96"/>
+    <g id="ships" filter="url(#shadow)"></g>
+  </svg>
+
+  <div class="controls">
+    <button type="button" data-key="ArrowLeft" aria-label="Turn left">⟲</button>
+    <button type="button" data-key="ArrowUp" aria-label="Thrust">▲</button>
+    <button type="button" data-key="ArrowRight" aria-label="Turn right">⟳</button>
+    <output id="readout" aria-live="off"></output>
+  </div>
+
+  <p>Try <a href="?edition=override&amp;ship=callisto">?edition=override&amp;ship=callisto</a> or
+    <a href="?edition=conex&amp;ship=dart">?edition=conex&amp;ship=dart</a>.</p>
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a>.
+    The planet is the pack's generated art.</p>
+</main>
+
+<script type="module">
+  // Swap for "https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/lib/yodacon-ship-pack.js"
+  import { loadShipMeta, frameIndex, frameRect } from "../../lib/yodacon-ship-pack.js";
+
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 640, H = 400;
+  const q = new URLSearchParams(location.search);
+  const svgEl = (name, attrs) => {
+    const el = document.createElementNS(NS, name);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    return el;
+  };
+
+  // A ship: a nested <svg>, one frame in size, holding the whole sheet. Its
+  // viewBox picks the frame; anything outside the viewBox is clipped.
+  function makeShip(ship, scale) {
+    const { frame_width: w, frame_height: h, columns, rows } = ship.sprite;
+    const view = svgEl("svg", { width: w * scale, height: h * scale });
+    view.append(svgEl("image", { href: ship.urls.sheet, width: w * columns, height: h * rows }));
+    document.getElementById("ships").append(view);
+    return {
+      ship,
+      place(x, y, heading) {
+        const r = frameRect(ship, frameIndex(heading));
+        view.setAttribute("viewBox", `${r.x} ${r.y} ${r.w} ${r.h}`);
+        view.setAttribute("x", x - (r.w * scale) / 2);
+        view.setAttribute("y", y - (r.h * scale) / 2);
+      },
+    };
+  }
+
+  const [player, ...escorts] = await Promise.all([
+    loadShipMeta(q.get("edition") || "conex", q.get("ship") || "yodacon"),
+    loadShipMeta("conex", "gryphon"),
+    loadShipMeta("conex", "trident"),
+    loadShipMeta("conex", "defender"),
+  ]).then((ships) => ships.map((s) => makeShip(s, s.sprite.frame_width > 64 ? 1 : 2)));
+  document.getElementById("scene-title").textContent =
+    `${player.ship.name} flying past a gas giant, with a Gryphon, a Trident and a Defender in orbit`;
+
+  for (let i = 0; i < 90; i++) {
+    document.getElementById("stars").append(svgEl("rect", { x: Math.floor(Math.random() * W), y: Math.floor(Math.random() * H), width: 1, height: 1 }));
+  }
+
+  // Handling from ship.json, as in the Canvas example.
+  const stats = player.ship.meta.stats ?? {};
+  const MAX = (stats.Speed || 300) * 0.6, ACCEL = (stats.Accel || 300) * 0.6, TURN = (stats.Maneuver || 3) * 40;
+  const s = { x: 120, y: 300, vx: 0, vy: 0, heading: 45 };
+
+  const keys = {};
+  addEventListener("keydown", (e) => { if (e.key.startsWith("Arrow")) { keys[e.key] = true; e.preventDefault(); } });
+  addEventListener("keyup", (e) => { keys[e.key] = false; });
+  for (const b of document.querySelectorAll("[data-key]")) {
+    b.addEventListener("pointerdown", () => { keys[b.dataset.key] = true; });
+    for (const ev of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(ev, () => { keys[b.dataset.key] = false; });
+  }
+
+  function update(dt, t) {
+    if (keys.ArrowLeft) s.heading -= TURN * dt;
+    if (keys.ArrowRight) s.heading += TURN * dt;
+    s.heading = (s.heading + 360) % 360;
+    if (keys.ArrowUp) {
+      const a = (frameIndex(s.heading) * 10 * Math.PI) / 180;   // thrust along the frame shown
+      s.vx += Math.sin(a) * ACCEL * dt;
+      s.vy -= Math.cos(a) * ACCEL * dt;
+    }
+    const v = Math.hypot(s.vx, s.vy);
+    if (v > MAX) { s.vx *= MAX / v; s.vy *= MAX / v; }
+    s.x = (s.x + s.vx * dt + W) % W;
+    s.y = (s.y + s.vy * dt + H) % H;
+    player.place(s.x, s.y, s.heading);
+
+    // Escorts orbit clockwise: at angle φ from up, they move along φ + 90°.
+    escorts.forEach((e, i) => {
+      const R = 90 + 38 * i, phi = (t * (40 - 8 * i) + 120 * i) % 360, rad = (phi * Math.PI) / 180;
+      e.place(W / 2 + R * Math.sin(rad), H / 2 - R * Math.cos(rad), phi + 90);
+    });
+    document.getElementById("readout").textContent =
+      `${player.ship.name} · heading ${Math.round(s.heading)}° · frame ${String(frameIndex(s.heading)).padStart(2, "0")}`;
+  }
+
+  // Fixed 60 Hz updates; the browser repaints the SVG when its attributes change.
+  const STEP = 1 / 60;
+  let last = performance.now(), acc = 0, t = 0;
+  requestAnimationFrame(function frame(now) {
+    acc += Math.min(0.25, (now - last) / 1000);
+    last = now;
+    while (acc >= STEP) { t += STEP; update(STEP, t); acc -= STEP; }
+    requestAnimationFrame(frame);
+  });
+</script>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 8 · October 2026</p>
+  <h2 class="title" id="note-title">A Viewport per Ship: How the SVG Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The SVG example shows each pack ship as a nested <code>&lt;svg&gt;</code> that holds the whole <code>sheet-alpha.png</code> and selects one frame with its <code>viewBox</code>, clipping the rest. This note follows the page's source: the scene in user units, the ship as a viewport, orbiting escorts that face their direction of travel, and a loop with no drawing step.</p>
+<p class="terms"><i>Index Terms</i>—SVG, viewBox, sprite sheets, pixel art.</p>
+
+<h3>I. Introduction</h3>
+<p>SVG can show part of an image without any clipping code: a nested <code>&lt;svg&gt;</code> element
+establishes its own viewport, and its <code>viewBox</code> chooses which region of its content fills that
+viewport. The SVG example uses this to make each pack ship a small window onto its sprite sheet, then flies
+one ship and orbits three more around a planet. The page is <code>examples/svg/index.html</code>.</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Read at</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>ship.json</code> ×4</td><td><code>index.html:92</code></td><td>Frame grid, stats, names</td></tr>
+<tr><td><code>sheet-alpha.png</code></td><td><code>index.html:78</code></td><td>The pixels, as an SVG <code>&lt;image&gt;</code></td></tr>
+<tr><td><code>planets/gas/large/planet.png</code></td><td><code>index.html:42</code></td><td>The planet, a plain <code>&lt;image&gt;</code></td></tr>
+<tr><td><code>frameRect()</code>, <code>frameIndex()</code></td><td><code>index.html:62</code></td><td>Which cell to show</td></tr>
+</tbody></table>
+</figure>
+<p>Only metadata is fetched by script; the browser loads the sheets itself when the <code>&lt;image&gt;</code>
+elements reference them, so no image is decoded in JavaScript.</p>
+
+<h3>III. The Scene</h3>
+<p>The scene is one <code>&lt;svg viewBox="0 0 640 400"&gt;</code> (<code>index.html:34</code>). All
+positions in the script are in those 640 × 400 user units, and CSS stretches the whole drawing to the page
+width, so the game logic never deals with screen pixels. One rule, <code>image-rendering: pixelated</code>
+(<code>index.html:18</code>), keeps the 1997 pixels square at whatever size the scene ends up. Stars are
+1 × 1 <code>&lt;rect&gt;</code>s and the ships share a drop-shadow <code>&lt;filter&gt;</code>
+(<code>index.html:37–39</code>), an effect that costs one attribute here and a second
+drawing pass on a canvas.</p>
+
+<h3>IV. One Ship, One Viewport</h3>
+<p><code>makeShip()</code> (Listing 1) builds a nested <code>&lt;svg&gt;</code> one frame in size (times a
+whole-number scale) and puts the entire sheet inside it at its natural size, <i>6w</i> × <i>6h</i>. Nothing
+in the sheet moves afterwards. To show frame <i>f</i>, <code>place()</code> sets</p>
+<p class="eq"><span>viewBox = ((f mod 6) · w,&nbsp; ⌊f / 6⌋ · h,&nbsp; w,&nbsp; h)</span><span>(1)</span></p>
+<p>which is exactly <code>frameRect()</code>'s rectangle, so the viewport shows that cell and clips the other
+35; nested SVG viewports clip by default. Position is the element's <code>x</code>/<code>y</code>, offset by
+half its size so the ship is centred on the point.</p>
+<figure>
+<figcaption><b>Listing 1.</b> A ship as a nested viewport, <code>index.html:75–87</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">75</span>function makeShip(ship, scale) {</span><span class="l"><span class="n">76</span>  const { frame_width: w, frame_height: h, columns, rows } = ship.sprite;</span><span class="l"><span class="n">77</span>  const view = svgEl(&quot;svg&quot;, { width: w * scale, height: h * scale });</span><span class="l"><span class="n">78</span>  view.append(svgEl(&quot;image&quot;, { href: ship.urls.sheet, width: w * columns, height: h * rows }));</span><span class="l"><span class="n">79</span>  document.getElementById(&quot;ships&quot;).append(view);</span><span class="l"><span class="n">80</span>  return {</span><span class="l"><span class="n">81</span>    ship,</span><span class="l"><span class="n">82</span>    place(x, y, heading) {</span><span class="l"><span class="n">83</span>      const r = frameRect(ship, frameIndex(heading));</span><span class="l"><span class="n">84</span>      view.setAttribute(&quot;viewBox&quot;, `${r.x} ${r.y} ${r.w} ${r.h}`);</span><span class="l"><span class="n">85</span>      view.setAttribute(&quot;x&quot;, x - (r.w * scale) / 2);</span><span class="l"><span class="n">86</span>      view.setAttribute(&quot;y&quot;, y - (r.h * scale) / 2);</span><span class="l"><span class="n">87</span>    },</span></pre>
+</figure>
+
+<h3>V. Heading and Motion</h3>
+<p>The player's update is the Canvas example's [2]: turn, thrust along the frame shown, cap the speed, wrap at
+the edges. Only the last step differs, a call to <code>place()</code> instead of a draw. The escorts
+(Listing 2) orbit clockwise: at angle <i>φ</i> from up a ship is at (<i>c<sub>x</sub></i> + <i>R</i> sin
+<i>φ</i>, <i>c<sub>y</sub></i> − <i>R</i> cos <i>φ</i>), and its velocity points along</p>
+<p class="eq"><span>θ = φ + 90°</span><span>(2)</span></p>
+<p>so each is drawn with frame <code>frameIndex(φ + 90)</code> and always faces the way it is going.</p>
+<figure>
+<figcaption><b>Listing 2.</b> The escorts, <code>index.html:132–136</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">132</span><span class="c">// Escorts orbit clockwise: at angle φ from up, they move along φ + 90°.</span></span><span class="l"><span class="n">133</span>escorts.forEach((e, i) =&gt; {</span><span class="l"><span class="n">134</span>  const R = 90 + 38 * i, phi = (t * (40 - 8 * i) + 120 * i) % 360, rad = (phi * Math.PI) / 180;</span><span class="l"><span class="n">135</span>  e.place(W / 2 + R * Math.sin(rad), H / 2 - R * Math.cos(rad), phi + 90);</span><span class="l"><span class="n">136</span>});</span></pre>
+</figure>
+
+<h3>VI. Drawing</h3>
+<p>There is no draw function. The loop (<code>index.html:142</code>) only updates attributes, and the
+browser repaints the changed parts of the SVG. That is the trade: SVG costs a DOM element per ship, which
+suits tens of ships, not thousands, but gives hit-testing, accessibility (the scene's
+<code>&lt;title&gt;</code>, <code>index.html:35</code>), CSS styling and filters for nothing.</p>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Copy <code>makeShip()</code> and the <code>image-rendering</code> rule.</li>
+  <li>Call <code>place(x, y, heading)</code> from your own update.</li>
+  <li>Put the ships inside any SVG: a map, a diagram, an editor canvas.</li>
+</ol>
+<p>The same window-onto-a-sheet idea, done with a CSS background instead of a viewport, is the DOM
+example [3].</p>
+
+<h3>VIII. Conclusion</h3>
+<p>A nested <code>&lt;svg&gt;</code> whose <code>viewBox</code> is Equation (1) is a complete sprite: the
+sheet is loaded once by the browser and every frame change is one attribute.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “A game loop on Canvas 2D,” Tutorial Note 3, <a href="../canvas/#note">examples/canvas/</a>.</li>
+  <li>Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="../dom/#note">examples/dom/</a>.</li>
+  <li>Yodacon Ship Pack, <i>lib/yodacon-ship-pack.js</i>, v2.0.0, 2026.</li>
+  <li>W3C, <i>Scalable Vector Graphics (SVG) 2</i>, §8.2 “The viewBox attribute,” Candidate Recommendation, 2018.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
+</body>
+</html>

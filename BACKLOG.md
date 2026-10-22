@@ -50,8 +50,8 @@ Paul's Rust/Bevy overhead tank game ([research 07](docs/research/2026-10-21-07-t
 
 ## Next: examples, one technique each
 
-- [ ] SVG sprite (`viewBox` per frame)
-- [ ] CSS-only spin (`steps(36)`)
+- [x] SVG sprite (`viewBox` per frame)
+- [x] CSS-only spin (two `steps(6)`, one per axis; `mod()` for a held heading)
 - [ ] OffscreenCanvas in a worker
 - [ ] Web Audio engine and shots
 - [ ] Gamepad API

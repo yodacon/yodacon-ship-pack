@@ -26,6 +26,8 @@ text pattern, so after editing an example run
 | [`threejs/`](threejs/) | three.js 0.160.0: a textured quad flown over a grid, and a billboard `Sprite` with `OrbitControls` (UV math explained) |
 | [`phaser/`](phaser/) | Phaser 3.80.1: `load.spritesheet`, Arcade physics, `pixelArt: true`, `setFrame` from heading |
 | [`pixi/`](pixi/) | PixiJS 8.6.6: 36 textures sharing one source, ticker-driven flight, nearest scaling |
+| [`svg/`](svg/) | SVG: a nested `<svg>` per ship whose `viewBox` picks the frame; a flyable ship and orbiting escorts |
+| [`css/`](css/) | No JavaScript: two `steps(6)` animations spin a hangar; `:has()` and CSS `mod()` hold a heading |
 
 The [demo game](../demo/) is the full version: targets, missiles, minimap,
 touch controls and the EV-style info panel. The [library reference](../lib/README.md)

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>CSS-Only Spin · Yodacon Ship Pack</title>
+<style>
+  :root { --bg: #f2f3f8; --ink: #161a24; --muted: #5a6276; --line: #c8ccd9; --link: #1b4fb8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #090b12; --ink: #dfe4f2; --muted: #8f98b3; --line: #2a3150; --link: #8db6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--link); }
+  main { max-width: 860px; margin: 0 auto; }
+  .hangar {
+    list-style: none; margin: 0; padding: 16px; display: grid; gap: 16px 8px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); justify-items: center; align-items: end;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: #05060b radial-gradient(#ffffff40 1px, transparent 1px) 0 0 / 24px 24px;
+  }
+  .hangar li { display: grid; justify-items: center; gap: 6px; color: #c9d1ea; font-size: 13px; }
+
+  /* The sprite. Each ship sets --sheet, --w and --h (its frame size, from
+     ship.json) and --s (a whole-number scale) in its style attribute. */
+  .ship {
+    --cell-w: calc(var(--w) * var(--s) * 1px);
+    --cell-h: calc(var(--h) * var(--s) * 1px);
+    display: block;
+    width: var(--cell-w);
+    height: var(--cell-h);
+    background: var(--sheet) no-repeat 0 0 / calc(var(--cell-w) * 6) auto;
+    image-rendering: pixelated;      /* keep the 1997 pixels square */
+  }
+
+  /* Spinning: the columns step across a row six times as fast as the rows
+     step down, so the frame shown is 6 · row + column = 0, 1, 2 … 35. */
+  .ship {
+    --turn: 3.6s;                    /* one full turn; 0.1 s a frame */
+    animation: cols calc(var(--turn) / 6) steps(6) infinite,
+               rows var(--turn) steps(6) infinite;
+  }
+  @keyframes cols { to { background-position-x: calc(var(--cell-w) * -6); } }
+  @keyframes rows { to { background-position-y: calc(var(--cell-h) * -6); } }
+  .ship:hover { animation-play-state: paused; }
+
+  /* Holding a heading: frame --f is column mod(f, 6), row round(down, f / 6). */
+  body:not(:has(#spin:checked)) .ship {
+    animation: none;
+    background-position:
+      calc(mod(var(--f), 6) * var(--cell-w) * -1)
+      calc(round(down, var(--f) / 6) * var(--cell-h) * -1);
+  }
+  body:has(#h0:checked) .ship { --f: 0; }
+  body:has(#h3:checked) .ship { --f: 3; }
+  body:has(#h6:checked) .ship { --f: 6; }
+  body:has(#h9:checked) .ship { --f: 9; }
+  body:has(#h12:checked) .ship { --f: 12; }
+  body:has(#h15:checked) .ship { --f: 15; }
+  body:has(#h18:checked) .ship { --f: 18; }
+  body:has(#h21:checked) .ship { --f: 21; }
+  body:has(#h24:checked) .ship { --f: 24; }
+  body:has(#h27:checked) .ship { --f: 27; }
+  body:has(#h30:checked) .ship { --f: 30; }
+  body:has(#h33:checked) .ship { --f: 33; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ship { animation: none; }
+  }
+
+  .headings { border: 0; margin: 12px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .headings legend { padding: 0; margin-bottom: 4px; font-weight: 600; }
+  .headings label { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .credit { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a> · <a href="#note">How this page works</a></p>
+  <h1>CSS-only spin</h1>
+  <p>No JavaScript on this page. Each ship is an element whose background is its <code>sheet-alpha.png</code>;
+    two <code>steps(6)</code> animations walk the 6 × 6 grid, and the radio buttons below hold one heading
+    with <code>:has()</code> and CSS <code>mod()</code>. Hover a ship to pause it.</p>
+
+  <fieldset class="headings">
+    <legend>Heading</legend>
+    <label><input type="radio" name="heading" id="spin" checked> Spin</label>
+    <label><input type="radio" name="heading" id="h0"> 0°</label>
+    <label><input type="radio" name="heading" id="h3"> 30°</label>
+    <label><input type="radio" name="heading" id="h6"> 60°</label>
+    <label><input type="radio" name="heading" id="h9"> 90°</label>
+    <label><input type="radio" name="heading" id="h12"> 120°</label>
+    <label><input type="radio" name="heading" id="h15"> 150°</label>
+    <label><input type="radio" name="heading" id="h18"> 180°</label>
+    <label><input type="radio" name="heading" id="h21"> 210°</label>
+    <label><input type="radio" name="heading" id="h24"> 240°</label>
+    <label><input type="radio" name="heading" id="h27"> 270°</label>
+    <label><input type="radio" name="heading" id="h30"> 300°</label>
+    <label><input type="radio" name="heading" id="h33"> 330°</label>
+  </fieldset>
+
+  <ul class="hangar">
+    <li><i class="ship" role="img" aria-label="Yodacon" style="--sheet: url(../../conex/ships/yodacon/sheet-alpha.png); --w: 70; --h: 70; --s: 2"></i><span>Yodacon</span></li>
+    <li><i class="ship" role="img" aria-label="Dart" style="--sheet: url(../../conex/ships/dart/sheet-alpha.png); --w: 80; --h: 80; --s: 2"></i><span>Dart</span></li>
+    <li><i class="ship" role="img" aria-label="Large Pin" style="--sheet: url(../../conex/ships/large-pin/sheet-alpha.png); --w: 65; --h: 65; --s: 2"></i><span>Large Pin</span></li>
+    <li><i class="ship" role="img" aria-label="Tomaquad" style="--sheet: url(../../conex/ships/tomaquad/sheet-alpha.png); --w: 60; --h: 60; --s: 2"></i><span>Tomaquad</span></li>
+    <li><i class="ship" role="img" aria-label="Medium Pin" style="--sheet: url(../../conex/ships/medium-pin/sheet-alpha.png); --w: 50; --h: 50; --s: 2"></i><span>Medium Pin</span></li>
+    <li><i class="ship" role="img" aria-label="Necromancer" style="--sheet: url(../../conex/ships/necromancer/sheet-alpha.png); --w: 50; --h: 50; --s: 2"></i><span>Necromancer</span></li>
+    <li><i class="ship" role="img" aria-label="Defender" style="--sheet: url(../../conex/ships/defender/sheet-alpha.png); --w: 36; --h: 36; --s: 3"></i><span>Defender</span></li>
+    <li><i class="ship" role="img" aria-label="Small Pin" style="--sheet: url(../../conex/ships/small-pin/sheet-alpha.png); --w: 36; --h: 36; --s: 3"></i><span>Small Pin</span></li>
+    <li><i class="ship" role="img" aria-label="Trident" style="--sheet: url(../../conex/ships/trident/sheet-alpha.png); --w: 35; --h: 35; --s: 3"></i><span>Trident</span></li>
+    <li><i class="ship" role="img" aria-label="Gryphon" style="--sheet: url(../../conex/ships/gryphon/sheet-alpha.png); --w: 32; --h: 32; --s: 3"></i><span>Gryphon</span></li>
+    <li><i class="ship" role="img" aria-label="Callisto" style="--sheet: url(../../override/ships/callisto/sheet-alpha.png); --w: 72; --h: 72; --s: 2"></i><span>Callisto</span></li>
+  </ul>
+
+  <p class="credit">Ships from the Yodacon Ship Pack by Paul Richeson (ConEx, 1997), GPL-2.0-or-later —
+    <a href="https://github.com/yodacon/yodacon-ship-pack">github.com/yodacon/yodacon-ship-pack</a></p>
+</main>
+<!-- tutorial note: written by tools/example_notes.py -->
+<link rel="stylesheet" href="../paper.css">
+<article class="paper" id="note" aria-labelledby="note-title">
+<header>
+  <p class="kicker">Yodacon Ship Pack · Tutorial Note 9 · October 2026</p>
+  <h2 class="title" id="note-title">Spinning Without Script: How the CSS-Only Example Uses the Pack</h2>
+  <p class="byline">Yodacon Ship Pack project, yodacon.org/ship-pack</p>
+</header>
+<div class="cols">
+<p class="abstract"><i>Abstract</i>—The CSS-only example animates pack ships with no JavaScript: two <code>steps(6)</code> animations, one per background axis, walk the 6 × 6 sheet in frame order, and <code>mod()</code>, <code>round()</code> and <code>:has()</code> hold any heading chosen by a radio button. This note derives the frame sequence and follows the page's stylesheet.</p>
+<p class="terms"><i>Index Terms</i>—CSS animation, steps(), CSS math functions, :has(), sprite sheets.</p>
+
+<h3>I. Introduction</h3>
+<p>The CSS example has no script at all. Eleven ships spin in a hangar, and a row of radio buttons stops them
+all at one heading. Everything is in the page's stylesheet, <code>examples/css/index.html</code>, and in one
+<code>style</code> attribute per ship. It is the form to use where JavaScript is unwelcome: an e-mail-safe
+page, a README preview, a loading screen.</p>
+
+<h3>II. Assets Used</h3>
+<figure>
+<figcaption><b>Table I.</b> What the page takes from the pack</figcaption>
+<table><thead><tr><th>Asset</th><th>Where</th><th>Used for</th></tr></thead><tbody>
+<tr><td><code>sheet-alpha.png</code> ×11</td><td><code>index.html:104</code></td><td>Each ship's background</td></tr>
+<tr><td><code>ship.json</code> (copied)</td><td><code>index.html:104</code></td><td>Frame size, as <code>--w</code> and <code>--h</code></td></tr>
+</tbody></table>
+</figure>
+<p>With no script the page cannot read <code>ship.json</code>, so each ship's frame size is copied into its
+<code>style</code> attribute with the sheet URL and a whole-number scale <code>--s</code>
+(<code>--sheet</code>, <code>--w</code>, <code>--h</code>, <code>--s</code>). Those four properties are the
+only per-ship data; the rest of the page is shared rules.</p>
+
+<h3>III. The Sprite</h3>
+<p>As in the DOM example [2], an element one frame in size shows the sheet, scaled by <i>s</i>, as its
+background (Listing 1). Two derived properties, <code>--cell-w</code> and <code>--cell-h</code>, hold the
+scaled frame size so the later rules can stay short.</p>
+<figure>
+<figcaption><b>Listing 1.</b> The sprite rule, <code>index.html:27–34</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">27</span>.ship {</span><span class="l"><span class="n">28</span>  --cell-w: calc(var(--w) * var(--s) * 1px);</span><span class="l"><span class="n">29</span>  --cell-h: calc(var(--h) * var(--s) * 1px);</span><span class="l"><span class="n">30</span>  display: block;</span><span class="l"><span class="n">31</span>  width: var(--cell-w);</span><span class="l"><span class="n">32</span>  height: var(--cell-h);</span><span class="l"><span class="n">33</span>  background: var(--sheet) no-repeat 0 0 / calc(var(--cell-w) * 6) auto;</span><span class="l"><span class="n">34</span>  image-rendering: pixelated;      <span class="c">/* keep the 1997 pixels square */</span></span></pre>
+</figure>
+
+<h3>IV. Spinning With Two Step Animations</h3>
+<p>The frames run 0 to 35 across six rows of six. A single <code>steps(36)</code> animation would need the
+frames in one strip; the pack's sheets are a grid, so the page runs two animations at once (Listing 2). One
+moves <code>background-position-x</code> through six columns in <i>T</i>/6, repeating; the other moves
+<code>background-position-y</code> through six rows in <i>T</i>. At time <i>t</i> the column is
+⌊36<i>t</i>/<i>T</i>⌋ mod 6 and the row ⌊6<i>t</i>/<i>T</i>⌋, so the frame shown is</p>
+<p class="eq"><span>f = 6 · row + col = ⌊36 t / T⌋ mod 36</span><span>(1)</span></p>
+<p>which is the clockwise spin, one frame every <i>T</i>/36 = 0.1 s. The two properties are animated
+separately, so neither animation disturbs the other. Hovering pauses both with
+<code>animation-play-state</code>, and <code>prefers-reduced-motion</code> turns them off
+(<code>index.html:68</code>).</p>
+<figure>
+<figcaption><b>Listing 2.</b> The spin, <code>index.html:40–46</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">40</span>  --turn: 3.6s;                    <span class="c">/* one full turn; 0.1 s a frame */</span></span><span class="l"><span class="n">41</span>  animation: cols calc(var(--turn) / 6) steps(6) infinite,</span><span class="l"><span class="n">42</span>             rows var(--turn) steps(6) infinite;</span><span class="l"><span class="n">43</span>}</span><span class="l"><span class="n">44</span>@keyframes cols { to { background-position-x: calc(var(--cell-w) * -6); } }</span><span class="l"><span class="n">45</span>@keyframes rows { to { background-position-y: calc(var(--cell-h) * -6); } }</span><span class="l"><span class="n">46</span>.ship:hover { animation-play-state: paused; }</span></pre>
+</figure>
+
+<h3>V. Holding a Heading</h3>
+<p>A fixed frame <i>f</i> needs its column and row, and CSS can now compute both: <code>mod()</code> and
+<code>round(down, …)</code> (Listing 3). The heading itself comes from the radio buttons: for each one a rule
+<code>body:has(#h9:checked) .ship { --f: 9; }</code> sets <code>--f</code> on every ship, so the form
+state reaches the ships without a line of script. Choosing “Spin” removes the override and the animations
+resume.</p>
+<figure>
+<figcaption><b>Listing 3.</b> Frame f in CSS, <code>index.html:49–55</code></figcaption>
+<pre class="wrap"><span class="l"><span class="n">49</span>body:not(:has(#spin:checked)) .ship {</span><span class="l"><span class="n">50</span>  animation: none;</span><span class="l"><span class="n">51</span>  background-position:</span><span class="l"><span class="n">52</span>    calc(mod(var(--f), 6) * var(--cell-w) * -1)</span><span class="l"><span class="n">53</span>    calc(round(down, var(--f) / 6) * var(--cell-h) * -1);</span><span class="l"><span class="n">54</span>}</span><span class="l"><span class="n">55</span>body:has(#h0:checked) .ship { --f: 0; }</span></pre>
+</figure>
+
+<h3>VI. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Copy the <code>.ship</code> rules and the two <code>@keyframes</code>.</li>
+  <li>For each ship, write its sheet URL and its <code>frame_width</code> and <code>frame_height</code> from
+    <code>ship.json</code> into a <code>style</code> attribute.</li>
+  <li>Set <code>--turn</code> for speed, or <code>--f</code> (0–35) with <code>animation: none</code> for a
+    fixed heading.</li>
+</ol>
+<p>Browsers without <code>mod()</code> and <code>round()</code> still spin; only the held heading needs
+them.</p>
+
+<h3>VII. Conclusion</h3>
+<p>Two <code>steps(6)</code> animations on the two background axes reproduce the pack's frame order exactly,
+and CSS math picks any single frame, so a pack ship can spin or hold a heading with no JavaScript.</p>
+<h3>References</h3>
+<ol class="refs">
+  <li>Yodacon Ship Pack, “From sprite sheet to moving ship,” Tutorial Note 1, <i>examples/</i>, 2026. <a href="../#tutorial">examples/#tutorial</a></li>
+  <li>Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="../dom/#note">examples/dom/</a>.</li>
+  <li>W3C, <i>CSS Values and Units Module Level 4</i>, §10 “Stepped value functions,” Working Draft, 2024.</li>
+  <li>W3C, <i>CSS Easing Functions Level 1</i>, §3 “Step easing functions,” Candidate Recommendation, 2023.</li>
+</ol>
+</div>
+</article>
+<!-- /tutorial note -->
+</body>
+</html>

@@ -10,7 +10,7 @@ an example and the quotations and references follow.
 The note goes after the page's last </script>, and the "How this page works"
 link joins an existing line, so writing a note never moves a line it cites.
 
-    python3 tools/example_notes.py          # write all six
+    python3 tools/example_notes.py          # write every note
     python3 tools/example_notes.py --check  # exit 1 if any page is out of date
 """
 import html
@@ -541,8 +541,160 @@ an ordinary Pixi sprite.</p>"""
         body, [TN1, R_LIB, "PixiJS authors, <i>PixiJS</i> v8.6.6, 2024. [Online]. Available: pixijs.com"])
 
 
+# --- TN-8: SVG ----------------------------------------------------------------------------------------
+
+def note_svg():
+    f = P.format("svg")
+    body = f"""
+<h3>I. Introduction</h3>
+<p>SVG can show part of an image without any clipping code: a nested <code>&lt;svg&gt;</code> element
+establishes its own viewport, and its <code>viewBox</code> chooses which region of its content fills that
+viewport. The SVG example uses this to make each pack ship a small window onto its sprite sheet, then flies
+one ship and orbits three more around a planet. The page is <code>examples/svg/index.html</code>.</p>
+
+<h3>II. Assets Used</h3>
+{table("I", "What the page takes from the pack", ["Asset", "Read at", "Used for"], [
+  ["<code>ship.json</code> ×4", ref(f, "loadShipMeta(q.get"), "Frame grid, stats, names"],
+  ["<code>sheet-alpha.png</code>", ref(f, 'view.append(svgEl("image"'), "The pixels, as an SVG <code>&lt;image&gt;</code>"],
+  ["<code>planets/gas/large/planet.png</code>", ref(f, 'id="planet"'), "The planet, a plain <code>&lt;image&gt;</code>"],
+  ["<code>frameRect()</code>, <code>frameIndex()</code>", ref(f, "import { loadShipMeta, frameIndex, frameRect }"), "Which cell to show"],
+])}
+<p>Only metadata is fetched by script; the browser loads the sheets itself when the <code>&lt;image&gt;</code>
+elements reference them, so no image is decoded in JavaScript.</p>
+
+<h3>III. The Scene</h3>
+<p>The scene is one <code>&lt;svg viewBox="0 0 640 400"&gt;</code> ({ref(f, '<svg id="scene"')}). All
+positions in the script are in those 640 × 400 user units, and CSS stretches the whole drawing to the page
+width, so the game logic never deals with screen pixels. One rule, <code>image-rendering: pixelated</code>
+({ref(f, "#scene image {")}), keeps the 1997 pixels square at whatever size the scene ends up. Stars are
+1 × 1 <code>&lt;rect&gt;</code>s and the ships share a drop-shadow <code>&lt;filter&gt;</code>
+({ref(f, '<filter id="shadow"', '</filter>')}), an effect that costs one attribute here and a second
+drawing pass on a canvas.</p>
+
+<h3>IV. One Ship, One Viewport</h3>
+<p><code>makeShip()</code> (Listing 1) builds a nested <code>&lt;svg&gt;</code> one frame in size (times a
+whole-number scale) and puts the entire sheet inside it at its natural size, <i>6w</i> × <i>6h</i>. Nothing
+in the sheet moves afterwards. To show frame <i>f</i>, <code>place()</code> sets</p>
+{eq("viewBox = ((f mod 6) · w,&nbsp; ⌊f / 6⌋ · h,&nbsp; w,&nbsp; h)", 1)}
+<p>which is exactly <code>frameRect()</code>'s rectangle, so the viewport shows that cell and clips the other
+35; nested SVG viewports clip by default. Position is the element's <code>x</code>/<code>y</code>, offset by
+half its size so the ship is centred on the point.</p>
+{listing(1, "A ship as a nested viewport", f, ("function makeShip(ship, scale)", "      },"))}
+
+<h3>V. Heading and Motion</h3>
+<p>The player's update is the Canvas example's [2]: turn, thrust along the frame shown, cap the speed, wrap at
+the edges. Only the last step differs, a call to <code>place()</code> instead of a draw. The escorts
+(Listing 2) orbit clockwise: at angle <i>φ</i> from up a ship is at (<i>c<sub>x</sub></i> + <i>R</i> sin
+<i>φ</i>, <i>c<sub>y</sub></i> − <i>R</i> cos <i>φ</i>), and its velocity points along</p>
+{eq("θ = φ + 90°", 2)}
+<p>so each is drawn with frame <code>frameIndex(φ + 90)</code> and always faces the way it is going.</p>
+{listing(2, "The escorts", f, ("// Escorts orbit clockwise", "    });"))}
+
+<h3>VI. Drawing</h3>
+<p>There is no draw function. The loop ({ref(f, "const STEP = 1 / 60;")}) only updates attributes, and the
+browser repaints the changed parts of the SVG. That is the trade: SVG costs a DOM element per ship, which
+suits tens of ships, not thousands, but gives hit-testing, accessibility (the scene's
+<code>&lt;title&gt;</code>, {ref(f, '<title id="scene-title">')}), CSS styling and filters for nothing.</p>
+
+<h3>VII. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Copy <code>makeShip()</code> and the <code>image-rendering</code> rule.</li>
+  <li>Call <code>place(x, y, heading)</code> from your own update.</li>
+  <li>Put the ships inside any SVG: a map, a diagram, an editor canvas.</li>
+</ol>
+<p>The same window-onto-a-sheet idea, done with a CSS background instead of a viewport, is the DOM
+example [3].</p>
+
+<h3>VIII. Conclusion</h3>
+<p>A nested <code>&lt;svg&gt;</code> whose <code>viewBox</code> is Equation (1) is a complete sprite: the
+sheet is loaded once by the browser and every frame change is one attribute.</p>"""
+    return paper(8, "A Viewport per Ship: How the SVG Example Uses the Pack",
+        "The SVG example shows each pack ship as a nested <code>&lt;svg&gt;</code> that holds the whole "
+        "<code>sheet-alpha.png</code> and selects one frame with its <code>viewBox</code>, clipping the rest. "
+        "This note follows the page's source: the scene in user units, the ship as a viewport, orbiting "
+        "escorts that face their direction of travel, and a loop with no drawing step.",
+        "SVG, viewBox, sprite sheets, pixel art.",
+        body, [TN1, 'Yodacon Ship Pack, “A game loop on Canvas 2D,” Tutorial Note 3, <a href="../canvas/#note">examples/canvas/</a>.',
+               'Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="../dom/#note">examples/dom/</a>.',
+               R_LIB, "W3C, <i>Scalable Vector Graphics (SVG) 2</i>, §8.2 “The viewBox attribute,” Candidate Recommendation, 2018."])
+
+
+# --- TN-9: CSS only -----------------------------------------------------------------------------------
+
+def note_css():
+    f = P.format("css")
+    body = f"""
+<h3>I. Introduction</h3>
+<p>The CSS example has no script at all. Eleven ships spin in a hangar, and a row of radio buttons stops them
+all at one heading. Everything is in the page's stylesheet, <code>examples/css/index.html</code>, and in one
+<code>style</code> attribute per ship. It is the form to use where JavaScript is unwelcome: an e-mail-safe
+page, a README preview, a loading screen.</p>
+
+<h3>II. Assets Used</h3>
+{table("I", "What the page takes from the pack", ["Asset", "Where", "Used for"], [
+  ["<code>sheet-alpha.png</code> ×11", ref(f, 'aria-label="Yodacon"'), "Each ship's background"],
+  ["<code>ship.json</code> (copied)", ref(f, 'aria-label="Yodacon"'), "Frame size, as <code>--w</code> and <code>--h</code>"],
+])}
+<p>With no script the page cannot read <code>ship.json</code>, so each ship's frame size is copied into its
+<code>style</code> attribute with the sheet URL and a whole-number scale <code>--s</code>
+(<code>--sheet</code>, <code>--w</code>, <code>--h</code>, <code>--s</code>). Those four properties are the
+only per-ship data; the rest of the page is shared rules.</p>
+
+<h3>III. The Sprite</h3>
+<p>As in the DOM example [2], an element one frame in size shows the sheet, scaled by <i>s</i>, as its
+background (Listing 1). Two derived properties, <code>--cell-w</code> and <code>--cell-h</code>, hold the
+scaled frame size so the later rules can stay short.</p>
+{listing(1, "The sprite rule", f, (".ship {", "image-rendering: pixelated"))}
+
+<h3>IV. Spinning With Two Step Animations</h3>
+<p>The frames run 0 to 35 across six rows of six. A single <code>steps(36)</code> animation would need the
+frames in one strip; the pack's sheets are a grid, so the page runs two animations at once (Listing 2). One
+moves <code>background-position-x</code> through six columns in <i>T</i>/6, repeating; the other moves
+<code>background-position-y</code> through six rows in <i>T</i>. At time <i>t</i> the column is
+⌊36<i>t</i>/<i>T</i>⌋ mod 6 and the row ⌊6<i>t</i>/<i>T</i>⌋, so the frame shown is</p>
+{eq("f = 6 · row + col = ⌊36 t / T⌋ mod 36", 1)}
+<p>which is the clockwise spin, one frame every <i>T</i>/36 = 0.1 s. The two properties are animated
+separately, so neither animation disturbs the other. Hovering pauses both with
+<code>animation-play-state</code>, and <code>prefers-reduced-motion</code> turns them off
+({ref(f, "@media (prefers-reduced-motion: reduce)")}).</p>
+{listing(2, "The spin", f, ("--turn: 3.6s;", ".ship:hover"))}
+
+<h3>V. Holding a Heading</h3>
+<p>A fixed frame <i>f</i> needs its column and row, and CSS can now compute both: <code>mod()</code> and
+<code>round(down, …)</code> (Listing 3). The heading itself comes from the radio buttons: for each one a rule
+<code>body:has(#h9:checked) .ship {{ --f: 9; }}</code> sets <code>--f</code> on every ship, so the form
+state reaches the ships without a line of script. Choosing “Spin” removes the override and the animations
+resume.</p>
+{listing(3, "Frame f in CSS", f, ("body:not(:has(#spin:checked)) .ship {", "body:has(#h0:checked)"))}
+
+<h3>VI. Using It in Your Project</h3>
+<ol class="steps">
+  <li>Copy the <code>.ship</code> rules and the two <code>@keyframes</code>.</li>
+  <li>For each ship, write its sheet URL and its <code>frame_width</code> and <code>frame_height</code> from
+    <code>ship.json</code> into a <code>style</code> attribute.</li>
+  <li>Set <code>--turn</code> for speed, or <code>--f</code> (0–35) with <code>animation: none</code> for a
+    fixed heading.</li>
+</ol>
+<p>Browsers without <code>mod()</code> and <code>round()</code> still spin; only the held heading needs
+them.</p>
+
+<h3>VII. Conclusion</h3>
+<p>Two <code>steps(6)</code> animations on the two background axes reproduce the pack's frame order exactly,
+and CSS math picks any single frame, so a pack ship can spin or hold a heading with no JavaScript.</p>"""
+    return paper(9, "Spinning Without Script: How the CSS-Only Example Uses the Pack",
+        "The CSS-only example animates pack ships with no JavaScript: two <code>steps(6)</code> animations, one per "
+        "background axis, walk the 6 × 6 sheet in frame order, and <code>mod()</code>, <code>round()</code> and "
+        "<code>:has()</code> hold any heading chosen by a radio button. This note derives the frame sequence and "
+        "follows the page's stylesheet.",
+        "CSS animation, steps(), CSS math functions, :has(), sprite sheets.",
+        body, [TN1, 'Yodacon Ship Pack, “A ship in plain HTML and CSS,” Tutorial Note 2, <a href="../dom/#note">examples/dom/</a>.',
+               "W3C, <i>CSS Values and Units Module Level 4</i>, §10 “Stepped value functions,” Working Draft, 2024.",
+               "W3C, <i>CSS Easing Functions Level 1</i>, §3 “Step easing functions,” Candidate Recommendation, 2023."])
+
+
 NOTES = {"dom": note_dom, "canvas": note_canvas, "web-component": note_wc,
-         "threejs": note_three, "phaser": note_phaser, "pixi": note_pixi}
+         "threejs": note_three, "phaser": note_phaser, "pixi": note_pixi,
+         "svg": note_svg, "css": note_css}
 BACK = '<p><a href="../">← Examples</a> · <a href="../../">Ship Pack</a>'
 
 

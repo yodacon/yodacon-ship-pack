@@ -154,6 +154,17 @@
   @media (max-width: 520px) { .tools { grid-template-columns: minmax(0, 1fr); } .tools dd { margin-bottom: 6px; } }
   .rank { font-size: 1.05rem; }
   .rank strong { color: var(--accent); }
+  .made { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .made li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+  .made .shot { display: block; background: var(--well); }
+  .made .shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+  .made .body { padding: 10px 14px 12px; }
+  .made h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .made .tag { margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .made p { margin: 4px 0 0; font-size: 14px; }
+  .made .feature { grid-column: 1 / -1; }
+  .made .feature .shot img { aspect-ratio: auto; }
+  @media (min-width: 760px) { .made .feature { flex-direction: row; } .made .feature .shot { flex: 0 0 58%; } .made .feature .body { padding: 18px 20px; } }
 
   footer { margin-top: 48px; padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
   footer p { margin: 6px 0; }
@@ -191,6 +202,7 @@
     <li><a href="#origins">Origins</a></li>
     <li><a href="#made">How they were made</a></li>
     <li><a href="#flying">Who's flying</a></li>
+    <li><a href="#inspiration">Made with it</a></li>
     <li><a href="playground/">Playground</a></li>
     <li><a href="projects/">Sample projects</a></li>
     <li><a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/TIMELINE.md">Timeline</a></li>
@@ -510,6 +522,60 @@ https://cdn.jsdelivr.net/gh/yodacon/yodacon-ship-pack@v2.0.0/catalog.json</code>
     <li><a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/USED-IN.md">The full leaderboard (USED-IN.md)</a></li>
     <li><a href="https://github.com/yodacon/yodacon-ship-pack/issues/new/choose">List your project</a> — see
       <a href="https://github.com/yodacon/yodacon-ship-pack/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+  </ul>
+</section>
+
+<section class="block" id="inspiration" aria-labelledby="inspiration-h">
+  <h2 id="inspiration-h">Made with it: example projects</h2>
+  <p class="lede">Complete games built on these sprites, to play and to take apart. Each one is a single folder of plain
+    HTML, CSS and JavaScript with no build step; copy one and start changing it.</p>
+  <ul class="made">
+    <li class="feature">
+      <a class="shot" href="projects/konquest/"><img src="projects/konquest/screenshot.png" alt="Konquest at turn ten: fleets of pack ships crossing the galaxy, each turned to its heading, with the news and standings" width="830" height="680" loading="lazy"></a>
+      <div class="body"><p class="tag">DOM + Canvas strategy</p><h3><a href="projects/konquest/">Konquest</a></h3>
+        <p>KDE's galactic conquest with its exact rules and three computer opponents. Every fleet in flight is a pack ship turned to its heading, and each turn's news shows the hull's comm portrait.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/konquest">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/courier/"><img src="projects/courier/screenshot.png" alt="Leaving Express Yard in a Small Pin, the radar top right" width="1280" height="757" loading="lazy"></a>
+      <div class="body"><p class="tag">Canvas + DOM trading</p><h3><a href="projects/courier/">ConEx Courier</a></h3>
+        <p><i>Escape Velocity</i> in miniature: four systems, five goods, courier missions, pirates flying the Override hulls and a shipyard of the ten 1997 ships.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/courier">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/fleet-tactics/"><img src="projects/fleet-tactics/screenshot.png" alt="Mid-battle: the opposing fleet above, the battle log, your Advisor to act" width="1280" height="757" loading="lazy"></a>
+      <div class="body"><p class="tag">DOM card game</p><h3><a href="projects/fleet-tactics/">Fleet Tactics</a></h3>
+        <p>Draft a fleet within a budget and fight card by card; hull, firepower and initiative come from each ship's 1997 record.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/fleet-tactics">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/orbital-defence/"><img src="projects/orbital-defence/screenshot.png" alt="Wave four: Advisor patrols on their orbits, Gryphons and Tridents spiralling in" width="1280" height="860" loading="lazy"></a>
+      <div class="body"><p class="tag">Canvas arcade</p><h3><a href="projects/orbital-defence/">Orbital Defence</a></h3>
+        <p>Hold a planet against waves of ConEx ships: aim its cannon, buy Advisor patrols, repair between waves.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/orbital-defence">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/slingshot/"><img src="projects/slingshot/screenshot.png" alt="Level six, the gauntlet: the aim preview bending under the lava planet's pull" width="1280" height="860" loading="lazy"></a>
+      <div class="body"><p class="tag">Canvas physics</p><h3><a href="projects/slingshot/">Slingshot</a></h3>
+        <p>Gravity golf with the 1997 Dart: pull back, let go, and let the planets bend it through the gate. Six levels against par.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/slingshot">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/pin-miner/"><img src="projects/pin-miner/screenshot.png" alt="Seven Small Pins working the field, with the shipyard's 1997 yard pictures" width="1280" height="860" loading="lazy"></a>
+      <div class="body"><p class="tag">Pure DOM idle game</p><h3><a href="projects/pin-miner/">Pin Miner</a></h3>
+        <p>Pins mine an asteroid field and haul the ore home; buy more ships and upgrades. No canvas: every ship is a DOM element.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/pin-miner">Source</a></p></div>
+    </li>
+    <li>
+      <a class="shot" href="projects/cutaway/"><img src="projects/cutaway/screenshot.png" alt="A round: the Trident's cutaway, four comm portraits to choose from" width="1280" height="860" loading="lazy"></a>
+      <div class="body"><p class="tag">DOM quiz</p><h3><a href="projects/cutaway/">Cutaway</a></h3>
+        <p>Name the ship from its 1997 targeting cutaway, against the clock: scanning and mirrored rounds, streak bonuses.</p>
+        <p><a href="https://github.com/yodacon/yodacon-ship-pack/tree/main/projects/cutaway">Source</a></p></div>
+    </li>
+  </ul>
+  <ul class="links">
+    <li><a href="projects/">All the projects</a>, including the three.js Hangar, Fleet Flyby, Shipyard and DOM Dogfight</li>
+    <li><a href="examples/">The examples</a>: one technique each (DOM, Canvas, a web component, three.js, Phaser 3, PixiJS), each with a tutorial note on how it works</li>
   </ul>
 </section>
 

@@ -22,6 +22,12 @@ moved or renamed file a major one. A tag's files never change.
 - **Tutorial notes 2–7**: each example page (DOM, Canvas, `<yodacon-ship>`,
   three.js, Phaser, PixiJS) ends with an IEEE-style note on how it uses the
   assets, with listings cut from its own source by `tools/example_notes.py`
+- **Two more examples**: `examples/svg/` (a nested `<svg>` per ship, its
+  `viewBox` on one frame) and `examples/css/` (no JavaScript: two `steps(6)`
+  animations, and `mod()` with `:has()` for a held heading), with Tutorial
+  Notes 8 and 9
+- **Pack page**: “Made with it”, the example games as inspiration, Konquest
+  first; Konquest's screenshot retaken in its console look
 - **Tools**: `tools/drive_page.mjs` plays a page with a script; `--width`
 - **Style**: `docs/STYLE.md`, `lib/yodacon-style.css` and `styleguide/`;
   `docs/HOUSE-STYLE.md` for the family with treadcore and paulricheson.com
